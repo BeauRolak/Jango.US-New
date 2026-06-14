@@ -1,0 +1,40 @@
+:root {
+  --bg-0: #07070d;
+  --bg-1: #0d0d18;
+  --panel-solid: #161627;
+  --panel-2: #1d1e33;
+  --border: #272a45;
+  --text: #eef0ff;
+  --text-dim: #9aa0c4;
+  --text-faint: #646a92;
+  --neon: #00e5ff;
+  --neon-2: #b14bff;
+  --neon-3: #ff2e88;
+  --gold: #ffd24a;
+  --green: #2ee6a6;
+  --red: #ff4d6d;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow-neon: 0 0 24px rgba(0,229,255,.25);
+  --maxw: 1240px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body, #root { height: 100%; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(177,75,255,.12), transparent 60%),
+    radial-gradient(900px 500px at -10% 20%, rgba(0,229,255,.10), transparent 55%),
+    var(--bg-0);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; }
+ul { list-style: none; }
+.neon-text { background: linear-gradient(90deg, var(--neon), var(--neon-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+@keyframes pop-in { from { transform: scale(.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes float-up { from { transform: translateY(8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.fade-in { animation: float-up .35s ease both; }
