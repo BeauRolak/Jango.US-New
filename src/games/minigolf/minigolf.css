@@ -1,0 +1,28 @@
+.mg-wrap{max-width:440px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:12px}
+
+.mg-hud{width:100%;display:flex;align-items:center;justify-content:space-between}
+.mg-hole{font-weight:700}
+.mg-turn{color:var(--neon);font-weight:700;font-size:14px}
+
+.mg-scores{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mg-pscore{display:flex;align-items:center;justify-content:space-between;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-weight:700}
+.mg-pscore span{font-size:20px;color:var(--neon)}
+.mg-pscore.active{border-color:var(--neon);box-shadow:0 0 0 1px rgba(0,229,255,.25)}
+
+.mg-canvas{width:100%;max-width:400px;aspect-ratio:400/560;border-radius:14px;border:1px solid var(--border);box-shadow:var(--shadow);touch-action:none;cursor:crosshair;background:#136b39}
+
+.mg-banner{background:rgba(39,232,167,.15);color:var(--green);font-weight:700;padding:8px 16px;border-radius:999px}
+.mg-help{color:var(--muted);font-size:13px;text-align:center}
+
+/* Start screen */
+.mg-start,.mg-end{text-align:center;background:linear-gradient(180deg,var(--panel),var(--panel-2));border:1px solid var(--border);border-radius:var(--radius);padding:34px 26px;box-shadow:var(--shadow);width:100%}
+.mg-start h1,.mg-end h1{margin:0 0 10px}
+.mg-start p,.mg-end p{color:var(--muted);margin:0 0 18px}
+.mg-diff{display:flex;gap:10px;justify-content:center;margin-bottom:18px}
+.mg-diff-btn{text-transform:capitalize;background:var(--panel);border:1px solid var(--border);color:var(--muted);padding:9px 18px;border-radius:10px;font-weight:700;cursor:pointer}
+.mg-diff-btn.on{color:#04101a;background:linear-gradient(135deg,var(--neon),var(--neon-2));border-color:transparent}
+.mg-play{background:linear-gradient(135deg,var(--neon),var(--neon-2));color:#04101a;border:none;padding:13px 26px;border-radius:12px;font-weight:800;font-size:16px;cursor:pointer;box-shadow:0 8px 22px rgba(0,229,255,.3)}
+.mg-play:hover{transform:translateY(-1px)}
+
+/* End screen */
+.mg-trophy{font-size:64px;margin-bottom:8px}
