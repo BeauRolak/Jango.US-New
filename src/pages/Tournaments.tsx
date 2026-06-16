@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./pages.css";
+import "./tournaments.css";
 
 type Tourney = {
   id: number;
