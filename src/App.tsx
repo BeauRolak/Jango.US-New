@@ -20,6 +20,7 @@ import DotsBoxes from './games/dotsboxes/DotsBoxes';
 import Chess from './games/chess/Chess';
 import EightBall from './games/eightball/EightBall';
 import AirHockey from './games/airhockey/AirHockey';
+import Bowling from './games/bowling/Bowling';
 
 function P({ children }: { children: ReactNode }) {
   return <Layout>{children}</Layout>;
@@ -37,6 +38,7 @@ export default function App() {
       <Route path='/games/chess' element={<P><Chess /></P>} />
       <Route path='/games/eightball' element={<P><EightBall /></P>} />
       <Route path='/games/airhockey' element={<P><AirHockey /></P>} />
+      <Route path='/games/bowling' element={<P><Bowling /></P>} />
       <Route path='/profile' element={<P><Profile /></P>} />
       <Route path='/wallet' element={<P><Wallet /></P>} />
       <Route path='/tournaments' element={<P><Tournaments /></P>} />
