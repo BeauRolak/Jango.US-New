@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import Layout from './components/Layout';
 import './pages/pages.css';
 import Dashboard from './pages/Dashboard';
+import Play from './pages/Play';
 import Games from './pages/Games';
 import Profile from './pages/Profile';
 import Wallet from './pages/Wallet';
@@ -37,6 +38,7 @@ export default function App() {
   return (
     <Routes>
       <Route path='/' element={<P><Dashboard /></P>} />
+      <Route path='/play' element={<P><Play /></P>} />
       <Route path='/games' element={<P><Games /></P>} />
       <Route path='/games/minigolf' element={<P><MiniGolf /></P>} />
       <Route path='/games/connect4' element={<P><Connect4 /></P>} />
@@ -55,10 +57,16 @@ export default function App() {
       <Route path='/games/racing' element={<P><Racing /></P>} />
       <Route path='/profile' element={<P><Profile /></P>} />
       <Route path='/wallet' element={<P><Wallet /></P>} />
+      <Route path='/deposit' element={<P><Wallet /></P>} />
       <Route path='/tournaments' element={<P><Tournaments /></P>} />
       <Route path='/rankings' element={<P><Rankings /></P>} />
+      <Route path='/leaderboard' element={<P><Rankings /></P>} />
+      <Route path='/clans' element={<P><Tournaments /></P>} />
+      <Route path='/battle-pass' element={<P><Shop /></P>} />
+      <Route path='/rank-progression' element={<P><Rankings /></P>} />
       <Route path='/shop' element={<P><Shop /></P>} />
       <Route path='/training' element={<P><Training /></P>} />
+      <Route path='/tutorial' element={<P><Training /></P>} />
       <Route path='/social' element={<P><Social /></P>} />
       <Route path='/story' element={<P><Story /></P>} />
       <Route path='/settings' element={<P><Settings /></P>} />
