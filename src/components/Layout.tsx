@@ -1,59 +1,91 @@
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, Link } from 'react-router-dom';
 import { ReactNode, useState } from 'react';
 import './Layout.css';
 
-const NAV = [
-  { to: '/', label: 'Dashboard', icon: '◉' },
-  { to: '/games', label: 'Games', icon: '▶' },
-  { to: '/tournaments', label: 'Tournaments', icon: '♦' },
-  { to: '/rankings', label: 'Rankings', icon: '↑' },
-  { to: '/shop', label: 'Shop', icon: '◆' },
-  { to: '/training', label: 'Training', icon: '✱' },
-  { to: '/social', label: 'Social', icon: '☺' },
-  { to: '/story', label: 'Story', icon: '♛' },
-  { to: '/profile', label: 'Profile', icon: '●' },
-  { to: '/wallet', label: 'Wallet', icon: '¤' },
-  { to: '/settings', label: 'Settings', icon: '⚙' },
+const COMPETE = [
+  { to: '/leaderboard', label: 'Leaderboard' },
+  { to: '/tournaments', label: 'Tournaments' },
+  { to: '/clans', label: 'Clans' },
+  { to: '/battle-pass', label: 'Battle Pass' },
+  { to: '/story', label: 'Arena Origins' },
+  { to: '/rank-progression', label: 'Rank Track' },
+  { to: '/tutorial', label: 'Training' },
+];
+
+const AVATAR_MENU = [
+  { to: '/social', label: 'Friends' }, { to: '/play', label: 'Private Match' },
+  { to: '/', label: 'Dashboard' }, { to: '/leaderboard', label: 'Global Stats' },
+  { to: '/clans', label: 'Clans' }, { to: '/wallet', label: 'Wallet' },
+  { to: '/wallet', label: 'Transaction History' }, { to: '/battle-pass', label: 'Battle Pass' },
+  { to: '/profile', label: 'Profile' }, { to: '/rank-progression', label: 'Rank Track' },
+  { to: '/tutorial', label: 'Training Arena' }, { to: '/settings', label: 'Settings' },
 ];
 
 export default function Layout({ children }: { children: ReactNode }) {
-  const [open, setOpen] = useState(false);
+  const [menu, setMenu] = useState<string | null>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const loc = useLocation();
+  const close = () => { setMenu(null); setMobileOpen(false); };
+  const toggle = (k: string) => setMenu(menu === k ? null : k);
   return (
     <div className="app-shell">
-      <aside className={open ? 'side open' : 'side'}>
-        <div className="brand">
-          <span className="brand-mark">♛</span>
-          <span className="brand-text neon-text">JANGO.US</span>
-        </div>
-        <nav className="nav">
-          {NAV.map((n) => (
-            <NavLink key={n.to} to={n.to} end={n.to === '/'} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'} onClick={() => setOpen(false)}>
-              <span className="nav-icon">{n.icon}</span>
-              <span className="nav-label">{n.label}</span>
-            </NavLink>
-          ))}
-        </nav>
-        <div className="side-foot">
-          <div className="mini-bal">
-            <span className="text-dim">Scaps</span>
-            <span className="bal-amt">1,250</span>
+      <header className="topnav">
+        <div className="topnav-inner">
+          <Link to="/" className="jango-logo" onClick={close}>JANGO</Link>
+          <nav className="topnav-links">
+            <NavLink to="/play" className={({isActive})=> isActive ? 'tnl active' : 'tnl'}>Play</NavLink>
+            <div className="tnl-drop">
+              <button className={'tnl' + (menu==='compete' ? ' active' : '')} onClick={()=>toggle('compete')}>Compete <span className="caret">{'\u25BE'}</span></button>
+              {menu==='compete' && (
+                <div className="dropdown">
+                  {COMPETE.map(c => <Link key={c.label} to={c.to} className="dd-item" onClick={close}>{c.label}</Link>)}
+                </div>
+              )}
+            </div>
+            <NavLink to="/social" className={({isActive})=> isActive ? 'tnl active' : 'tnl'}>Social</NavLink>
+            <NavLink to="/shop" className={({isActive})=> isActive ? 'tnl active' : 'tnl'}>Shop</NavLink>
+          </nav>
+          <div className="topnav-right">
+            <button className="icon-btn bell" aria-label="Notifications">{'\uD83D\uDD14'}<span className="badge">3</span></button>
+            <Link to="/wallet" className="balance-pill"><span className="coin">S</span><span className="balance-num">117.00</span><span className="bal-plus">+</span></Link>
+            <div className="tnl-drop">
+              <button className="avatar-btn" onClick={()=>toggle('avatar')}>P<span className="rank-dot" /></button>
+              {menu==='avatar' && (
+                <div className="dropdown dropdown-right">
+                  <div className="dd-head"><div className="dd-name">Player 1</div><div className="dd-email">player@jango.us</div></div>
+                  {AVATAR_MENU.map((c,i) => <Link key={i} to={c.to} className="dd-item" onClick={close}>{c.label}</Link>)}
+                  <button className="dd-item dd-signout" onClick={close}>Sign Out</button>
+                </div>
+              )}
+            </div>
+            <button className="hamburger" onClick={()=>setMobileOpen(!mobileOpen)} aria-label="Menu">{'\u2630'}</button>
           </div>
         </div>
-      </aside>
-      {open && <div className="scrim" onClick={() => setOpen(false)} />}
-      <div className="main-col">
-        <header className="topbar">
-          <button className="hamburger" onClick={() => setOpen(!open)} aria-label="Menu">☰</button>
-          <div className="top-spacer" />
-          <div className="top-actions">
-            <div className="chip"><span className="chip-gold">¤</span> 1,250</div>
-            <div className="chip">Gold III</div>
-            <div className="avatar-sm">P</div>
+        {mobileOpen && (
+          <nav className="mobile-menu">
+            <Link to="/play" className="mm-item" onClick={close}>Play</Link>
+            <Link to="/leaderboard" className="mm-item" onClick={close}>Leaderboard</Link>
+            <Link to="/tournaments" className="mm-item" onClick={close}>Tournaments</Link>
+            <Link to="/social" className="mm-item" onClick={close}>Social</Link>
+            <Link to="/shop" className="mm-item" onClick={close}>Shop</Link>
+            <Link to="/wallet" className="mm-item" onClick={close}>Wallet</Link>
+            <Link to="/profile" className="mm-item" onClick={close}>Profile</Link>
+            <Link to="/settings" className="mm-item" onClick={close}>Settings</Link>
+          </nav>
+        )}
+      </header>
+      {menu && <div className="menu-scrim" onClick={close} />}
+      <main className="content" key={loc.pathname}>{children}</main>
+      <footer className="site-footer">
+        <div className="footer-inner">
+          <div className="footer-brand"><span className="jango-logo sm">JANGO</span><span className="footer-tag">Skill-based competitive gaming platform</span></div>
+          <div className="footer-links">
+            <Link to="/terms">Terms of Service</Link><Link to="/privacy">Privacy Policy</Link>
+            <Link to="/contact">Contact</Link><Link to="/fair-play">Fair Play</Link>
           </div>
-        </header>
-        <main className="content" key={loc.pathname}>{children}</main>
-      </div>
+          <div className="footer-legal">{'\u00A9'} 2026 Jango.us. All rights reserved. <span className="footer-18">Players must be 18+. Play responsibly.</span></div>
+        </div>
+      </footer>
     </div>
   );
 }
