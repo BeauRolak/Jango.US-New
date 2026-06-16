@@ -11,11 +11,11 @@ const FEATURED = [
 ];
 
 const MODES = [
-  { id: 'casual', label: 'Casual', sub: 'Quick play, no rating at stake', cls: 'm-green', icon: '\u25C9' },
-  { id: 'ranked', label: 'Ranked', sub: 'ELO ladder, win to climb the tiers', cls: 'm-orange', icon: '\u25B2' },
-  { id: 'bot', label: 'vs Bot', sub: 'Practice solo against an AI opponent', cls: 'm-blue', icon: '\u2699' },
-  { id: 'tournament', label: 'Tournament', sub: 'Bracket competition with prize pools', cls: 'm-gold', icon: '\u265B' },
-  { id: 'private', label: 'Private', sub: 'Play with friends using an invite code', cls: 'm-purple', icon: '\u26BF' },
+  { id: 'casual', label: 'Casual', sub: 'Quick play, no rating at stake', cls: 'm-green', icon: '◉' },
+  { id: 'ranked', label: 'Ranked', sub: 'ELO ladder, win to climb the tiers', cls: 'm-orange', icon: '▲' },
+  { id: 'bot', label: 'vs Bot', sub: 'Practice solo against an AI opponent', cls: 'm-blue', icon: '⚙' },
+  { id: 'tournament', label: 'Tournament', sub: 'Bracket competition with prize pools', cls: 'm-gold', icon: '♛' },
+  { id: 'private', label: 'Private', sub: 'Play with friends using an invite code', cls: 'm-purple', icon: '⚿' },
 ];
 
 const GAMES = [
@@ -66,7 +66,7 @@ export default function Play() {
       <div className='play-hero'>
         <div className='eyebrow'>Skill-Based Competition</div>
         <h1 className='play-h1'>Play Skill Games. <span className='grad-text'>Win Real Money.</span></h1>
-        <p className='play-sub'>Instant payouts \u00B7 Real competition \u00B7 3% rake</p>
+        <p className='play-sub'>Instant payouts · Real competition · 3% rake</p>
       </div>
 
       <div className={'carousel ' + f.cls}>
@@ -93,7 +93,7 @@ export default function Play() {
 
       <div className='status-strip'>
         <span><span className='live-dot' /> online now</span>
-        <span>\u26A1 live matches</span>
+        <span>⚡ live matches</span>
         <span>3% rake</span>
         <span>instant payouts</span>
         <span className='ss-right'><button className='ss-link' onClick={() => nav('/leaderboard')}>Rankings</button><button className='ss-link'>Join Code</button></span>
@@ -102,7 +102,7 @@ export default function Play() {
       {open && (
         <div className='modal-scrim' onClick={() => setOpen(false)}>
           <div className='play-modal pop-in' onClick={e => e.stopPropagation()}>
-            <button className='modal-x' onClick={() => setOpen(false)}>\u00D7</button>
+            <button className='modal-x' onClick={() => setOpen(false)}>×</button>
             <div className='stepper'>
               <span className={step >= 1 ? 'st on' : 'st'}>1 Mode</span>
               <span className={step >= 2 ? 'st on' : 'st'}>2 Game</span>
@@ -153,7 +153,7 @@ export default function Play() {
                 <h3 className='step-title'>{game[1]} <button className='change-btn' onClick={() => setStep(2)}>Change</button></h3>
                 <div className='wager-label'>Wager Amount</div>
                 {lockedWager ? (
-                  <div className='ranked-lock'>Ranked is locked at exactly <b>1 Scalp</b> \u2014 everyone risks the same stake.</div>
+                  <div className='ranked-lock'>Ranked is locked at exactly <b>1 Scalp</b> · everyone risks the same stake.</div>
                 ) : (
                   <div className='wager-chips'>
                     {WAGERS.map(w => (
@@ -162,7 +162,7 @@ export default function Play() {
                   </div>
                 )}
                 <div className='balance-note'>Balance: <span className='balance-num'>117.00</span> S</div>
-                <button className='start-btn' onClick={start}>Start Match \u00B7 {lockedWager ? 1 : wager} Scalps</button>
+                <button className='start-btn' onClick={start}>Start Match · {lockedWager ? 1 : wager} Scalps</button>
               </div>
             )}
           </div>
