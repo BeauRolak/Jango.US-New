@@ -24,8 +24,11 @@ const STATS = [
   { label: "Matches Played", value: "0" },
   { label: "Wins", value: "0" },
   { label: "Losses", value: "0" },
-  { label: "Win Rate", value: "â" },
+  { label: "Win Rate", value: "N/A" },
 ];
+
+const FIRE = "🔥";
+const MID = "·";
 
 export default function Profile() {
   return (
@@ -39,15 +42,15 @@ export default function Profile() {
           <h1>beaurolak <span className={"you-tag"}>You</span></h1>
           <p className={"profile-role"}>Chess Tactician</p>
           <div className={"profile-chips"}>
-            <span className={"chip silver"}>Silver Â· 1200</span>
+            <span className={"chip silver"}>Silver {MID} 1200</span>
             <span className={"chip"}>Lv 1</span>
-            <span className={"chip"}>ð¥ 1 day streak</span>
+            <span className={"chip"}>{FIRE} 1 day streak</span>
             <span className={"chip green"}>Excellent (80/100)</span>
           </div>
           <div className={"xp-bar"}>
             <div className={"xp-fill"} style={{ width: "0%" }} />
           </div>
-          <span className={"xp-label"}>Level 1 XP Â· 0 / 500</span>
+          <span className={"xp-label"}>Level 1 XP {MID} 0 / 500</span>
         </div>
       </div>
 
