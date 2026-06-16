@@ -1,0 +1,23 @@
+/* Training Arena (5.9) */
+.tr-page { max-width: 1100px; margin: 0 auto; }
+.tr-bot { display:flex; justify-content:space-between; align-items:center; gap:20px; flex-wrap:wrap; background:hsl(222 15% 10%); border:1px solid hsl(0 0% 18%); border-radius:14px; padding:20px; margin-bottom:28px; }
+.tr-bot-info h3 { font-family:'Space Grotesk',sans-serif; margin:0 0 4px; font-size:17px; }
+.tr-bot-info p { margin:0; color:hsl(0 0% 60%); font-size:13px; }
+.tr-bot-levels { display:flex; gap:8px; flex-wrap:wrap; }
+.tr-lvl { background:hsl(222 12% 16%); color:hsl(0 0% 78%); border:1px solid hsl(0 0% 18%); border-radius:8px; padding:9px 16px; font-size:13px; font-weight:600; cursor:pointer; transition:all .15s; }
+.tr-lvl:hover { border-color:#3B82F6; }
+.tr-lvl-on { background:linear-gradient(90deg,#3B82F6,#7c5cff); color:#fff; border-color:transparent; }
+.tr-section { font-family:'Space Grotesk',sans-serif; font-size:20px; font-weight:700; margin:0 0 16px; }
+.tr-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; }
+.tr-card { background:hsl(222 15% 10%); border:1px solid hsl(0 0% 18%); border-radius:14px; padding:18px; display:flex; flex-direction:column; transition:border-color .15s, transform .15s; }
+.tr-card:hover { border-color:#c084fc; transform:translateY(-3px); }
+.tr-card-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+.tr-skill { font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#c084fc; background:rgba(192,132,252,.14); padding:3px 9px; border-radius:5px; }
+.tr-game { font-size:12px; color:hsl(0 0% 60%); }
+.tr-name { font-family:'Space Grotesk',sans-serif; font-size:17px; font-weight:700; margin:0 0 6px; }
+.tr-desc { font-size:13px; color:hsl(0 0% 62%); margin:0 0 14px; line-height:1.5; flex:1; }
+.tr-stars { display:flex; align-items:center; gap:3px; margin-bottom:14px; }
+.tr-star { color:hsl(0 0% 30%); font-size:18px; line-height:1; }
+.tr-star-on { color:#ffc14d; }
+.tr-best { margin-left:auto; font-size:12px; color:hsl(0 0% 60%); font-family:'JetBrains Mono',monospace; }
+@media (max-width:560px){ .tr-grid{grid-template-columns:1fr;} .tr-bot{flex-direction:column; align-items:flex-start;} }
