@@ -1,0 +1,21 @@
+/* Battle Pass (5.7) */
+.bp-page { max-width: 1100px; margin: 0 auto; }
+.bp-progress { display:flex; align-items:center; gap:18px; background:hsl(222 15% 10%); border:1px solid hsl(0 0% 18%); border-radius:14px; padding:18px 22px; margin-bottom:22px; }
+.bp-level-badge { width:60px; height:60px; flex-shrink:0; border-radius:14px; display:flex; align-items:center; justify-content:center; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:24px; color:#0b0d11; background:linear-gradient(135deg,#ffc14d,#ff8a3c); box-shadow:0 0 18px rgba(255,193,77,.35); }
+.bp-progress-main { flex:1; }
+.bp-progress-top { display:flex; justify-content:space-between; font-size:14px; font-weight:600; margin-bottom:8px; }
+.bp-xp { font-family:'JetBrains Mono',monospace; color:hsl(0 0% 60%); font-weight:500; }
+.bp-bar { height:10px; background:hsl(222 12% 18%); border-radius:99px; overflow:hidden; }
+.bp-bar-fill { height:100%; background:linear-gradient(90deg,#FF2D78,#FF6A2C); border-radius:99px; }
+.bp-track-labels { display:grid; grid-template-columns:60px 1fr 1fr; gap:12px; margin-bottom:8px; padding:0 4px; }
+.bp-tl-free { grid-column:2; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:hsl(0 0% 55%); }
+.bp-tl-prem { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:#ffc14d; }
+.bp-track { display:flex; flex-direction:column; gap:8px; }
+.bp-tier { display:grid; grid-template-columns:60px 1fr 1fr; gap:12px; align-items:stretch; opacity:.55; transition:opacity .15s; }
+.bp-unlocked { opacity:1; }
+.bp-tier-num { display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:16px; background:hsl(222 14% 13%); border:1px solid hsl(0 0% 18%); border-radius:10px; }
+.bp-unlocked .bp-tier-num { border-color:#ffc14d; color:#ffc14d; }
+.bp-reward { display:flex; align-items:center; gap:8px; padding:12px 14px; border-radius:10px; font-size:13px; font-weight:600; background:hsl(222 15% 10%); border:1px solid hsl(0 0% 18%); }
+.bp-prem { border-width:1px; border-style:solid; }
+.bp-rarity-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+@media (max-width:620px){ .bp-track-labels,.bp-tier{grid-template-columns:44px 1fr 1fr; gap:8px;} .bp-progress{flex-direction:column; align-items:flex-start;} }
