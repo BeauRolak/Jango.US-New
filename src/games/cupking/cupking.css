@@ -1,0 +1,59 @@
+.ck-wrap {
+  min-height: 100vh;
+  background: radial-gradient(circle at 50% 0%, #3a2008 0%, #0c0702 70%);
+  color: #ffe8d0;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 16px; font-family: 'Inter', system-ui, sans-serif;
+}
+.ck-head {
+  width: 100%; max-width: 440px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin-bottom: 8px;
+}
+.ck-back { color: #ffb066; text-decoration: none; font-size: 14px; font-weight: 600; white-space: nowrap; }
+.ck-back:hover { color: #ffd0a0; }
+.ck-title {
+  font-size: 22px; font-weight: 800; margin: 0;
+  background: linear-gradient(90deg, #ff5c5c, #ffd34d);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.ck-diff { display: flex; gap: 6px; }
+.ck-diff-btn {
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,180,100,0.25);
+  color: #ffd0a0; border-radius: 999px; padding: 5px 12px; font-size: 12px;
+  text-transform: capitalize; cursor: pointer; transition: all 0.15s ease;
+}
+.ck-diff-btn:hover { border-color: #ff9a4d; }
+.ck-diff-btn.active {
+  background: linear-gradient(90deg, #ff5c5c, #ffd34d); color: #2a1505;
+  border-color: transparent; font-weight: 700;
+}
+.ck-score {
+  display: flex; align-items: center; gap: 16px; font-size: 22px; font-weight: 800; margin: 4px 0;
+}
+.ck-you { color: #ffd34d; }
+.ck-cpu { color: #ff7a6a; }
+.ck-turn { color: #c89a78; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+.ck-status { font-size: 14px; color: #ffd6b8; min-height: 20px; margin-bottom: 8px; text-align: center; }
+.ck-stage-wrap {
+  position: relative; width: 100%; max-width: 360px; aspect-ratio: 400 / 620;
+  border-radius: 16px; overflow: hidden;
+  box-shadow: 0 0 0 2px rgba(255,150,80,0.2), 0 20px 60px rgba(0,0,0,0.6);
+}
+.ck-canvas { display: block; width: 100%; height: 100%; touch-action: none; background: #1a0e04; cursor: crosshair; }
+.ck-overlay {
+  position: absolute; inset: 0; background: rgba(12,7,2,0.82); backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+}
+.ck-card { text-align: center; display: flex; flex-direction: column; gap: 14px; padding: 28px; }
+.ck-result {
+  font-size: 32px; font-weight: 900;
+  background: linear-gradient(90deg, #ff5c5c, #ffd34d);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.ck-final { font-size: 15px; color: #ffd0a0; }
+.ck-play { background: linear-gradient(90deg, #ff5c5c, #ffd34d); color: #2a1505; border: none; border-radius: 12px; padding: 12px 28px; font-size: 16px; font-weight: 800; cursor: pointer; }
+.ck-play:hover { filter: brightness(1.08); }
+.ck-leave { color: #ffb066; text-decoration: none; font-size: 14px; }
+.ck-leave:hover { color: #ffd0a0; }
+@media (max-width: 420px) { .ck-title { font-size: 18px; } .ck-score { font-size: 18px; } .ck-result { font-size: 26px; } }
