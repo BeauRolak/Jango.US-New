@@ -19,10 +19,10 @@ export const GAMES: GameInfo[] = [
   { id: "dotsboxes", name: "Dots & Boxes", emoji: "\u25fb\ufe0f", mode: "1v1", category: "Board", playable: true, path: "/games/dotsboxes", art: "linear-gradient(135deg,#1a5a6b,#3fb0d0)" },
   { id: "bowling", name: "Bowling", emoji: "\ud83c\udfb3", mode: "1v1", category: "Sports", playable: true, path: "/games/bowling", art: "linear-gradient(135deg,#1a3a6b,#3f6fd0)" },
   { id: "basketball", name: "Basketball", emoji: "\ud83c\udfc0", mode: "1v1", category: "Sports", playable: true, path: "/games/basketball", art: "linear-gradient(135deg,#6b3a0a,#d07f1b)" },
+  { id: "football", name: "Football", emoji: "\ud83c\udfc8", mode: "1v1", category: "Sports", playable: true, path: "/games/football", art: "linear-gradient(135deg,#3a6b1a,#7fd03f)" },
   { id: "cupking", name: "Cup King", emoji: "\ud83c\udfaf", mode: "Solo", category: "Arcade", playable: false, path: "/games", art: "linear-gradient(135deg,#6b3a1a,#d07f3f)" },
   { id: "stacktower", name: "Stack Tower", emoji: "\ud83e\uddf1", mode: "Solo", category: "Arcade", playable: false, path: "/games", art: "linear-gradient(135deg,#1a6b4b,#3fd0a0)" },
   { id: "blockblast", name: "Block Blast", emoji: "\ud83d\udca5", mode: "Solo", category: "Arcade", playable: false, path: "/games", art: "linear-gradient(135deg,#6b1a4b,#d03fa0)" },
   { id: "tron", name: "Tron", emoji: "\ud83c\udfcd\ufe0f", mode: "1v1", category: "Arcade", playable: false, path: "/games", art: "linear-gradient(135deg,#0a4a6b,#1bbfd0)" },
-  { id: "football", name: "Football", emoji: "\ud83c\udfc8", mode: "1v1", category: "Sports", playable: false, path: "/games", art: "linear-gradient(135deg,#3a6b1a,#7fd03f)" },
   { id: "racing", name: "Racing", emoji: "\ud83c\udfce\ufe0f", mode: "1v1", category: "Sports", playable: false, path: "/games", art: "linear-gradient(135deg,#6b1a1a,#d03f3f)" },
 ];
