@@ -1,46 +1,256 @@
-import { PageHeader, Card, Stat, Tag, Btn } from "../components/UI";
+import "./pages.css";
 
-const HISTORY = [
-  { game: "Mini Golf", result: "Win", score: "+45", opp: "Bot (Hard)" },
-  { game: "Mini Golf", result: "Loss", score: "-20", opp: "Bot (Medium)" },
-  { game: "Mini Golf", result: "Win", score: "+30", opp: "Bot (Easy)" },
+interface GameRating { game: string; rating: number; tier: string; pct: number; }
+
+const RATINGS: GameRating[] = [
+  { game: "Chess", rating: 1200, tier: "Silver", pct: 60 },
+  { game: "Mini Golf", rating: 1200, tier: "Silver", pct: 60 },
+  { game: "Connect 4", rating: 1200, tier: "Silver", pct: 60 },
+  { game: "Air Hockey", rating: 1200, tier: "Silver", pct: 60 },
+  { game: "Rock Paper Scissors", rating: 1200, tier: "Silver", pct: 60 },
+  { game: "Dots & Boxes", rating: 1200, tier: "Silver", pct: 60 },
+  { game: "8-Ball Pool", rating: 1200, tier: "Silver", pct: 60 },
+  { game: "Bowling", rating: 1200, tier: "Silver", pct: 60 },
+  { game: "Cup King", rating: 1200, tier: "Silver", pct: 60 },
+  { game: "Stack Tower", rating: 1000, tier: "Bronze", pct: 30 },
+];
+
+const LADDER = [
+  { name: "Bronze", min: 0 }, { name: "Silver", min: 1000 }, { name: "Gold", min: 1400 },
+  { name: "Platinum", min: 1800 }, { name: "Diamond", min: 2200 }, { name: "Champion", min: 2600 },
+];
+
+const STATS = [
+  { label: "Matches Played", value: "0" },
+  { label: "Wins", value: "0" },
+  { label: "Losses", value: "0" },
+  { label: "Win Rate", value: "—" },
 ];
 
 export default function Profile() {
   return (
-    <div>
-      <PageHeader title="Player Profile" subtitle="Your stats, rank, and recent matches." />
-      <div className="profile-head">
-        <div className="avatar-lg">P</div>
-        <div>
-          <h2 style={{ margin: "0 0 4px" }}>Player_One</h2>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <Tag color="gold">Gold III</Tag>
-            <Tag color="neon">Rank #842</Tag>
-            <Tag color="green">57% WR</Tag>
-          </div>
+    <div className={"page profile-page"}>
+      <div className={"profile-hero"}>
+        <div className={"profile-avatar"}>
+          <span>B</span>
+          <span className={"rank-dot silver"} />
         </div>
-        <div style={{ marginLeft: "auto" }}><Btn variant="ghost">Edit profile</Btn></div>
+        <div className={"profile-meta"}>
+          <h1>beaurolak <span className={"you-tag"}>You</span></h1>
+          <p className={"profile-role"}>Chess Tactician</p>
+          <div className={"profile-chips"}>
+            <span className={"chip silver"}>Silver · 1200</span>
+            <span className={"chip"}>Lv 1</span>
+            <span className={"chip"}>🔥 1 day streak</span>
+            <span className={"chip green"}>Excellent (80/100)</span>
+          </div>
+          <div className={"xp-bar"}>
+            <div className={"xp-fill"} style={{ width: "0%" }} />
+          </div>
+          <span className={"xp-label"}>Level 1 XP · 0 / 500</span>
+        </div>
       </div>
-      <div className="grid grid-4" style={{ margin: "22px 0" }}>
-        <Stat label="Matches" value="128" />
-        <Stat label="Wins" value="73" accent="var(--green)" />
-        <Stat label="Best Streak" value="9" />
-        <Stat label="Scaps Earned" value="4,820" accent="var(--gold)" />
+
+      <div className={"stat-tiles"}>
+        {STATS.map((s) => (
+          <div key={s.label} className={"stat-tile"}>
+            <div className={"stat-value"}>{s.value}</div>
+            <div className={"stat-label"}>{s.label}</div>
+          </div>
+        ))}
       </div>
-      <h3 style={{ margin: "0 0 12px" }}>Recent matches</h3>
-      <Card>
-        <div className="history">
-          {HISTORY.map((h, i) => (
-            <div key={i} className="history-row">
-              <span className="history-game">{h.game}</span>
-              <span className="history-opp">vs {h.opp}</span>
-              <Tag color={h.result === "Win" ? "green" : "accent"}>{h.result}</Tag>
-              <span className="history-score">{h.score}</span>
+
+      <div className={"card"}>
+        <h3 className={"section-title"}>Ratings by Game</h3>
+        <div className={"rating-list"}>
+          {RATINGS.map((r) => (
+            <div key={r.game} className={"rating-row"}>
+              <span className={"rating-game"}>{r.game}</span>
+              <div className={"rating-bar"}>
+                <div className={"rating-fill"} style={{ width: r.pct + "%" }} />
+              </div>
+              <span className={"rating-val"}>{r.rating} <em>{r.tier}</em></span>
             </div>
           ))}
         </div>
-      </Card>
+      </div>
+
+      <div className={"card"}>
+        <h3 className={"section-title"}>Recent Matches</h3>
+        <div className={"empty-state"}>No matches yet</div>
+      </div>
+
+      <div className={"card"}>
+        <h3 className={"section-title"}>Rank Ladder</h3>
+        <div className={"ladder-strip"}>
+          {LADDER.map((l) => (
+            <div key={l.name} className={"ladder-node" + (l.name === "Silver" ? " active" : "")}>
+              <span className={"ladder-name"}>{l.name}</span>
+              <span className={"ladder-min"}>{l.min}+</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+import { useState } from "react";
+import "./pages.css";
+
+type Rarity = "common" | "uncommon" | "rare" | "epic" | "legendary";
+
+interface Item {
+  id: string;
+  name: string;
+  type: string;
+  rarity: Rarity;
+  price: number;
+  desc: string;
+  icon: string;
+  featured?: boolean;
+}
+
+const RARITY_LABEL: Record<Rarity, string> = {
+  common: "Common",
+  uncommon: "Uncommon",
+  rare: "Rare",
+  epic: "Epic",
+  legendary: "Legendary",
+};
+
+const TABS = ["Featured", "Daily Deals", "Frames", "Badges", "Boards", "Emotes", "Themes", "Victory", "Banners", "Trails", "Dice", "Cards", "My Items"];
+
+const ITEMS: Item[] = [
+  { id: "inferno", name: "Inferno Avatar Frame", type: "Avatar Frame", rarity: "legendary", price: 25, desc: "Animated flame border that engulfs your avatar in living fire.", icon: "🔥", featured: true },
+  { id: "galaxy", name: "Galaxy Avatar", type: "Avatar Frame", rarity: "legendary", price: 85, desc: "A swirling cosmos of stars wrapped around your profile.", icon: "🌌" },
+  { id: "crown", name: "Champions Crown", type: "Badge", rarity: "legendary", price: 85, desc: "Only true champions wear the crown. Pure flex.", icon: "👑" },
+  { id: "goldshower", name: "Gold Shower", type: "Victory Effect", rarity: "epic", price: 35, desc: "Rain gold coins across the board when you win.", icon: "🪙" },
+  { id: "diamondtrail", name: "Diamond Trail", type: "Trail", rarity: "epic", price: 35, desc: "Leave a shimmering trail of diamonds behind your pieces.", icon: "💎" },
+  { id: "goat", name: "G.O.A.T. Badge", type: "Badge", rarity: "legendary", price: 85, desc: "The greatest of all time. Reserved for legends.", icon: "🐐" },
+  { id: "neonpulse", name: "Neon Pulse Frame", type: "Avatar Frame", rarity: "rare", price: 15, desc: "A pulsing neon glow that breathes around your avatar.", icon: "💠" },
+  { id: "voidboard", name: "Void Board", type: "Board", rarity: "epic", price: 35, desc: "A board carved from the empty dark of space.", icon: "🌑" },
+  { id: "rookiebadge", name: "Rookie Badge", type: "Badge", rarity: "common", price: 3, desc: "Everyone starts somewhere. Wear it with pride.", icon: "🎖️" },
+  { id: "emberemote", name: "Ember Emote", type: "Emote", rarity: "uncommon", price: 6, desc: "Taunt your opponent with a flicker of flame.", icon: "😏" },
+  { id: "pixeltrail", name: "Pixel Trail", type: "Trail", rarity: "rare", price: 15, desc: "Retro pixel particles follow your every move.", icon: "👾" },
+  { id: "goldenbanner", name: "Golden Banner", type: "Banner", rarity: "epic", price: 35, desc: "A radiant golden banner for your profile header.", icon: "🏳️" },
+];
+
+const PRICING = [
+  { tier: "Common", range: "Free – 3", cls: "common" },
+  { tier: "Uncommon", range: "6", cls: "uncommon" },
+  { tier: "Rare", range: "15", cls: "rare" },
+  { tier: "Epic", range: "35", cls: "epic" },
+  { tier: "Legendary", range: "85", cls: "legendary" },
+];
+
+export default function Shop() {
+  const [tab, setTab] = useState("Featured");
+  const [selected, setSelected] = useState<Item | null>(null);
+  const [owned, setOwned] = useState<string[]>([]);
+  const featured = ITEMS.find((i) => i.featured) ?? ITEMS[0];
+
+  function buy(item: Item) {
+    if (!owned.includes(item.id)) setOwned([...owned, item.id]);
+    setSelected(null);
+  }
+
+  return (
+    <div className="page shop-page">
+      <div className="page-head">
+        <div>
+          <h1 className="page-title">{"◈ Item Shop"}</h1>
+          <p className="page-sub">Spend Scalps on cosmetics — no pay-to-win, ever.</p>
+        </div>
+        <div className="shop-balance">
+          <span className="coin">S</span>
+          <span className="bal-amt">117.00</span>
+          <button className="btn-primary sm">+ Add Scalps</button>
+        </div>
+      </div>
+
+      <div className="shop-banner">
+        1 Scalp = 1 USD. Deposit real money → it becomes Scalps automatically. Use Scalps to wager on games or buy cosmetics.
+      </div>
+
+      <div className="chip-row scroll-x">
+        {TABS.map((t) => (
+          <button key={t} className={"chip" + (tab === t ? " active" : "")} onClick={() => setTab(t)}>{t}</button>
+        ))}
+      </div>
+
+      <section className="shop-featured" onClick={() => setSelected(featured)}>
+        <div className={"feat-preview rar-" + featured.rarity}>
+          <span className="feat-icon">{featured.icon}</span>
+        </div>
+        <div className="feat-info">
+          <span className="overline">Featured · {RARITY_LABEL[featured.rarity]}</span>
+          <h2>{featured.name}</h2>
+          <p>{featured.desc}</p>
+          <div className="feat-price"><span className="coin">S</span> {featured.price.toFixed(2)} Scalps</div>
+        </div>
+      </section>
+
+      <div className="section-title-row">
+        <h3 className="section-title">Legendary Collection</h3>
+        <span className="shop-timer">Shop refreshes in 00:00:59</span>
+      </div>
+
+      <div className="rarity-grid">
+        {ITEMS.map((item) => (
+          <div key={item.id} className={"rarity-card rar-" + item.rarity}>
+            <div className="rar-preview"><span className="rar-icon">{item.icon}</span></div>
+            <div className="rar-body">
+              <span className={"rar-tag rar-" + item.rarity}>{RARITY_LABEL[item.rarity]}</span>
+              <h4>{item.name}</h4>
+              <div className="rar-actions">
+                <button className="icon-btn" onClick={() => setSelected(item)} title="Preview">{"👁"}</button>
+                {owned.includes(item.id) ? (
+                  <span className="owned-tag">Owned</span>
+                ) : (
+                  <button className="btn-buy" onClick={() => buy(item)}><span className="coin sm">S</span> {item.price}</button>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <section className="pricing-guide">
+        <h3 className="section-title">Scalps Pricing Guide</h3>
+        <div className="pricing-row">
+          {PRICING.map((p) => (
+            <div key={p.tier} className={"price-pill rar-" + p.cls}>
+              <span className="pp-tier">{p.tier}</span>
+              <span className="pp-range">{p.range}</span>
+            </div>
+          ))}
+        </div>
+        <p className="pricing-note">All items are purely cosmetic · 1 Scalp = 1 USD · Scalps never expire.</p>
+      </section>
+
+      {selected && (
+        <div className="modal-backdrop" onClick={() => setSelected(null)}>
+          <div className="modal item-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-x" onClick={() => setSelected(null)}>{"×"}</button>
+            <span className="overline">{RARITY_LABEL[selected.rarity]} · {selected.type}</span>
+            <div className={"item-preview-3d rar-" + selected.rarity}>
+              <span className="big-icon">{selected.icon}</span>
+              <span className="rotate-hint">Drag to rotate · Scroll to zoom</span>
+            </div>
+            <h2>{selected.name}</h2>
+            <div className="modal-tags">
+              <span className={"rar-tag rar-" + selected.rarity}>{RARITY_LABEL[selected.rarity]}</span>
+              {selected.featured && <span className="rar-tag feat">Featured</span>}
+            </div>
+            <p className="item-desc">{selected.desc}</p>
+            {owned.includes(selected.id) ? (
+              <button className="btn-primary full" disabled>Owned</button>
+            ) : (
+              <button className="btn-gradient full" onClick={() => buy(selected)}>Buy for {selected.price} Scalps</button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
