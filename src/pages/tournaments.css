@@ -1,0 +1,27 @@
+/* Tournaments (5.5) */
+.tn-page { max-width: 1100px; margin: 0 auto; }
+.tn-prizepool { text-align:right; }
+.tn-prize-num { display:block; font-family:'JetBrains Mono',monospace; font-size:26px; font-weight:700; color:#36d399; }
+.tn-prize-label { font-size:12px; color:hsl(0 0% 55%); text-transform:uppercase; letter-spacing:.06em; }
+.tn-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px; }
+.tn-card { background:hsl(222 15% 10%); border:1px solid hsl(0 0% 18%); border-radius:14px; padding:18px; display:flex; flex-direction:column; transition:border-color .15s, transform .15s; }
+.tn-card:hover { border-color:#3B82F6; transform:translateY(-3px); }
+.tn-card-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+.tn-status { font-size:10px; font-weight:700; letter-spacing:.06em; padding:3px 8px; border-radius:5px; }
+.tn-live { background:rgba(255,93,115,.16); color:#ff5d73; }
+.tn-registering { background:rgba(54,211,153,.16); color:#36d399; }
+.tn-upcoming { background:rgba(96,168,255,.16); color:#6aa8ff; }
+.tn-game { font-size:12px; color:hsl(0 0% 60%); }
+.tn-name { font-family:'Space Grotesk',sans-serif; font-size:18px; font-weight:700; margin:0 0 8px; }
+.tn-prize { font-family:'JetBrains Mono',monospace; font-size:24px; font-weight:700; color:#ffc14d; margin-bottom:14px; }
+.tn-prize span { font-family:'Inter',sans-serif; font-size:12px; font-weight:400; color:hsl(0 0% 55%); margin-left:6px; }
+.tn-meta { display:flex; gap:18px; margin-bottom:14px; }
+.tn-meta div { display:flex; flex-direction:column; gap:2px; }
+.tn-meta-k { font-size:11px; color:hsl(0 0% 50%); text-transform:uppercase; letter-spacing:.04em; }
+.tn-meta-v { font-size:13px; font-weight:600; }
+.tn-fill { margin-bottom:14px; }
+.tn-fill-bar { height:6px; background:hsl(222 12% 18%); border-radius:99px; overflow:hidden; margin-bottom:5px; }
+.tn-fill-in { height:100%; background:linear-gradient(90deg,#3B82F6,#7c5cff); border-radius:99px; }
+.tn-fill-txt { font-size:12px; color:hsl(0 0% 55%); }
+.tn-join { margin-top:auto; }
+@media (max-width:560px){ .tn-grid{grid-template-columns:1fr;} }
