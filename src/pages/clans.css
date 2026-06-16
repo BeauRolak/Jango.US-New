@@ -1,0 +1,34 @@
+/* Clans (5.6) */
+.cl-page { max-width: 1100px; margin: 0 auto; }
+.cl-banner { display:flex; gap:20px; align-items:center; background:linear-gradient(120deg,hsl(222 15% 11%),hsl(270 30% 12%)); border:1px solid hsl(270 40% 30%); border-radius:16px; padding:22px; margin-bottom:24px; }
+.cl-crest { width:78px; height:78px; border-radius:16px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:22px; color:#fff; background:linear-gradient(135deg,#7c5cff,#c084fc); box-shadow:0 0 22px rgba(124,92,255,.4); }
+.cl-banner-info h2 { font-family:'Space Grotesk',sans-serif; margin:0 0 12px; font-size:22px; }
+.cl-tag { color:#c084fc; font-size:16px; font-weight:600; }
+.cl-banner-stats { display:flex; gap:28px; flex-wrap:wrap; }
+.cl-banner-stats div { display:flex; flex-direction:column; gap:3px; }
+.cl-k { font-size:11px; color:hsl(0 0% 60%); text-transform:uppercase; letter-spacing:.05em; }
+.cl-v { font-family:'JetBrains Mono',monospace; font-size:18px; font-weight:700; }
+.cl-up { color:#36d399; }
+.cl-cols { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+.cl-card { background:hsl(222 15% 10%); border:1px solid hsl(0 0% 18%); border-radius:14px; padding:18px; }
+.cl-h3 { font-family:'Space Grotesk',sans-serif; font-size:16px; margin:0 0 14px; }
+.cl-roster { display:flex; flex-direction:column; gap:4px; }
+.cl-member { display:grid; grid-template-columns:34px 1fr 90px 110px; align-items:center; gap:10px; padding:9px 8px; border-radius:8px; font-size:13px; }
+.cl-member:hover { background:hsl(222 12% 14%); }
+.cl-you { background:rgba(124,92,255,.12); }
+.cl-av { width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; background:linear-gradient(135deg,#7c5cff,#c084fc); color:#fff; }
+.cl-mname { font-weight:600; }
+.cl-role { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
+.cl-role-leader { color:#ffc14d; }
+.cl-role-officer { color:#6aa8ff; }
+.cl-role-member { color:hsl(0 0% 55%); }
+.cl-contrib { text-align:right; font-family:'JetBrains Mono',monospace; font-size:12px; color:hsl(0 0% 65%); }
+.cl-ladder { display:flex; flex-direction:column; gap:4px; }
+.cl-lrow { display:grid; grid-template-columns:44px 52px 1fr 70px 80px; align-items:center; gap:10px; padding:10px 8px; border-radius:8px; font-size:13px; }
+.cl-lrow:hover { background:hsl(222 12% 14%); }
+.cl-lrank { font-family:'JetBrains Mono',monospace; font-weight:700; color:hsl(0 0% 60%); }
+.cl-lcrest { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:12px; color:#c084fc; background:rgba(192,132,252,.14); border-radius:6px; padding:4px 6px; text-align:center; }
+.cl-lname { font-weight:600; }
+.cl-lmem { font-size:12px; color:hsl(0 0% 55%); }
+.cl-lpts { text-align:right; font-family:'JetBrains Mono',monospace; font-weight:600; color:#ffc14d; }
+@media (max-width:780px){ .cl-cols{grid-template-columns:1fr;} .cl-banner{flex-direction:column; text-align:center;} .cl-banner-stats{justify-content:center;} }
