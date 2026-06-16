@@ -1,0 +1,26 @@
+/* Rank Progression (5.8) */
+.rt-page { max-width: 1100px; margin: 0 auto; }
+.rt-hero { display:flex; gap:24px; align-items:center; background:hsl(222 15% 10%); border:1px solid hsl(0 0% 18%); border-radius:16px; padding:24px; margin-bottom:28px; }
+.rt-emblem { width:120px; height:120px; flex-shrink:0; border:3px solid; border-radius:18px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; background:hsl(222 18% 7%); }
+.rt-emblem-tier { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:17px; }
+.rt-emblem-div { font-family:'JetBrains Mono',monospace; font-size:20px; font-weight:700; opacity:.85; }
+.rt-hero-info { flex:1; min-width:0; }
+.rt-rating { font-family:'JetBrains Mono',monospace; font-size:36px; font-weight:700; margin-bottom:14px; }
+.rt-rating span { font-family:'Inter',sans-serif; font-size:14px; font-weight:400; color:hsl(0 0% 55%); margin-left:6px; }
+.rt-promo { margin-bottom:16px; }
+.rt-promo-top { display:flex; justify-content:space-between; font-size:13px; color:hsl(0 0% 65%); margin-bottom:7px; }
+.rt-promo-bar { height:9px; background:hsl(222 12% 18%); border-radius:99px; overflow:hidden; }
+.rt-promo-fill { height:100%; border-radius:99px; }
+.rt-stats { display:flex; gap:30px; flex-wrap:wrap; }
+.rt-stats div { display:flex; flex-direction:column; gap:2px; }
+.rt-k { font-size:11px; color:hsl(0 0% 55%); text-transform:uppercase; letter-spacing:.05em; }
+.rt-v { font-family:'JetBrains Mono',monospace; font-size:18px; font-weight:700; }
+.rt-section { font-family:'Space Grotesk',sans-serif; font-size:20px; font-weight:700; margin:0 0 16px; }
+.rt-ladder { display:flex; justify-content:space-between; gap:6px; background:hsl(222 15% 10%); border:1px solid hsl(0 0% 18%); border-radius:14px; padding:22px 18px; position:relative; overflow-x:auto; }
+.rt-node { display:flex; flex-direction:column; align-items:center; gap:8px; flex:1; min-width:80px; position:relative; }
+.rt-node-dot { width:20px; height:20px; border-radius:50%; border:2px solid; z-index:1; }
+.rt-node-name { font-size:13px; font-weight:600; color:hsl(0 0% 60%); }
+.rt-node-min { font-family:'JetBrains Mono',monospace; font-size:11px; color:hsl(0 0% 45%); }
+.rt-node-cur .rt-node-name { font-weight:700; }
+.rt-node-cur::after { content:''; position:absolute; top:-8px; width:34px; height:34px; border-radius:50%; border:2px dashed currentColor; opacity:.4; }
+@media (max-width:680px){ .rt-hero{flex-direction:column; text-align:center;} .rt-stats{justify-content:center;} }
