@@ -15,6 +15,10 @@ import Story from './pages/Story';
 import Settings from './pages/Settings';
 import MiniGolf from './games/minigolf/MiniGolf';
 import Connect4 from './games/connect4/Connect4';
+import RPS from './games/rps/RPS';
+import DotsBoxes from './games/dotsboxes/DotsBoxes';
+import Chess from './games/chess/Chess';
+import EightBall from './games/eightball/EightBall';
 
 function P({ children }: { children: ReactNode }) {
   return <Layout>{children}</Layout>;
@@ -27,6 +31,10 @@ export default function App() {
       <Route path='/games' element={<P><Games /></P>} />
       <Route path='/games/minigolf' element={<P><MiniGolf /></P>} />
       <Route path='/games/connect4' element={<P><Connect4 /></P>} />
+      <Route path='/games/rps' element={<P><RPS /></P>} />
+      <Route path='/games/dotsboxes' element={<P><DotsBoxes /></P>} />
+      <Route path='/games/chess' element={<P><Chess /></P>} />
+      <Route path='/games/eightball' element={<P><EightBall /></P>} />
       <Route path='/profile' element={<P><Profile /></P>} />
       <Route path='/wallet' element={<P><Wallet /></P>} />
       <Route path='/tournaments' element={<P><Tournaments /></P>} />
