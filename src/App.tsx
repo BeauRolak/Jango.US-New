@@ -14,6 +14,7 @@ import Social from './pages/Social';
 import Story from './pages/Story';
 import Settings from './pages/Settings';
 import MiniGolf from './games/minigolf/MiniGolf';
+import Connect4 from './games/connect4/Connect4';
 
 function P({ children }: { children: ReactNode }) {
   return <Layout>{children}</Layout>;
@@ -25,6 +26,7 @@ export default function App() {
       <Route path='/' element={<P><Dashboard /></P>} />
       <Route path='/games' element={<P><Games /></P>} />
       <Route path='/games/minigolf' element={<P><MiniGolf /></P>} />
+      <Route path='/games/connect4' element={<P><Connect4 /></P>} />
       <Route path='/profile' element={<P><Profile /></P>} />
       <Route path='/wallet' element={<P><Wallet /></P>} />
       <Route path='/tournaments' element={<P><Tournaments /></P>} />
