@@ -26,6 +26,8 @@ import Football from './games/football/Football';
 import StackTower from './games/stacktower/StackTower';
 import BlockBlast from './games/blockblast/BlockBlast';
 import Tron from './games/tron/Tron';
+import CupKing from './games/cupking/CupKing';
+import Racing from './games/racing/Racing';
 
 function P({ children }: { children: ReactNode }) {
   return <Layout>{children}</Layout>;
@@ -49,6 +51,8 @@ export default function App() {
       <Route path='/games/stacktower' element={<P><StackTower /></P>} />
       <Route path='/games/blockblast' element={<P><BlockBlast /></P>} />
       <Route path='/games/tron' element={<P><Tron /></P>} />
+      <Route path='/games/cupking' element={<P><CupKing /></P>} />
+      <Route path='/games/racing' element={<P><Racing /></P>} />
       <Route path='/profile' element={<P><Profile /></P>} />
       <Route path='/wallet' element={<P><Wallet /></P>} />
       <Route path='/tournaments' element={<P><Tournaments /></P>} />
