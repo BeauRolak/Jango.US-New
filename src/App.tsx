@@ -23,6 +23,7 @@ import AirHockey from './games/airhockey/AirHockey';
 import Bowling from './games/bowling/Bowling';
 import Basketball from './games/basketball/Basketball';
 import Football from './games/football/Football';
+import StackTower from './games/stacktower/StackTower';
 
 function P({ children }: { children: ReactNode }) {
   return <Layout>{children}</Layout>;
@@ -43,6 +44,7 @@ export default function App() {
       <Route path='/games/bowling' element={<P><Bowling /></P>} />
       <Route path='/games/basketball' element={<P><Basketball /></P>} />
       <Route path='/games/football' element={<P><Football /></P>} />
+      <Route path='/games/stacktower' element={<P><StackTower /></P>} />
       <Route path='/profile' element={<P><Profile /></P>} />
       <Route path='/wallet' element={<P><Wallet /></P>} />
       <Route path='/tournaments' element={<P><Tournaments /></P>} />
