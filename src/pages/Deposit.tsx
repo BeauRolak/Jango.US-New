@@ -13,10 +13,14 @@ const CRYPTO: CryptoOpt[] = [
 
 const QUICK = [10, 25, 50, 100, 250, 500];
 
+function toneStyle(tone: string) {
+  return { "--tone": tone } as React.CSSProperties;
+}
+
 export default function Deposit() {
   const [selected, setSelected] = useState<string | null>(null);
   const [amount, setAmount] = useState<string>("");
-  const active = CRYPTO.find(function (c) { return c.id === selected; }) || null;
+  const active = CRYPTO.find((c) => c.id === selected) || null;
 
   return (
     <div className="deposit-page">
@@ -35,9 +39,18 @@ export default function Deposit() {
       </header>
 
       <div className="trust-strip">
-        <div className="trust-item"><span className="trust-ic">🔒</span><div><strong>Secure</strong><span>256-bit encrypted</span></div></div>
-        <div className="trust-item"><span className="trust-ic">⚡</span><div><strong>Instant</strong><span>Auto-credited on confirm</span></div></div>
-        <div className="trust-item"><span className="trust-ic">🛡️</span><div><strong>Protected</strong><span>Funds held in escrow</span></div></div>
+        <div className="trust-item">
+          <span className="trust-ic">🔒</span>
+          <div><strong>Secure</strong><span>256-bit encrypted</span></div>
+        </div>
+        <div className="trust-item">
+          <span className="trust-ic">⚡</span>
+          <div><strong>Instant</strong><span>Auto-credited on confirm</span></div>
+        </div>
+        <div className="trust-item">
+          <span className="trust-ic">🛡️</span>
+          <div><strong>Protected</strong><span>Funds held in escrow</span></div>
+        </div>
       </div>
 
       <div className="dep-grid">
@@ -45,26 +58,24 @@ export default function Deposit() {
           <h2 className="dep-h">Crypto Deposits</h2>
           <p className="dep-h-sub">Fastest option — funds credited after network confirmation.</p>
           <div className="crypto-list">
-            {CRYPTO.map(function (c) {
-              return (
-                <button
-                  key={c.id}
-                  className={"crypto-opt" + (selected === c.id ? " on" : "")}
-                  onClick={function () { setSelected(c.id); }}
-                  style={{ "--tone": c.tone } as React.CSSProperties}
-                >
-                  <span className="crypto-glyph">{c.glyph}</span>
-                  <span className="crypto-meta">
-                    <strong>{c.name}</strong>
-                    <span>{c.symbol} · {c.net}</span>
-                  </span>
-                  <span className="crypto-arrow">›</span>
-                </button>
-              );
-            })}
+            {CRYPTO.map((c) => (
+              <button
+                key={c.id}
+                className={"crypto-opt" + (selected === c.id ? " on" : "")}
+                onClick={() => setSelected(c.id)}
+                style={toneStyle(c.tone)}
+              >
+                <span className="crypto-glyph">{c.glyph}</span>
+                <span className="crypto-meta">
+                  <strong>{c.name}</strong>
+                  <span>{c.symbol} · {c.net}</span>
+                </span>
+                <span className="crypto-arrow">›</span>
+              </button>
+            ))}
           </div>
 
-          <h2 className="dep-h" dep-h-spaced">Card & App Payments</h2>
+          <h2 className={"dep-h dep-h-spaced"}>Card & App Payments</h2>
           <div className="soon-list">
             <div className="soon-opt"><span>💳 Credit / Debit Card</span><span className="soon-tag">Coming Soon</span></div>
             <div className="soon-opt"><span>🍎 Apple Pay</span><span className="soon-tag">Coming Soon</span></div>
@@ -75,7 +86,7 @@ export default function Deposit() {
         <section className="ds-card dep-detail">
           {active ? (
             <div className="detail-inner">
-              <div className="detail-coin" style={{ "--tone": active.tone } as React.CSSProperties}>
+              <div className="detail-coin" style={toneStyle(active.tone)}>
                 <span className="detail-glyph">{active.glyph}</span>
                 <div><strong>{active.name}</strong><span>{active.net}</span></div>
               </div>
@@ -88,15 +99,13 @@ export default function Deposit() {
                   inputMode="decimal"
                   placeholder="0.00"
                   value={amount}
-                  onChange={function (e) { setAmount(e.target.value.replace(/[^0-9.]/g, "")); }}
+                  onChange={(e) => setAmount(e.target.value.replace(/[^0-9.]/g, ""))}
                 />
               </div>
               <div className="quick-amts">
-                {QUICK.map(function (q) {
-                  return (
-                    <button key={q} className="quick-amt" onClick={function () { setAmount(String(q)); }}>${q}</button>
-                  );
-                })}
+                {QUICK.map((q) => (
+                  <button key={q} className="quick-amt" onClick={() => setAmount(String(q))}>${q}</button>
+                ))}
               </div>
 
               <button className="gen-btn" disabled={!amount || Number(amount) < 1}>
