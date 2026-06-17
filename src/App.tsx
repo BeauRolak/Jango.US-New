@@ -6,6 +6,7 @@ import Play from "./pages/Play";
 import Games from "./pages/Games";
 import Profile from "./pages/Profile";
 import Wallet from "./pages/Wallet";
+import Deposit from "./pages/Wallet";
 import Tournaments from "./pages/Tournaments";
 import Rankings from "./pages/Rankings";
 import Clans from "./pages/Clans";
@@ -60,7 +61,7 @@ export default function App() {
         <Route path="/games/racing" element={<P><Racing /></P>} />
         <Route path="/profile" element={<P><Profile /></P>} />
         <Route path="/wallet" element={<P><Wallet /></P>} />
-        <Route path="/deposit" element={<P><Wallet /></P>} />
+        <Route path="/deposit" element={<P><Deposit /></P>} />
         <Route path="/tournaments" element={<P><Tournaments /></P>} />
         <Route path="/rankings" element={<P><Rankings /></P>} />
         <Route path="/leaderboard" element={<P><Rankings /></P>} />
