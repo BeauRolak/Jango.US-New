@@ -37,3 +37,29 @@ Rebuild to match the old site (jangous-jangous-pr-1.up.railway.app). Live: https
 
 ## Blockers needing your input
 - Real-time multiplayer + wager/escrow + auth need backend decisions (reuse Railway backend vs new). Not attempted per brief.
+
+## Update 2026-06-17
+
+### Done
+- Built standalone **/deposit** page (Deposit.tsx + deposit.css) matching the design system:
+  crypto deposit options (BTC/ETH/SOL/USDC) with color-coded coin tiles, amount input + quick amounts,
+  Generate Deposit Address CTA, Card/App payments marked Coming Soon, trust badges (Secure/Instant/Protected),
+  Min $1.00 / Max $10,000 limits, and 18+ responsible-gaming legal footer with spending-limit links.
+- Wired the /deposit route in App.tsx to the new Deposit component (was previously aliased to Wallet).
+- Fixed a TSX build error (inline `as React.CSSProperties` casts) by introducing a typed `toneStyle()` helper.
+
+### BLOCKER (needs your input) -- Vercel build serving a STALE bundle
+- All Deposit source is correct and committed to main (Deposit.tsx, deposit.css, App.tsx route).
+- `tsc -b && vite build` PASSES (deployments show Ready/Production).
+- HOWEVER: every production deployment since commit abb8624 (`Create profile.css`) keeps serving the
+  SAME old JS bundle `index-B4GQ8QYq.js`, which contains the earlier Play/Wallet/Profile rebuilds but
+  NOT the Deposit page. Verified on the canonical domain AND on the immutable per-deployment URLs, so it
+  is not browser/edge cache -- the built dist/ itself references the old bundle.
+- Tried: 3 fresh commits + a no-build-cache Redeploy. Vercel reports each as Ready/Current but the output
+  never changes (bundle hash never updates despite real source changes).
+- Likely a Vercel build-cache / project-settings issue restoring a cached dist/. Resolving it touches
+  account/project settings (build cache purge, or reconnect Git), which I am not making changes to without
+  your go-ahead.
+- SUGGESTED FIXES (your call): in Vercel project Settings, (1) clear/disable Build Cache and redeploy, or
+  (2) Settings > Git -> disconnect & reconnect the repo, or (3) check the Production Branch / Root Directory
+  is set to main / repo root. Once the pipeline rebuilds, /deposit will render correctly with zero code changes.
