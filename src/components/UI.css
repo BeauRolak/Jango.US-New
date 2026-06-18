@@ -54,3 +54,26 @@
 @keyframes toastIn{from{opacity:0;transform:translateX(40px) scale(.92)}to{opacity:1;transform:translateX(0) scale(1)}}
 @media (max-width:640px){.toast-wrap{right:12px;left:12px;bottom:12px}.toast{min-width:0;width:100%}}
 @media (prefers-reduced-motion: reduce){.toast{animation:none}}
+
+
+/* ===== icon-aware toast layout (added with icon system) ===== */
+.toast { display: flex; align-items: center; gap: 10px; }
+.toast-ic { display: inline-flex; align-items: center; justify-content: center; font-size: 18px; line-height: 0; flex: none; }
+.toast-ic > svg { display: block; }
+.toast-msg { flex: 1; }
+
+/* button variants used by new icon-driven actions */
+.btn-secondary {
+  background: linear-gradient(140deg, hsl(var(--secondary) / .9), hsl(var(--secondary) / .7));
+  color: hsl(var(--secondary-foreground)); border: 1px solid hsl(var(--secondary) / .5);
+}
+.btn-secondary:hover { box-shadow: 0 6px 18px hsl(var(--secondary) / .35); transform: translateY(-1px); }
+.btn-danger {
+  background: linear-gradient(140deg, hsl(var(--destructive) / .9), hsl(var(--destructive) / .7));
+  color: hsl(var(--destructive-foreground)); border: 1px solid hsl(var(--destructive) / .5);
+}
+.btn-danger:hover { box-shadow: 0 6px 18px hsl(var(--destructive) / .35); transform: translateY(-1px); }
+
+/* inline icon inside buttons / labels */
+.btn .j-ic, .btn svg { vertical-align: -.16em; }
+.btn > svg { width: 1.05em; height: 1.05em; margin-right: .1em; }
