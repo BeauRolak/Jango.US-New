@@ -1,4 +1,4 @@
-.mg-wrap{max-width:440px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:12px}
+.mg-wrap{--neon:#00E5FF;--neon-2:#2D9CFF;max-width:440px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:12px}
 
 .mg-hud{width:100%;display:flex;align-items:center;justify-content:space-between}
 .mg-hole{font-weight:700}
