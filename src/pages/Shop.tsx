@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { toast } from "../components/UI";
+import { Icon, type IconName } from "../components/Icon";
 import "./shop.css";
 
 type Rarity = "Common" | "Uncommon" | "Rare" | "Epic" | "Legendary";
@@ -8,25 +9,25 @@ const RARITY_COLOR: Record<Rarity, string> = {
   Common: "#9aa4b2", Uncommon: "#3ddc84", Rare: "#4d9bff", Epic: "#b15cff", Legendary: "#f5b942",
 };
 
-type Item = { id: string; name: string; icon: string; rarity: Rarity; category: string; desc: string };
+type Item = { id: string; name: string; icon: IconName; rarity: Rarity; category: string; desc: string };
 
 const ITEMS: Item[] = [
-  { id: "f1", name: "Inferno Avatar Frame", icon: "🔥", rarity: "Legendary", category: "Frames", desc: "Animated flame border that engulfs your avatar in living fire." },
-  { id: "f2", name: "Galaxy Avatar", icon: "🌌", rarity: "Epic", category: "Frames", desc: "A swirling cosmos frames your face among the stars." },
-  { id: "f3", name: "Neon Pulse Frame", icon: "⚡", rarity: "Rare", category: "Frames", desc: "Electric neon pulses around your avatar." },
-  { id: "f4", name: "Classic Ring", icon: "⭕", rarity: "Common", category: "Frames", desc: "A clean ring border. Simple and sharp." },
-  { id: "b1", name: "Champions Crown", icon: "👑", rarity: "Legendary", category: "Badges", desc: "Worn only by those who have stood at the top." },
-  { id: "b2", name: "G.O.A.T. Badge", icon: "🐐", rarity: "Epic", category: "Badges", desc: "Greatest of all time. Let them know." },
-  { id: "b3", name: "Rising Star", icon: "🌟", rarity: "Uncommon", category: "Badges", desc: "For the up-and-comers making noise." },
-  { id: "b4", name: "Rookie Badge", icon: "🎮", rarity: "Common", category: "Badges", desc: "Everyone starts somewhere." },
-  { id: "t1", name: "Diamond Trail", icon: "💎", rarity: "Epic", category: "Trails", desc: "Your ball leaves a trail of shimmering diamonds." },
-  { id: "t2", name: "Comet Trail", icon: "☄️", rarity: "Rare", category: "Trails", desc: "Streak across the table like a comet." },
-  { id: "e1", name: "Gold Shower Emote", icon: "💰", rarity: "Rare", category: "Emotes", desc: "Rain Scaps on your opponent after a win." },
-  { id: "e2", name: "Mic Drop", icon: "🎤", rarity: "Uncommon", category: "Emotes", desc: "Say nothing. Drop the mic." },
-  { id: "d1", name: "Golden Dice", icon: "🎲", rarity: "Legendary", category: "Dice", desc: "Solid gold dice for the high roller." },
-  { id: "v1", name: "Victory Roar", icon: "🦁", rarity: "Epic", category: "Victory", desc: "A lion’s roar announces your triumph." },
-  { id: "th1", name: "Midnight Theme", icon: "🌙", rarity: "Uncommon", category: "Themes", desc: "Deep navy UI theme for night owls." },
-  { id: "bn1", name: "Aurora Banner", icon: "🌈", rarity: "Rare", category: "Banners", desc: "A shifting aurora behind your profile." },
+  { id: "f1", name: "Inferno Avatar Frame", icon: "Flame", rarity: "Legendary", category: "Frames", desc: "Animated flame border that engulfs your avatar in living fire." },
+  { id: "f2", name: "Galaxy Avatar", icon: "Sparkles", rarity: "Epic", category: "Frames", desc: "A swirling cosmos frames your face among the stars." },
+  { id: "f3", name: "Neon Pulse Frame", icon: "Bolt", rarity: "Rare", category: "Frames", desc: "Electric neon pulses around your avatar." },
+  { id: "f4", name: "Classic Ring", icon: "Star", rarity: "Common", category: "Frames", desc: "A clean ring border. Simple and sharp." },
+  { id: "b1", name: "Champions Crown", icon: "Crown", rarity: "Legendary", category: "Badges", desc: "Worn only by those who have stood at the top." },
+  { id: "b2", name: "G.O.A.T. Badge", icon: "Medal", rarity: "Epic", category: "Badges", desc: "Greatest of all time. Let them know." },
+  { id: "b3", name: "Rising Star", icon: "Star", rarity: "Uncommon", category: "Badges", desc: "For the up-and-comers making noise." },
+  { id: "b4", name: "Rookie Badge", icon: "Gamepad", rarity: "Common", category: "Badges", desc: "Everyone starts somewhere." },
+  { id: "t1", name: "Diamond Trail", icon: "Gem", rarity: "Epic", category: "Trails", desc: "Your ball leaves a trail of shimmering diamonds." },
+  { id: "t2", name: "Comet Trail", icon: "Sparkles", rarity: "Rare", category: "Trails", desc: "Streak across the table like a comet." },
+  { id: "e1", name: "Gold Shower Emote", icon: "Coins", rarity: "Rare", category: "Emotes", desc: "Rain Scaps on your opponent after a win." },
+  { id: "e2", name: "Mic Drop", icon: "Bell", rarity: "Uncommon", category: "Emotes", desc: "Say nothing. Drop the mic." },
+  { id: "d1", name: "Golden Dice", icon: "Dice", rarity: "Legendary", category: "Dice", desc: "Solid gold dice for the high roller." },
+  { id: "v1", name: "Victory Roar", icon: "Crown", rarity: "Epic", category: "Victory", desc: "A lion’s roar announces your triumph." },
+  { id: "th1", name: "Midnight Theme", icon: "Star", rarity: "Uncommon", category: "Themes", desc: "Deep navy UI theme for night owls." },
+  { id: "bn1", name: "Aurora Banner", icon: "Sparkles", rarity: "Rare", category: "Banners", desc: "A shifting aurora behind your profile." },
 ];
 
 const CATEGORIES = ["All", "Frames", "Badges", "Trails", "Emotes", "Victory", "Themes", "Banners", "Dice", "My Items"];
@@ -91,12 +92,12 @@ export default function Shop() {
           return (
             <div key={item.id} className={"shop-card rarity-" + item.rarity.toLowerCase()} style={{ ["--rar" as any]: color }}>
               <div className="shop-rar-tag" style={{ color }}>{item.rarity}</div>
-              <div className="shop-card-icon">{item.icon}</div>
+              <div className="shop-card-icon"><Icon name={item.icon} /></div>
               <div className="shop-card-name">{item.name}</div>
               <div className="shop-card-foot">
-                <button className="shop-preview" onClick={() => setPreview(item)}>👁 Preview</button>
+                <button className="shop-preview" onClick={() => setPreview(item)}><Icon name="Search" /> Preview</button>
                 {isOwned ? (
-                  <button className={"shop-buy owned" + (isEquipped ? " equipped" : "")} onClick={() => equip(item)}>{isEquipped ? "✓ Equipped" : "Equip"}</button>
+                  <button className={"shop-buy owned" + (isEquipped ? " equipped" : "")} onClick={() => equip(item)}>{isEquipped ? <><Icon name="Check" /> Equipped</> : "Equip"}</button>
                 ) : (
                   <button className="shop-buy" onClick={() => setConfirm(item)}>Ⓢ {price}</button>
                 )}
@@ -109,7 +110,7 @@ export default function Shop() {
       {preview && (
         <div className="shop-modal-overlay" onClick={() => setPreview(null)}>
           <div className="shop-modal j-pop" onClick={(e) => e.stopPropagation()} style={{ ["--rar" as any]: RARITY_COLOR[preview.rarity] }}>
-            <div className="shop-preview-stage"><div className="shop-preview-icon">{preview.icon}</div></div>
+            <div className="shop-preview-stage"><div className="shop-preview-icon"><Icon name={preview.icon} /></div></div>
             <div className="shop-rar-tag big" style={{ color: RARITY_COLOR[preview.rarity] }}>{preview.rarity}</div>
             <h3 className="shop-modal-name">{preview.name}</h3>
             <p className="shop-modal-desc">{preview.desc}</p>
@@ -128,7 +129,7 @@ export default function Shop() {
       {confirm && (
         <div className="shop-modal-overlay" onClick={() => setConfirm(null)}>
           <div className="shop-modal small j-pop" onClick={(e) => e.stopPropagation()} style={{ ["--rar" as any]: RARITY_COLOR[confirm.rarity] }}>
-            <div className="shop-confirm-icon">{confirm.icon}</div>
+            <div className="shop-confirm-icon"><Icon name={confirm.icon} /></div>
             <h3 className="shop-modal-name">Buy {confirm.name}?</h3>
             <p className="shop-modal-desc">{confirm.rarity} cosmetic · {PRICES[confirm.rarity]} Scaps. Balance after: {balance - PRICES[confirm.rarity]} Scaps.</p>
             <div className="shop-modal-actions">
