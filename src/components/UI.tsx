@@ -1,82 +1,106 @@
-import { useEffect, useState } from "react";
-import React from 'react';
-import './UI.css';
+import { ReactNode, ButtonHTMLAttributes, useEffect, useState } from "react";
+import { Icon, IconName } from "./Icon";
+import "./UI.css";
 
-export function PageHeader({ title, subtitle, action }: { title: string; subtitle?: string; action?: React.ReactNode }) {
+/* ---------- Page header ---------- */
+export function PageHeader(
+  { title, sub, action }: { title: string; sub?: string; action?: ReactNode }
+) {
   return (
     <div className="page-header">
       <div>
         <h1 className="page-title">{title}</h1>
-        {subtitle && <p className="page-sub">{subtitle}</p>}
+        {sub && <p className="page-sub">{sub}</p>}
       </div>
       {action && <div className="page-action">{action}</div>}
     </div>
   );
 }
 
-export function Card({ children, className = '', glow = false, ...rest }: React.HTMLAttributes<HTMLDivElement> & { glow?: boolean }) {
+/* ---------- Card ---------- */
+export function Card(
+  { children, className = "", ...rest }:
+  { children: ReactNode; className?: string } & React.HTMLAttributes<HTMLDivElement>
+) {
+  return <div className={`card ${className}`} {...rest}>{children}</div>;
+}
+
+/* ---------- Button ---------- */
+export function Btn(
+  { children, variant = "primary", className = "", ...rest }:
+  { children: ReactNode; variant?: "primary" | "ghost" | "secondary" | "danger" } & ButtonHTMLAttributes<HTMLButtonElement>
+) {
   return (
-    <div className={'card ' + (glow ? 'card-glow ' : '') + className} {...rest}>
-      {children}
-    </div>
+    <button className={`btn btn-${variant} ${className}`} {...rest}>{children}</button>
   );
 }
 
-export function Btn({ children, variant = 'primary', className = '', ...rest }: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'ghost' | 'accent' | 'gold' }) {
-  return (
-    <button className={'btn btn-' + variant + ' ' + className} {...rest}>
-      {children}
-    </button>
-  );
-}
-
-export function Stat({ label, value, accent }: { label: string; value: React.ReactNode; accent?: string }) {
+/* ---------- Stat ---------- */
+export function Stat(
+  { value, label }: { value: ReactNode; label: string }
+) {
   return (
     <div className="stat">
-      <div className="stat-value" style={accent ? { color: accent } : undefined}>{value}</div>
+      <div className="stat-value">{value}</div>
       <div className="stat-label">{label}</div>
     </div>
   );
 }
 
-export function Tag({ children, color = 'neon' }: { children: React.ReactNode; color?: 'neon' | 'green' | 'gold' | 'accent' }) {
-  return <span className={'tag tag-' + color}>{children}</span>;
+/* ---------- Tag ---------- */
+export function Tag(
+  { children, className = "" }: { children: ReactNode; className?: string }
+) {
+  return <span className={`tag ${className}`}>{children}</span>;
 }
 
-export function Placeholder({ title, note }: { title: string; note?: string }) {
+/* ---------- Placeholder ---------- */
+export function Placeholder(
+  { title, sub, badge }: { title: string; sub?: string; badge?: string }
+) {
   return (
-    <Card className="placeholder">
-      <div className="placeholder-badge">Coming soon</div>
-      <h2>{title}</h2>
-      <p>{note || 'This section is part of the rebuild and will be wired up next.'}</p>
-    </Card>
+    <div className="placeholder">
+      {badge && <span className="placeholder-badge">{badge}</span>}
+      <h3>{title}</h3>
+      {sub && <p>{sub}</p>}
+    </div>
   );
 }
 
-
-// ===== Toast system (event-based, no provider needed) =====
+/* ---------- Toast system ---------- */
 export type ToastType = "success" | "error" | "info" | "reward";
+
+const TOAST_ICON: Record<ToastType, IconName> = {
+  success: "CheckCircle",
+  error: "AlertCircle",
+  info: "Info",
+  reward: "Sparkles",
+};
+
 export function toast(message: string, type: ToastType = "info") {
-  window.dispatchEvent(new CustomEvent("jango-toast", { detail: { message, type, id: Date.now() + Math.random() } }));
+  window.dispatchEvent(new CustomEvent("jango-toast", { detail: { message, type } }));
 }
+
 interface ToastItem { id: number; message: string; type: ToastType; }
+
 export function Toaster() {
   const [items, setItems] = useState<ToastItem[]>([]);
   useEffect(() => {
+    let n = 0;
     const onToast = (e: Event) => {
-      const d = (e as CustomEvent).detail as ToastItem;
-      setItems((prev) => [...prev, d]);
-      setTimeout(() => setItems((prev) => prev.filter((x) => x.id !== d.id)), 3200);
+      const d = (e as CustomEvent).detail as { message: string; type: ToastType };
+      const id = ++n;
+      setItems((cur) => [...cur, { id, message: d.message, type: d.type }]);
+      window.setTimeout(() => setItems((cur) => cur.filter((t) => t.id !== id)), 3200);
     };
     window.addEventListener("jango-toast", onToast);
     return () => window.removeEventListener("jango-toast", onToast);
   }, []);
-  const icon: Record<ToastType, string> = { success: "✓", error: "✕", info: "i", reward: "★" };
   return (
     <div className="toast-wrap" role="status" aria-live="polite">
       {items.map((t) => (
-        <div key={t.id} className={"toast toast-" + t.type}>
-          <span className="toast-ic">{icon[t.type]}</span>
+        <div key={t.id} className={`toast toast-${t.type}`}>
+          <span className="toast-ic" aria-hidden="true"><Icon name={TOAST_ICON[t.type]} /></span>
           <span className="toast-msg">{t.message}</span>
         </div>
       ))}
