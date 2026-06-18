@@ -36,7 +36,7 @@ export default function Tournaments() {
     if (joined.includes(t.id)) { toast("You are already registered", "info"); return; }
     setJoined((j) => [...j, t.id]);
     setConfirm(null);
-    toast(`Registered for ${t.name} — ${t.buyIn} Scaps entry`, "reward");
+    toast(`Registered for ${t.name} — ${t.buyIn} Scalps entry`, "reward");
   }
 
   return (
@@ -106,7 +106,7 @@ export default function Tournaments() {
               <div><div className="trn-meta-l">PRIZE POOL</div><div className="trn-meta-v big">Ⓢ {confirm.pot.toLocaleString()}</div></div>
               <div><div className="trn-meta-l">FIELD</div><div className="trn-meta-v big">{confirm.players}/{confirm.cap}</div></div>
             </div>
-            <div className="trn-modal-note">Entry fee is mock Scaps — no real money moves. Prizes are simulated.</div>
+            <div className="trn-modal-note">Entry fee is mock Scalps — no real money moves. Prizes are simulated.</div>
             <div className="trn-modal-actions">
               <button className="btn btn-ghost" onClick={() => setConfirm(null)}>Cancel</button>
               <button className="btn btn-primary" onClick={() => join(confirm)}>Confirm · Ⓢ {confirm.buyIn}</button>
