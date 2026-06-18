@@ -163,3 +163,10 @@ Reusable primitives now available everywhere: .j-hover-lift/.j-glow-pulse/.j-fad
 - Verified live on jango-us-new.vercel.app with full buy/claim/deposit flows working.
 
 ### Next: Tournaments, then Training / Social / Profile / Story / Admin, then mobile polish.
+
+## Session update — Tournaments
+
+- **Tournaments** (/tournaments): rebuilt with Scaps (Ⓢ) branding throughout (prize pools, entry fees). Added "Completed" filter. Status badges with live-pulse animation (live/registering/upcoming/completed). Join confirmation modal showing entry fee + prize pool + field size + mock-money note + register reward toast. Bracket preview modal: full Quarterfinals -> Semifinals -> Final -> Champion tree with winners highlighted. Winner/completed card state, Watch (live) / Registered states. Created/replaced tournaments.css. Mobile + reduced-motion. Zero console errors. Verified join + bracket flows live.
+
+### Status of confirmed priorities: Wallet ✓, Rank Progression ✓, Shop ✓, Tournaments ✓ — all live with consistent toast feedback.
+### Next: Training, Social/messages, Profile, Story, Admin shell, final mobile polish.
