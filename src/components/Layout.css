@@ -49,3 +49,27 @@
   .mobile-menu { display: flex; }
   .content { padding: 20px 14px 48px; }
 }
+
+
+/* NAV JUICE PASS */
+.tnl{position:relative;transition:color .18s ease,background .18s ease,transform .18s ease}
+.tnl:hover{color:var(--text);background:rgba(var(--accent-rgb),.08);transform:translateY(-1px)}
+.tnl::after{content:"";position:absolute;left:14px;right:14px;bottom:4px;height:2px;border-radius:2px;background:linear-gradient(90deg,hsl(var(--primary)),hsl(var(--accent)));transform:scaleX(0);transform-origin:center;transition:transform .25s cubic-bezier(.4,0,.2,1);opacity:.0}
+.tnl:hover::after{transform:scaleX(.5);opacity:.6}
+.tnl.active{color:#fff;background:rgba(var(--accent-rgb),.16)}
+.tnl.active::after{transform:scaleX(1);opacity:1;box-shadow:0 0 10px hsl(var(--accent) / .7)}
+
+.balance-pill{transition:transform .18s ease,border-color .2s ease,box-shadow .3s ease}
+.balance-pill:hover{transform:translateY(-1px);border-color:rgba(var(--accent-rgb),.55);box-shadow:0 0 0 1px rgba(var(--accent-rgb),.2),0 8px 22px -8px rgba(0,0,0,.6)}
+.balance-pill .bal-plus{transition:transform .15s ease}
+.balance-pill:hover .bal-plus{transform:scale(1.15)}
+
+.avatar-btn{transition:transform .18s ease,box-shadow .3s ease}
+.avatar-btn:hover{transform:translateY(-1px);box-shadow:0 0 0 2px rgba(var(--accent-rgb),.3),0 8px 20px -8px rgba(0,0,0,.6)}
+
+.dd-item{transition:background .15s ease,color .15s ease,padding-left .15s ease}
+.dd-item:hover{padding-left:16px}
+
+@media (prefers-reduced-motion: reduce){
+  .tnl,.tnl::after,.balance-pill,.avatar-btn,.dd-item{transition:none !important}
+}
