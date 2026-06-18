@@ -251,3 +251,20 @@ app's intended palette alive at once.
 ### Commits: d3e43d5 (Dashboard tsx), b18149f (index.css tokens), 7009f34 (landing css)
 ### Next: apply parity pass to Shop, Rankings/RankTrack, Wallet, Tournaments, Play lobby, etc.
 
+### Play Lobby rebuilt as competitive arena grid (commits 4bf53aa, 1517db3)
+- Replaced single rotating carousel with a premium game-card grid (10 games).
+- Each card has a color-identity hue (--hue) driving icon container, hover-lift glow, and play arrow.
+- Real Icon system (Crown/Target/Bolt/Swords/List/Dice/Building), no emoji.
+- Status pills (LIVE pulse / READY / NEW), difficulty chips (Easy/Medium/Advanced color-coded).
+- Mode chips with icons (Casual/Ranked/vs Bot/Tournament/Private), feedback() on tap.
+- Cards route to real /games/* paths. Mobile single-column grid. New play.css.
+
+### Shop brought to new standard (commits ada54c1, 365c0ae)
+- Replaced all 18 emoji (item icons + preview/equip) with real Icon system; Item.icon typed IconName.
+- Kept ALL existing logic intact: balance, owned/equipped, preview modal, confirm dialog,
+  buy/equip flow, not-enough-Scaps error toast, reward toast, correct Scaps pricing (5/10/15/20/25).
+- shop.css: rarity-glow icon containers (color-mix on --rar) + SVG sizing for card/preview/confirm.
+- Verified live: rarity-coded cards, preview modal with floating glow icon, buy/equip states. 0 console errors.
+
+### Wave status: Dashboard done, Play done, Shop done. Next: Rankings/RankTrack, Wallet, Tournaments.
+
