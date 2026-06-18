@@ -16,7 +16,7 @@ const CHAPTERS: Chapter[] = [
     num: "II",
     title: "The Hustle Becomes a Craft",
     era: "The Rise",
-    body: "Talent alone gets you robbed. Jango turned instinct into discipline — thousands of reps, cold reads, ice in the veins when the Scaps were on the line. Word spread across the districts: there was a kid who didn't miss when it mattered.",
+    body: "Talent alone gets you robbed. Jango turned instinct into discipline — thousands of reps, cold reads, ice in the veins when the Scalps were on the line. Word spread across the districts: there was a kid who didn't miss when it mattered.",
   },
   {
     num: "III",
@@ -28,13 +28,13 @@ const CHAPTERS: Chapter[] = [
     num: "IV",
     title: "The Arena Opens",
     era: "Today — Jango.US",
-    body: "Jango built the arena he always wanted: pure skill, no luck boxes, no pay-to-win. A place where anyone from any lobby can climb, earn their Scaps, and chase a crown of their own. Welcome to his table.",
+    body: "Jango built the arena he always wanted: pure skill, no luck boxes, no pay-to-win. A place where anyone from any lobby can climb, earn their Scalps, and chase a crown of their own. Welcome to his table.",
   },
 ];
 
 const PILLARS: Pillar[] = [
   { icon: "🎯", title: "Skill", body: "Every outcome is earned. Read the angle, make the shot, own the result." },
-  { icon: "🎲", title: "Risk", body: "Stake your Scaps, call your shot, and live with the line you chose." },
+  { icon: "🎲", title: "Risk", body: "Stake your Scalps, call your shot, and live with the line you chose." },
   { icon: "🔥", title: "Swagger", body: "Win with style. The table remembers the players who play without fear." },
   { icon: "👑", title: "Dominance", body: "Master every table game and stake your claim at the top of the ladder." },
 ];
@@ -125,7 +125,7 @@ export default function Story() {
       <section className="st-finale">
         <span className="st-finale-icon">🏆</span>
         <h2 className="st-finale-title">Your story starts now.</h2>
-        <p className="st-finale-text">Climb the ranks, earn your Scaps, and write your own chapter at Jango's table.</p>
+        <p className="st-finale-text">Climb the ranks, earn your Scalps, and write your own chapter at Jango's table.</p>
         <Btn className="st-cta" onClick={() => navigate("/games")}>Start Competing</Btn>
       </section>
     </div>
