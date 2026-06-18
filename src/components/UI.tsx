@@ -4,13 +4,15 @@ import "./UI.css";
 
 /* ---------- Page header ---------- */
 export function PageHeader(
-  { title, sub, action }: { title: string; sub?: string; action?: ReactNode }
+  { title, sub, subtitle, action }:
+  { title: string; sub?: string; subtitle?: string; action?: ReactNode }
 ) {
+  const s = subtitle ?? sub;
   return (
     <div className="page-header">
       <div>
         <h1 className="page-title">{title}</h1>
-        {sub && <p className="page-sub">{sub}</p>}
+        {s && <p className="page-sub">{s}</p>}
       </div>
       {action && <div className="page-action">{action}</div>}
     </div>
@@ -28,7 +30,7 @@ export function Card(
 /* ---------- Button ---------- */
 export function Btn(
   { children, variant = "primary", className = "", ...rest }:
-  { children: ReactNode; variant?: "primary" | "ghost" | "secondary" | "danger" } & ButtonHTMLAttributes<HTMLButtonElement>
+  { children: ReactNode; variant?: "primary" | "ghost" | "secondary" | "danger" | "accent" | "gold" } & ButtonHTMLAttributes<HTMLButtonElement>
 ) {
   return (
     <button className={`btn btn-${variant} ${className}`} {...rest}>{children}</button>
@@ -49,9 +51,11 @@ export function Stat(
 
 /* ---------- Tag ---------- */
 export function Tag(
-  { children, className = "" }: { children: ReactNode; className?: string }
+  { children, className = "", color }:
+  { children: ReactNode; className?: string; color?: string }
 ) {
-  return <span className={`tag ${className}`}>{children}</span>;
+  const colorClass = color ? `tag-${color}` : "";
+  return <span className={`tag ${colorClass} ${className}`}>{children}</span>;
 }
 
 /* ---------- Placeholder ---------- */
