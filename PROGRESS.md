@@ -224,3 +224,30 @@ Full rebuild of /story (src/pages/Story.tsx + new story.css). Original branded l
 
 ### Status: Wallet ✓, Rank Progression ✓, Shop ✓, Tournaments ✓, Training ✓, Social ✓, Profile ✓, Story ✓.
 ### Next: Admin shell, final site-wide mobile polish.
+
+---
+
+## Visual Parity + Dopamine Pass — Page Redesign Wave
+
+### CRITICAL ROOT-CAUSE FIX: Design tokens were undefined
+pages.css referenced ~20 custom tokens (--panel, --neon, --gold, --green, --text,
+--line, --text-dim, --panel-2, --blue, --purple, --amber, --grad-blue, --maxw, etc.)
+that were NOT defined in any CSS file. Every page using them rendered with broken/
+fallback colors — the main reason the site felt 'generic / placeholder'. Defined a full
+dark-neon arena palette in index.css :root (commit b18149f). This brings the whole
+app's intended palette alive at once.
+
+### Dashboard (landing) rebuilt as competitive arena hub
+- Replaced all emoji game/feature icons with the custom Icon system (Crown/Target/Dice/
+  Bolt/Swords/List/Trophy/Building + Chart/Shield). ARENA/FEATURES arrays typed as IconName.
+- Live StatusPill ('1,247 players online now') instead of emoji dot.
+- Neon hero with animated glow backdrop, blue->purple->pink gradient headline word.
+- Gradient 'Start Playing' pill (orange->pink) + outline 'View Games', glow stat cards,
+  glassy game cards with hover-lift + corner glow + arrow, purple feature cards,
+  ARENA ORIGINS band, final CTA, branded footer.
+- Added full landing CSS to pages.css (commit 7009f34). Build Ready/Production, 0 console errors.
+- Note: base Icon component takes name + SVG props only (no `size` prop) — size via CSS containers.
+
+### Commits: d3e43d5 (Dashboard tsx), b18149f (index.css tokens), 7009f34 (landing css)
+### Next: apply parity pass to Shop, Rankings/RankTrack, Wallet, Tournaments, Play lobby, etc.
+
