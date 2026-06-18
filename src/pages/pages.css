@@ -81,7 +81,7 @@
 .game-art::after{content:"";position:absolute;inset:0;background:radial-gradient(60% 60% at 50% 45%,color-mix(in srgb,var(--gh,#00E5FF) 22%,transparent),transparent 70%);opacity:.0;transition:opacity .3s ease;pointer-events:none}
 .game-card:hover .game-art::after{opacity:1}
 .game-emoji{font-size:46px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.4))}
-.game-live{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.45);color:var(--green);font-size:11px;font-weight:800;padding:4px 8px;border-radius:999px;letter-spacing:.5px}
+.game-live{position:absolute;top:8px;left:8px;right:auto;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);color:var(--green);font-size:9px;font-weight:800;padding:3px 7px;border-radius:999px;letter-spacing:.4px;z-index:4;box-shadow:0 2px 8px rgba(0,0,0,.4);white-space:nowrap}
 .game-card-body{padding:14px 16px}
 .game-card-title{font-weight:700;font-size:16px;margin-bottom:8px}
 .game-card-meta{display:flex;align-items:center;justify-content:space-between}
