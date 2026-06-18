@@ -199,3 +199,16 @@ Full rebuild of /social (src/pages/Social.tsx + social.css) using the shared toa
 
 ### Status: Wallet ✓, Rank Progression ✓, Shop ✓, Tournaments ✓, Training ✓, Social ✓ — all live with consistent toast feedback.
 ### Next: Profile, Story, Admin shell, final mobile polish.
+
+## Profile rebuild
+Full rebuild of /profile (src/pages/Profile.tsx + profile.css) using the shared toast system; carried over the strong existing structure and improved it.
+- Header: glowing avatar + presence dot, username + 'You' badge, editable title, rank/level/streak/behavior-score tags, animated level XP bar with 'X to next level'.
+- Stat cards: Matches, Wins (green), Losses (red), Win Rate (computed from match history).
+- Match History: W/L record, per-match rows (result badge, game, vs opponent + score + time, rating delta in green/red).
+- Achievements: unlocked vs locked grid (locked shows lock icon, dimmed); clicking unlocked fires a reward toast, locked fires an error toast.
+- Equipped Cosmetics: rarity-colored cards (Avatar Frame / Cue Trail / Title) with a Shop link.
+- Edit Profile mock modal: username + title fields, gated 'mock-only, nothing saved to a server' note, Save -> success toast (empty username -> error toast). Verified live: changed title to 'King of the Table', got 'Profile updated' toast.
+- Mobile-responsive (header stacks/centers, 2-col stats, single-col grid), prefers-reduced-motion. Zero console errors.
+
+### Status: Wallet ✓, Rank Progression ✓, Shop ✓, Tournaments ✓, Training ✓, Social ✓, Profile ✓.
+### Next: Story (cinematic Jango lore), Admin shell, final mobile polish.
