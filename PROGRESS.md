@@ -289,5 +289,15 @@ app's intended palette alive at once.
 - Gated real-money notice intact ("Demo only — no charge will be made"; "Scalps are in-platform credits, not cash").
 - Verified live: balance card, Deposited/Won/Withdrawn, Performance cards, Transactions w/ filters, Add Scalps modal. 0 console errors.
 
-### Wave status: Dashboard, Play, Shop(icons), Rankings/RankTrack, Wallet DONE + currency GATE fixed.
-### Next queue: Tournaments, Shop(full rebuild+3D preview), Profile, Clans, Battle Pass, Social, Settings, Landing, Training/Deposit, then global shell + juice + QA.
+## Tournaments — DONE (queue item 1)
+- Page already had polished card grid + join-confirm modal + bracket preview + winner state; brought to spec.
+- Removed all 3 emoji (header trophy, register check, winner trophy) -> Icon system (Trophy, Check).
+- Added Icon import; tournaments.css gets inline-svg sizing block for .trn-header/.trn-title/.trn-winner/.btn.
+- Verified live: status pills (LIVE/REGISTERING/UPCOMING/COMPLETED), entry fee + prize pool in Scalps,
+  join-confirm modal with gated 'mock Scalps - no real money moves' notice, Registered toast/state,
+  champion 'Winner: ShadowAce' with gold Trophy icon. 0 console errors, Vercel build green.
+- Commits: 751dbf5 (Tournaments.tsx emoji->Icon), 228c945 (tournaments.css icon sizing).
+
+
+### Wave status: Dashboard, Play, Shop(icons), Rankings/RankTrack, Wallet, Tournaments DONE + currency GATE fixed.
+### Next queue: Shop(full rebuild+3D preview), Profile, Clans, Battle Pass, Social, Settings, Landing, Training/Deposit, then global shell + juice + QA.
