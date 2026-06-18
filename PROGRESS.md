@@ -121,3 +121,35 @@ Extracted REAL computed tokens from html.dark and wrote /docs/OLD_SITE_AUDIT.md.
 - Continue Phase 1 capture of authed Dashboard/Play/Shop/Settings as login allows.
 
 Commits: OLD_SITE_AUDIT.md (create), index.css (arena atmosphere + juice primitives).
+
+
+---
+
+## UI/UX parity pass — Dashboard, Nav, Settings, global Toast system
+
+### Dashboard polish (dashboard.css)
+- Added hover-lift + radial glow + number text-glow to .stat-card; hover-lift to .feature-card and .game-card.
+- Gradient .btn-grad now has spring press (translateY/scale) + colored glow; .btn-outline hover tint. Reduced-motion respected.
+
+### Navigation polish (Layout.css)
+- .tnl active state now shows a glowing gradient underline; hover lifts + accent tint.
+- .balance-pill (Scaps) and .avatar-btn glow on hover; dropdown items slide on hover.
+
+### Settings
+- Audited live: already comprehensive (Account/Security/Notifications/Gameplay/Wallet/Privacy/Social/Appearance/Game Modes/Danger Zone), iOS-style toggles, sliders, segmented controls — modern & clean.
+- IMPROVEMENT: wired "Save Changes" to a success toast ("Settings saved successfully"). Verified live.
+
+### Global Toast system (reusable) — NEW
+- UI.tsx: added toast(msg,type) event-based helper + <Toaster/> (types: success/error/info/reward). No provider needed.
+- UI.css: toast styles with per-type colored glowing icon, slide-in animation, mobile full-width, reduced-motion.
+- App.tsx: mounted <Toaster/> once globally.
+- VERIFIED end-to-end on /settings save (green ✓ toast bottom-right, zero console errors).
+
+### Game lobby (earlier this pass)
+- Per-game hue (--gh) drives colored hover glow + top-highlight bar + art zoom on each card (old-site match). Fixed clipped PLAYABLE badge.
+
+### Next (in order)
+- Wallet/Scaps UI (balance, add/withdraw placeholders, mock tx history, gated real-money notice, toast on actions).
+- Rankings/RankTrack dopamine pass. Shop (5-tier Scaps pricing + buy/equip toasts). Tournaments flow. Then Training/Social/Profile/Story/Admin. Mobile pass throughout.
+
+Reusable primitives now available everywhere: .j-hover-lift/.j-glow-pulse/.j-fade-up/.j-pop/.j-grad-text/.j-skeleton + toast().
