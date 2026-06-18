@@ -1,72 +1,305 @@
 import { useState } from "react";
-import "./pages.css";
+import { Btn, toast } from "../components/UI";
 import "./training.css";
 
-type Drill = {
-  id: number;
-  name: string;
+type Diff = "Easy" | "Medium" | "Hard" | "Expert" | "Champion";
+type DrillStatus = "locked" | "ready" | "in-progress" | "complete";
+
+interface Drill {
+  id: string;
+  tag: string;
   game: string;
-  skill: string;
-  difficulty: number;
-  best: string;
+  title: string;
   desc: string;
-};
+  difficulty: number; // 1-5 stars
+  best: string;
+  reward: number; // Scaps cosmetic-credit reward (mock)
+  xp: number;
+}
 
-const BOTS = ["Easy", "Medium", "Hard", "Expert", "Champion"];
+interface Pack {
+  id: string;
+  game: string;
+  emoji: string;
+  accent: string;
+  blurb: string;
+  drills: Drill[];
+  requiredLevel: number;
+}
 
-const DRILLS: Drill[] = [
-  { id: 1, name: "Bank Shot Lab", game: "8-Ball Pool", skill: "Aim", difficulty: 3, best: "18/20", desc: "Master cushion angles with guided rails." },
-  { id: 2, name: "Putt Precision", game: "Mini Golf", skill: "Control", difficulty: 2, best: "Par -4", desc: "Dial in power and spin on tricky greens." },
-  { id: 3, name: "Opening Theory", game: "Chess", skill: "Strategy", difficulty: 4, best: "82%", desc: "Drill the top 10 openings against the engine." },
-  { id: 4, name: "Reaction Rush", game: "Air Hockey", skill: "Reflex", difficulty: 5, best: "210ms", desc: "Train split-second blocks and counters." },
-  { id: 5, name: "Threat Scanner", game: "Connect Four", skill: "Vision", difficulty: 3, best: "91%", desc: "Spot double-threats before they form." },
-  { id: 6, name: "Endgame Trainer", game: "Chess", skill: "Strategy", difficulty: 5, best: "76%", desc: "Convert winning positions every time." },
+const PACKS: Pack[] = [
+  {
+    id: "pool",
+    game: "8-Ball Pool",
+    emoji: "\u{1F3B1}",
+    accent: "#7c5cff",
+    blurb: "Master cushion angles, spin and safety play.",
+    requiredLevel: 0,
+    drills: [
+      { id: "pool-bank", tag: "AIM", game: "8-Ball Pool", title: "Bank Shot Lab", desc: "Master cushion angles with guided rails.", difficulty: 3, best: "18/20", reward: 5, xp: 40 },
+      { id: "pool-break", tag: "POWER", game: "8-Ball Pool", title: "Break Builder", desc: "Dial in a controlled, spread-heavy break.", difficulty: 4, best: "—", reward: 10, xp: 60 },
+    ],
+  },
+  {
+    id: "golf",
+    game: "Mini Golf",
+    emoji: "\u26F3",
+    accent: "#34d399",
+    blurb: "Sharpen power control and green reading.",
+    requiredLevel: 0,
+    drills: [
+      { id: "golf-putt", tag: "CONTROL", game: "Mini Golf", title: "Putt Precision", desc: "Dial in power and spin on tricky greens.", difficulty: 2, best: "Par -4", reward: 5, xp: 40 },
+      { id: "golf-bank", tag: "VISION", game: "Mini Golf", title: "Rail Reader", desc: "Plan multi-wall bank routes to the cup.", difficulty: 3, best: "—", reward: 10, xp: 55 },
+    ],
+  },
+  {
+    id: "chess",
+    game: "Chess",
+    emoji: "\u265F\uFE0F",
+    accent: "#f59e0b",
+    blurb: "Openings, tactics and clean endgame technique.",
+    requiredLevel: 3,
+    drills: [
+      { id: "chess-open", tag: "STRATEGY", game: "Chess", title: "Opening Theory", desc: "Drill the top 10 openings against the engine.", difficulty: 4, best: "82%", reward: 15, xp: 80 },
+      { id: "chess-end", tag: "STRATEGY", game: "Chess", title: "Endgame Trainer", desc: "Convert winning positions every time.", difficulty: 5, best: "76%", reward: 20, xp: 100 },
+    ],
+  },
+  {
+    id: "reflex",
+    game: "Air Hockey & Reflex",
+    emoji: "\u{1F3D2}",
+    accent: "#38bdf8",
+    blurb: "Split-second blocks, counters and threat-spotting.",
+    requiredLevel: 5,
+    drills: [
+      { id: "reflex-rush", tag: "REFLEX", game: "Air Hockey", title: "Reaction Rush", desc: "Train split-second blocks and counters.", difficulty: 5, best: "210ms", reward: 15, xp: 80 },
+      { id: "reflex-scan", tag: "VISION", game: "Connect Four", title: "Threat Scanner", desc: "Spot double-threats before they form.", difficulty: 3, best: "91%", reward: 10, xp: 60 },
+    ],
+  },
 ];
 
+const DIFFS: Diff[] = ["Easy", "Medium", "Hard", "Expert", "Champion"];
+const PLAYER_LEVEL = 6; // mock current level
+
 export default function Training() {
-  const [bot, setBot] = useState(1);
+  const [difficulty, setDifficulty] = useState<Diff>("Medium");
+  const [progress, setProgress] = useState<Record<string, number>>({
+    "pool-bank": 90,
+    "golf-putt": 100,
+    "chess-open": 45,
+  });
+  const [active, setActive] = useState<Drill | null>(null);
+
+  const allDrills = PACKS.flatMap((p) => p.drills);
+  const completed = allDrills.filter((d) => (progress[d.id] || 0) >= 100).length;
+  const totalXp = allDrills.reduce((s, d) => s + ((progress[d.id] || 0) >= 100 ? d.xp : 0), 0);
+  const overall = Math.round(
+    allDrills.reduce((s, d) => s + Math.min(100, progress[d.id] || 0), 0) / allDrills.length
+  );
+
+  function statusOf(pack: Pack, d: Drill): DrillStatus {
+    if (PLAYER_LEVEL < pack.requiredLevel) return "locked";
+    const p = progress[d.id] || 0;
+    if (p >= 100) return "complete";
+    if (p > 0) return "in-progress";
+    return "ready";
+  }
+
+  function startDrill(pack: Pack, d: Drill) {
+    if (PLAYER_LEVEL < pack.requiredLevel) {
+      toast(`Reach level ${pack.requiredLevel} to unlock ${pack.game} training`, "error");
+      return;
+    }
+    setActive(d);
+    toast(`Starting ${d.title} on ${difficulty} difficulty`, "info");
+  }
+
+  function completeDrill(d: Drill) {
+    setProgress((prev) => ({ ...prev, [d.id]: 100 }));
+    setActive(null);
+    toast(`${d.title} complete \u2014 +${d.xp} XP`, "success");
+    setTimeout(() => {
+      toast(`\u2B50 Reward unlocked: +${d.reward} Scaps training credit`, "reward");
+    }, 650);
+  }
+
+  function practiceStep(d: Drill) {
+    setProgress((prev) => {
+      const next = Math.min(100, (prev[d.id] || 0) + 25);
+      return { ...prev, [d.id]: next };
+    });
+  }
+
+  const stars = (n: number) =>
+    "\u2605".repeat(n) + "\u2606".repeat(5 - n);
 
   return (
-    <div className={"page tr-page"}>
-      <header className={"page-head"}>
-        <div>
-          <h1 className={"page-title"}>Training Arena</h1>
-          <p className={"page-sub"}>Sharpen your skills risk-free. No Scalps wagered, pure practice.</p>
+    <div className="training-page">
+      {/* Hub header */}
+      <header className="tr-hero">
+        <div className="tr-hero-text">
+          <h1 className="tr-title">Training Arena</h1>
+          <p className="tr-sub">
+            Sharpen your skills risk-free. No Scaps wagered, pure practice.
+          </p>
+        </div>
+        <div className="tr-hero-stats">
+          <div className="tr-stat">
+            <span className="tr-stat-num">{completed}/{allDrills.length}</span>
+            <span className="tr-stat-label">Drills mastered</span>
+          </div>
+          <div className="tr-stat">
+            <span className="tr-stat-num">{totalXp}</span>
+            <span className="tr-stat-label">Training XP</span>
+          </div>
+          <div className="tr-stat">
+            <span className="tr-stat-num">Lv {PLAYER_LEVEL}</span>
+            <span className="tr-stat-label">Player level</span>
+          </div>
         </div>
       </header>
 
-      <div className={"tr-bot"}>
-        <div className={"tr-bot-info"}>
+      {/* Overall progress */}
+      <section className="tr-overall">
+        <div className="tr-overall-top">
+          <span className="tr-overall-label">Overall mastery</span>
+          <span className="tr-overall-pct">{overall}%</span>
+        </div>
+        <div className="tr-bar">
+          <div className="tr-bar-fill" style={{ width: `${overall}%` }} />
+        </div>
+      </section>
+
+      {/* Difficulty selector */}
+      <section className="tr-diff-card">
+        <div className="tr-diff-text">
           <h3>Practice Bot Difficulty</h3>
           <p>Set how tough the AI sparring partner plays across all drills.</p>
         </div>
-        <div className={"tr-bot-levels"}>
-          {BOTS.map((b, i) => (
-            <button key={b} className={"tr-lvl " + (bot === i ? "tr-lvl-on" : "")} onClick={() => setBot(i)}>{b}</button>
+        <div className="tr-diff-options">
+          {DIFFS.map((d) => (
+            <button
+              key={d}
+              className={"tr-diff-btn" + (difficulty === d ? " active" : "")}
+              onClick={() => {
+                setDifficulty(d);
+                toast(`Practice difficulty set to ${d}`, "info");
+              }}
+            >
+              {d}
+            </button>
           ))}
         </div>
-      </div>
+      </section>
 
-      <h2 className={"tr-section"}>Skill Drills</h2>
-      <div className={"tr-grid"}>
-        {DRILLS.map((d) => (
-          <div key={d.id} className={"tr-card"}>
-            <div className={"tr-card-top"}>
-              <span className={"tr-skill"}>{d.skill}</span>
-              <span className={"tr-game"}>{d.game}</span>
+      {/* Training packs */}
+      {PACKS.map((pack) => {
+        const packLocked = PLAYER_LEVEL < pack.requiredLevel;
+        const packDone = pack.drills.filter((d) => (progress[d.id] || 0) >= 100).length;
+        return (
+          <section
+            key={pack.id}
+            className={"tr-pack" + (packLocked ? " locked" : "")}
+            style={{ ["--accent" as any]: pack.accent }}
+          >
+            <div className="tr-pack-head">
+              <div className="tr-pack-id">
+                <span className="tr-pack-emoji">{pack.emoji}</span>
+                <div>
+                  <h2 className="tr-pack-title">{pack.game} Pack</h2>
+                  <p className="tr-pack-blurb">{pack.blurb}</p>
+                </div>
+              </div>
+              {packLocked ? (
+                <span className="tr-pack-lock">\u{1F512} Unlocks at Lv {pack.requiredLevel}</span>
+              ) : (
+                <span className="tr-pack-count">{packDone}/{pack.drills.length} done</span>
+              )}
             </div>
-            <h3 className={"tr-name"}>{d.name}</h3>
-            <p className={"tr-desc"}>{d.desc}</p>
-            <div className={"tr-stars"}>
-              {[1,2,3,4,5].map((n) => (
-                <span key={n} className={"tr-star " + (n <= d.difficulty ? "tr-star-on" : "")}>*</span>
-              ))}
-              <span className={"tr-best"}>Best: {d.best}</span>
+
+            <div className="tr-drill-grid">
+              {pack.drills.map((d) => {
+                const st = statusOf(pack, d);
+                const pct = Math.min(100, progress[d.id] || 0);
+                return (
+                  <article key={d.id} className={"tr-drill st-" + st}>
+                    <div className="tr-drill-top">
+                      <span className="tr-drill-tag">{d.tag}</span>
+                      <span className="tr-drill-game">{d.game}</span>
+                    </div>
+                    <h3 className="tr-drill-title">{d.title}</h3>
+                    <p className="tr-drill-desc">{d.desc}</p>
+                    <div className="tr-drill-meta">
+                      <span className="tr-drill-stars">{stars(d.difficulty)}</span>
+                      <span className="tr-drill-best">Best: {d.best}</span>
+                    </div>
+
+                    {st !== "locked" && (
+                      <div className="tr-drill-bar">
+                        <div className="tr-drill-bar-fill" style={{ width: `${pct}%` }} />
+                      </div>
+                    )}
+
+                    {st === "complete" ? (
+                      <div className="tr-drill-done">
+                        <span>\u2713 Mastered</span>
+                        <span className="tr-drill-reward">+{d.reward} \u24C8</span>
+                      </div>
+                    ) : st === "locked" ? (
+                      <Btn variant="ghost" className="tr-drill-btn" disabled>
+                        \u{1F512} Locked
+                      </Btn>
+                    ) : (
+                      <Btn className="tr-drill-btn" onClick={() => startDrill(pack, d)}>
+                        {st === "in-progress" ? "Continue Drill" : "Start Training"}
+                      </Btn>
+                    )}
+                  </article>
+                );
+              })}
             </div>
-            <button className={"btn-grad"}>Start Drill</button>
+          </section>
+        );
+      })}
+
+      {/* Active drill modal (mock practice flow) */}
+      {active && (
+        <div className="tr-modal-overlay" onClick={() => setActive(null)}>
+          <div className="tr-modal" onClick={(e) => e.stopPropagation()}>
+            <span className="tr-modal-tag">{active.tag} \u00B7 {difficulty}</span>
+            <h2 className="tr-modal-title">{active.title}</h2>
+            <p className="tr-modal-desc">{active.desc}</p>
+
+            <div className="tr-modal-bar">
+              <div
+                className="tr-modal-bar-fill"
+                style={{ width: `${Math.min(100, progress[active.id] || 0)}%` }}
+              />
+            </div>
+            <p className="tr-modal-pct">
+              {Math.min(100, progress[active.id] || 0)}% \u2014 reward on completion: +{active.reward} \u24C8
+            </p>
+
+            <p className="tr-modal-note">
+              Practice only \u2014 no Scaps are wagered or won. Rewards are cosmetic training credit.
+            </p>
+
+            <div className="tr-modal-actions">
+              <Btn variant="ghost" onClick={() => setActive(null)}>
+                Exit
+              </Btn>
+              {(progress[active.id] || 0) >= 100 ? (
+                <Btn onClick={() => completeDrill(active)}>Claim Reward</Btn>
+              ) : (
+                <Btn onClick={() => practiceStep(active)}>Run Rep</Btn>
+              )}
+            </div>
+            {(progress[active.id] || 0) >= 100 && (
+              <p className="tr-modal-ready">Drill complete \u2014 claim your reward!</p>
+            )}
           </div>
-        ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
