@@ -266,5 +266,19 @@ app's intended palette alive at once.
 - shop.css: rarity-glow icon containers (color-mix on --rar) + SVG sizing for card/preview/confirm.
 - Verified live: rarity-coded cards, preview modal with floating glow icon, buy/equip states. 0 console errors.
 
-### Wave status: Dashboard done, Play done, Shop done. Next: Rankings/RankTrack, Wallet, Tournaments.
+### Rankings / RankTrack brought to new standard (commits c4920df, e8b5443, ab762c2/a648673)
+- RankTrack (/rank-progression): full rebuild to highest-dopamine standard matching old "Climb the Ladder".
+  - Current-rank card: glowing tier-colored badge (pulse anim), ProgressGlow bar, "% to next tier".
+  - Next-reward banner (links to /shop), full Rank Ladder grid (17 tiers) with YOU tag + unlocked/locked icons.
+  - Reward Track: category filter chips w/ counts, reward cards with tier-gradient banners, rarity tags,
+    floating icon art, Unlocked/locked status pills. All real Icon system, no emoji (was 16 emoji).
+  - New ranktrack.css fully rewritten (palette tokens + color-mix + reduced-motion + mobile).
+- Rankings (/rankings + /leaderboard): full rebuild to premium leaderboard matching old site.
+  - Gradient headline, Rank-Progression banner, Season 1 LIVE card (StatusPill), game tabs,
+    period + scope segmented toggles, filter chips, board with top-3 medals, tier-colored ratings,
+    win-rate bars, YOU-highlighted row, QUICK STATS + YOUR STANDING sidebar with Play Now.
+  - New rankings.css. Note: Rankings.tsx commit alone errored (css not yet present); rankings.css commit fixed it (Production Ready).
+  - Verified live: both pages render, 0 console errors.
+  - Minor polish TODO: leaderboard header eyebrow/subtitle layout could be widened (cosmetic, non-breaking).
 
+### Wave status: Dashboard, Play, Shop, Rankings/RankTrack DONE. Next: Wallet/Scaps, Tournaments.
