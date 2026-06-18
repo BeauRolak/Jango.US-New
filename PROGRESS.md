@@ -170,3 +170,20 @@ Reusable primitives now available everywhere: .j-hover-lift/.j-glow-pulse/.j-fad
 
 ### Status of confirmed priorities: Wallet ✓, Rank Progression ✓, Shop ✓, Tournaments ✓ — all live with consistent toast feedback.
 ### Next: Training, Social/messages, Profile, Story, Admin shell, final mobile polish.
+
+## Training rebuild (Priority: Training)
+Full rebuild of /training (src/pages/Training.tsx + training.css) as a real onboarding/progression system using the shared toast system.
+- Training hub header with live stats: Drills mastered (count/total), Training XP, Player level.
+- Animated overall-mastery progress bar (aggregates per-drill progress).
+- Practice Bot Difficulty selector (Easy/Medium/Hard/Expert/Champion) with toast on change.
+- Game-specific training PACKS (8-Ball Pool, Mini Golf, Chess, Air Hockey & Reflex), each with emoji, accent color, blurb, requiredLevel and a done-count badge.
+- Per-drill cards: tag, game, title, desc, star difficulty, best score, per-drill progress bar.
+- Drill statuses: locked / ready / in-progress / complete. Locked packs (requiredLevel > player level) render disabled with a lock badge; completed drills show 'Mastered' + Scaps reward.
+- Start Training flow: opens a mock practice modal (Run Rep advances 25% each, gated 'no Scaps wagered' note, Claim Reward at 100%).
+- Completion toast (+XP, success) followed by reward toast (+Scaps training credit, reward type). Difficulty + start emit info toasts; locked start emits error toast.
+- Mobile-responsive grid + modal, prefers-reduced-motion support.
+- FIX: first commit failed Vercel build (TS1351/TS1381) because emoji/symbol escape sequences were written literally (\u{...}) into JSX, where {...} parsed as a numeric-literal expression. Re-authored using real unicode characters; build now Ready/Production.
+- Currency corrected to Scaps (old file had 'Scalps'). Zero console errors. Verified live: ran drill to 100%, claimed reward -> card flips to Mastered +10, hero XP 40->100, overall mastery 29%->42%, both toasts fired.
+
+### Status of confirmed priorities: Wallet ✓, Rank Progression ✓, Shop ✓, Tournaments ✓, Training ✓ — all live with consistent toast feedback.
+### Next: Social/messages, Profile, Story, Admin shell, final mobile polish.
