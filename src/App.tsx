@@ -7,7 +7,7 @@ import Play from "./pages/Play";
 import Games from "./pages/Games";
 import Profile from "./pages/Profile";
 import Wallet from "./pages/Wallet";
-import Deposit from "./pages/Wallet";
+import Deposit from "./pages/Deposit";
 import Tournaments from "./pages/Tournaments";
 import Rankings from "./pages/Rankings";
 import Clans from "./pages/Clans";
