@@ -187,3 +187,15 @@ Full rebuild of /training (src/pages/Training.tsx + training.css) as a real onbo
 
 ### Status of confirmed priorities: Wallet ✓, Rank Progression ✓, Shop ✓, Tournaments ✓, Training ✓ — all live with consistent toast feedback.
 ### Next: Social/messages, Profile, Story, Admin shell, final mobile polish.
+
+## Social / Messages rebuild
+Full rebuild of /social (src/pages/Social.tsx + social.css) using the shared toast system. Three tabs: Feed, Messages, Friends.
+- Feed: trending bar, post composer (empty-state error toast / posted success toast), auto-generated community posts with Like/Comment/Challenge/Share actions (each emits a toast).
+- Messages: two-pane layout (conversation list + chat) on desktop. Thread list shows presence dot, last preview, time, unread badge. Chat view: header with presence status + Invite, message bubbles (me/them with timestamps), rounded composer with send button. Sending appends a bubble, updates the list preview, and fires a success toast. Opening a thread clears its unread count.
+- MOBILE FIX (old site's messaging was hard to reach on mobile): at <=720px the messages view becomes single-pane and SWAPS between the conversation list and the open chat, with a back arrow in the chat header to return to the list. Verified the @media(max-width:720px) swap + .so-chat-back rules are present in the live CSSOM.
+- Friends: live search filter, online/in-game/offline presence states with colored dots, 'N of M online' summary, Message (jumps to that thread in Messages tab) + Invite buttons. Invite -> 'Invited' state + reward toast. Offline friends have Invite disabled. Empty-state with clear-search when no match.
+- Notification badges: Messages tab shows total unread; Friends tab shows online count.
+- Currency corrected to Scaps (old file had 'Scalps'). Mobile-responsive, prefers-reduced-motion. Zero console errors. Verified live: opened Nova chat, sent a message (bubble + preview + toast), filtered friends to 'gho', invited Ghost (reward toast + Invited state).
+
+### Status: Wallet ✓, Rank Progression ✓, Shop ✓, Tournaments ✓, Training ✓, Social ✓ — all live with consistent toast feedback.
+### Next: Profile, Story, Admin shell, final mobile polish.
