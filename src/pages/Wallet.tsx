@@ -56,27 +56,27 @@ export default function Wallet() {
   }
 
   function doAdd() {
-    if (amount <= 0) { toast("Enter an amount above 0 Scaps", "error"); return; }
+    if (amount <= 0) { toast("Enter an amount above 0 Scalps", "error"); return; }
     setBusy(true);
     toast("Processing deposit…", "info");
     setTimeout(() => {
       pushTxn({ type: "Deposit", note: "Mock top-up (no real money)", amount, dir: "in", kind: "deposit" });
       setBusy(false);
       setModal(null);
-      toast(`Added ${amount} Scaps to your balance`, "success");
+      toast(`Added ${amount} Scalps to your balance`, "success");
     }, 900);
   }
 
   function doWithdraw() {
-    if (amount <= 0) { toast("Enter an amount above 0 Scaps", "error"); return; }
-    if (amount > balance) { toast("Not enough Scaps to withdraw", "error"); return; }
+    if (amount <= 0) { toast("Enter an amount above 0 Scalps", "error"); return; }
+    if (amount > balance) { toast("Not enough Scalps to withdraw", "error"); return; }
     setBusy(true);
     toast("Submitting withdrawal…", "info");
     setTimeout(() => {
       pushTxn({ type: "Withdrawal", note: "Mock withdrawal (no real money)", amount, dir: "out", kind: "withdrawal" });
       setBusy(false);
       setModal(null);
-      toast(`Withdrawal of ${amount} Scaps requested`, "success");
+      toast(`Withdrawal of ${amount} Scalps requested`, "success");
     }, 900);
   }
 
@@ -87,29 +87,29 @@ export default function Wallet() {
           <div className="balance-label">TOTAL BALANCE</div>
           <div className="balance-main">
             <span className="balance-num">{balance.toFixed(2)}</span>
-            <span className="balance-cur">Scaps</span>
+            <span className="balance-cur">Scalps</span>
           </div>
-          <div className="balance-meta">≈ ${balance.toFixed(2)} value · Scaps are in-platform credits, not cash</div>
+          <div className="balance-meta">≈ ${balance.toFixed(2)} value · Scalps are in-platform credits, not cash</div>
           <div className="funds-pill"><span className="dot" /> Funds available</div>
           <div className="balance-actions">
-            <button className="btn btn-primary" onClick={() => { setAmount(25); setModal("add"); }}>+ Add Scaps</button>
+            <button className="btn btn-primary" onClick={() => { setAmount(25); setModal("add"); }}>+ Add Scalps</button>
             <button className="btn btn-ghost" onClick={() => { setAmount(10); setModal("withdraw"); }}>↗ Withdraw</button>
             <button className="btn btn-ghost" onClick={() => setModal("methods")}>Payment Methods</button>
           </div>
         </div>
         <div className="mini-stats">
-          <div className="mini-stat j-hover-lift"><div className="mini-label">DEPOSITED</div><div className="mini-num">{deposited.toFixed(2)} <small>Scaps</small></div></div>
-          <div className="mini-stat j-hover-lift"><div className="mini-label">WON</div><div className="mini-num pos">{won.toFixed(2)} <small>Scaps</small></div></div>
-          <div className="mini-stat j-hover-lift"><div className="mini-label">WITHDRAWN</div><div className="mini-num">{withdrawn.toFixed(2)} <small>Scaps</small></div></div>
+          <div className="mini-stat j-hover-lift"><div className="mini-label">DEPOSITED</div><div className="mini-num">{deposited.toFixed(2)} <small>Scalps</small></div></div>
+          <div className="mini-stat j-hover-lift"><div className="mini-label">WON</div><div className="mini-num pos">{won.toFixed(2)} <small>Scalps</small></div></div>
+          <div className="mini-stat j-hover-lift"><div className="mini-label">WITHDRAWN</div><div className="mini-num">{withdrawn.toFixed(2)} <small>Scalps</small></div></div>
         </div>
       </div>
 
       <div className="wallet-section">
         <h2 className="wallet-h2">Performance</h2>
         <div className="perf-grid">
-          <div className="perf-card j-hover-lift"><div className="mini-label">NET PROFIT / LOSS</div><div className={"perf-val " + (netProfit >= 0 ? "pos" : "neg")}>{netProfit >= 0 ? "+" : ""}{netProfit.toFixed(2)} Scaps</div><div className="perf-sub">{netProfit >= 0 ? "You’re in profit" : "Down this period"}</div></div>
-          <div className="perf-card j-hover-lift"><div className="mini-label">TOTAL WAGERED</div><div className="perf-val">{wagered.toFixed(2)} Scaps</div><div className="perf-sub">{matchesPlayed} match{matchesPlayed === 1 ? "" : "es"} played</div></div>
-          <div className="perf-card j-hover-lift"><div className="mini-label">BIGGEST WIN</div><div className="perf-val">{biggestWin.toFixed(2)} Scaps</div><div className="perf-sub">All time</div></div>
+          <div className="perf-card j-hover-lift"><div className="mini-label">NET PROFIT / LOSS</div><div className={"perf-val " + (netProfit >= 0 ? "pos" : "neg")}>{netProfit >= 0 ? "+" : ""}{netProfit.toFixed(2)} Scalps</div><div className="perf-sub">{netProfit >= 0 ? "You’re in profit" : "Down this period"}</div></div>
+          <div className="perf-card j-hover-lift"><div className="mini-label">TOTAL WAGERED</div><div className="perf-val">{wagered.toFixed(2)} Scalps</div><div className="perf-sub">{matchesPlayed} match{matchesPlayed === 1 ? "" : "es"} played</div></div>
+          <div className="perf-card j-hover-lift"><div className="mini-label">BIGGEST WIN</div><div className="perf-val">{biggestWin.toFixed(2)} Scalps</div><div className="perf-sub">All time</div></div>
           <div className="perf-card j-hover-lift"><div className="mini-label">WIN RATE</div><div className="perf-val">{winRate}%</div><div className="perf-sub">Wins vs. wagers</div></div>
         </div>
       </div>
@@ -129,7 +129,7 @@ export default function Wallet() {
             <div className="txn-row" key={t.id}>
               <div className={"txn-icon " + (t.dir === "in" ? "in" : "out")}>{t.dir === "in" ? "↓" : "↑"}</div>
               <div className="txn-info"><div className="txn-type">{t.type}</div><div className="txn-note">{t.note}</div></div>
-              <div className="txn-right"><div className={"txn-amt " + (t.dir === "in" ? "" : "neg")}>{t.dir === "in" ? "+" : "-"}{t.amount.toFixed(2)} Scaps</div><div className="txn-time">{t.time}</div></div>
+              <div className="txn-right"><div className={"txn-amt " + (t.dir === "in" ? "" : "neg")}>{t.dir === "in" ? "+" : "-"}{t.amount.toFixed(2)} Scalps</div><div className="txn-time">{t.time}</div></div>
             </div>
           ))}
         </div>
@@ -140,7 +140,7 @@ export default function Wallet() {
         <div className="trust-item">🆎+ Real deposits are gated &amp; require verification</div>
         <div className="trust-item">⚖️ Play responsibly · set spending limits in Settings</div>
       </div>
-      <div className="wallet-legal">Scaps are in-platform credits used for entry fees and cosmetics. This is a demo wallet; deposits, withdrawals and payouts shown here are simulated and do not move real funds.</div>
+      <div className="wallet-legal">Scalps are in-platform credits used for entry fees and cosmetics. This is a demo wallet; deposits, withdrawals and payouts shown here are simulated and do not move real funds.</div>
 
       {modal && (
         <div className="wallet-modal-overlay" onClick={() => !busy && setModal(null)}>
@@ -159,9 +159,9 @@ export default function Wallet() {
               </>
             ) : (
               <>
-                <h3 className="wm-title">{modal === "add" ? "Add Scaps" : "Withdraw Scaps"}</h3>
-                <p className="wm-sub">{modal === "add" ? "Top up your in-platform Scaps balance." : "Move Scaps out of your balance."} No real money is involved.</p>
-                <div className="wm-amount"><span>{amount}</span> <small>Scaps</small></div>
+                <h3 className="wm-title">{modal === "add" ? "Add Scalps" : "Withdraw Scalps"}</h3>
+                <p className="wm-sub">{modal === "add" ? "Top up your in-platform Scalps balance." : "Move Scalps out of your balance."} No real money is involved.</p>
+                <div className="wm-amount"><span>{amount}</span> <small>Scalps</small></div>
                 <div className="wm-presets">
                   {PRESETS.map((v) => (
                     <button key={v} className={"wm-preset" + (amount === v ? " on" : "")} onClick={() => setAmount(v)}>{v}</button>
@@ -171,7 +171,7 @@ export default function Wallet() {
                 <div className="wm-gate">🔒 Demo only — {modal === "add" ? "no charge will be made" : "no payout will be sent"}.</div>
                 <div className="wm-actions">
                   <button className="btn btn-ghost" disabled={busy} onClick={() => setModal(null)}>Cancel</button>
-                  <button className="btn btn-primary" disabled={busy} onClick={modal === "add" ? doAdd : doWithdraw}>{busy ? "Processing…" : modal === "add" ? `Add ${amount} Scaps` : `Withdraw ${amount} Scaps`}</button>
+                  <button className="btn btn-primary" disabled={busy} onClick={modal === "add" ? doAdd : doWithdraw}>{busy ? "Processing…" : modal === "add" ? `Add ${amount} Scalps` : `Withdraw ${amount} Scalps`}</button>
                 </div>
               </>
             )}
