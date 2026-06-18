@@ -1,6 +1,7 @@
 // build-bump: deposit route v2 1781737701811
 import { Routes, Route } from "react-router-dom";
 import { Toaster } from "./components/UI";
+import { RewardLayer } from "./components/Juice";
 import type { ReactNode } from "react";
 import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
@@ -79,6 +80,7 @@ export default function App() {
         <Route path="*" element={<P><Dashboard /></P>} />
       </Routes>
       <Toaster />
+      <RewardLayer />
     </Layout>
   );
 }
