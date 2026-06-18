@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "../components/UI";
 import "./pages.css";
 import "./settings.css";
 
@@ -39,7 +40,7 @@ function Card({ title, children }: { title: string; children: any }) {
 }
 
 function Save({ label }: { label?: string }) {
-  return <button className={"set-save"}>{label || "Save Changes"}</button>;
+  return <button className={"set-save"} onClick={() => toast("Settings saved successfully", "success")}>{label || "Save Changes"}</button>;
 }
 
 export default function Settings() {
