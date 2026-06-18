@@ -54,3 +54,17 @@
 @media (prefers-reduced-motion: reduce) {
   .shop-preview-icon { animation: none; }
 }
+
+/* ============================================================
+   SHOP - real-icon containers + rarity glow (Icon system)
+   ============================================================ */
+.shop-card-icon{font-size:0;display:flex;align-items:center;justify-content:center;width:84px;height:84px;margin:14px auto 14px;border-radius:18px;background:radial-gradient(circle at 50% 30%,color-mix(in srgb,var(--rar) 28%,transparent),color-mix(in srgb,var(--rar) 8%,transparent));border:1px solid color-mix(in srgb,var(--rar) 45%,transparent);filter:drop-shadow(0 8px 22px color-mix(in srgb,var(--rar) 40%,transparent))}
+.shop-card-icon svg{width:38px;height:38px;color:var(--rar)}
+.shop-preview-icon{font-size:0;display:grid;place-items:center;width:128px;height:128px;margin:0 auto;border-radius:26px;background:radial-gradient(circle at 50% 30%,color-mix(in srgb,var(--rar) 30%,transparent),transparent 70%);filter:drop-shadow(0 10px 30px color-mix(in srgb,var(--rar) 45%,transparent));animation:shopFloat 3s ease-in-out infinite}
+.shop-preview-icon svg{width:60px;height:60px;color:var(--rar)}
+.shop-confirm-icon{font-size:0;display:grid;place-items:center;width:74px;height:74px;margin:0 auto 8px;border-radius:18px;background:color-mix(in srgb,var(--rar) 16%,transparent);filter:drop-shadow(0 6px 18px color-mix(in srgb,var(--rar) 40%,transparent))}
+.shop-confirm-icon svg{width:34px;height:34px;color:var(--rar)}
+.shop-preview{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.shop-preview svg{width:15px;height:15px}
+.shop-buy svg{width:15px;height:15px;vertical-align:-2px;margin-right:4px}
+@media (prefers-reduced-motion:reduce){ .shop-preview-icon{animation:none} }
