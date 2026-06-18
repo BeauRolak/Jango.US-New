@@ -80,3 +80,18 @@ Fix (commit 7250c59): changed the import to ./pages/Deposit. New bundle index-Cc
 Lesson: when a bundle hash never changes despite "changed" source, suspect that the source the bundler actually compiles is unchanged (dead/aliased imports) before suspecting the host's build cache.
 
 ## STEP 4 STATUS: Deposit DONE (live). Moving to STEP 5 (games playable vs bot).
+
+
+---
+
+## STEP 5 (games) — audit + first fixes
+
+Audited all 15 games live on jango-us-new.vercel.app/games/<name>. ALL 15 load with ZERO console errors and render proper intro/board screens: minigolf, connect4, rps, dotsboxes, chess, eightball, airhockey, bowling, basketball, football, stacktower, blockblast, tron, cupking, racing. Each has engine.ts (+ chess/minigolf have bot.ts/holes.ts). The codebase was in far better shape than earlier notes implied — none were broken.
+
+Real defect found + fixed: Mini Golf used undefined CSS vars --neon / --neon-2 (7 refs in minigolf.css) for its selected-difficulty pill and Start Match button. Those vars don't exist in the design system, so the gradients collapsed to transparent -> the 'Medium' label and the 'Start Match' button text (dark #04101a on transparent) were INVISIBLE, and the game looked unstartable. Fix (commit 52d2117): defined --neon:#00E5FF and --neon-2:#2D9CFF on .mg-wrap (cyan family, matching existing rgba(0,229,255) shadows). Now buttons render with the cyan gradient.
+
+Verified live AFTER fix: Mini Golf — buttons visible; Start Match launches the canvas (400x560) with green course, hole+flag, wood obstacles, ball; drag-back-release shoots (stroke counter incremented You:1); You/Bot scorecard + Hole 1/3 Par 2 HUD; bot opponent present. Connect Four — goes straight to a 7x6 board, dropping a disc works and the bot replies with its own disc (turn alternation + AI confirmed). Both marquee games are genuinely PLAYABLE vs bot with on-brand visuals.
+
+Game route pattern: /games/<name>. Only minigolf.css used the bad tokens; the other 14 CSS files use correct design-system tokens (which is why they rendered fine).
+
+Remaining Step-5 polish (TODO, no blockers): spot-play the other 13 to confirm each bot loop end-to-end; check mobile/touch responsiveness; ensure win/lose end screens are on-brand. NO real-time multiplayer / wager / escrow (needs backend + owner decisions).
