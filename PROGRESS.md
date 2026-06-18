@@ -63,3 +63,20 @@ Rebuild to match the old site (jangous-jangous-pr-1.up.railway.app). Live: https
 - SUGGESTED FIXES (your call): in Vercel project Settings, (1) clear/disable Build Cache and redeploy, or
   (2) Settings > Git -> disconnect & reconnect the repo, or (3) check the Production Branch / Root Directory
   is set to main / repo root. Once the pipeline rebuilds, /deposit will render correctly with zero code changes.
+
+
+---
+
+## RESOLVED: /deposit blocker was NOT Vercel — it was a one-line import bug
+
+The stale-bundle symptom (same bundle hash across commits, even on no-cache redeploys and immutable per-deployment URLs) had a simple root cause: in App.tsx the Deposit page was imported with the WRONG path:
+
+  import Deposit from "./pages/Wallet";   // BUG: alias Deposit pointed at the Wallet module
+
+So the /deposit route rendered <Deposit /> which actually WAS the Wallet component, and Deposit.tsx was never referenced (tree-shaken out). Because the real source the bundler saw never changed, Vite produced the identical content hash every build — which looked like a frozen Vercel cache but wasn't.
+
+Fix (commit 7250c59): changed the import to ./pages/Deposit. New bundle index-CcNcfBtm.js now contains the Deposit code and https://jango-us-new.vercel.app/deposit renders the real Add Funds page (crypto BTC/ETH/SOL/USDC selector, amount input + quick chips, Generate Deposit Address CTA, Card/App coming-soon, trust badges). Verified live, interaction works (Bitcoin select -> form), zero console errors. Vercel pipeline is healthy; no account/settings changes were needed.
+
+Lesson: when a bundle hash never changes despite "changed" source, suspect that the source the bundler actually compiles is unchanged (dead/aliased imports) before suspecting the host's build cache.
+
+## STEP 4 STATUS: Deposit DONE (live). Moving to STEP 5 (games playable vs bot).
