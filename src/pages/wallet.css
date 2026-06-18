@@ -94,3 +94,12 @@
   .wm-actions { flex-direction: column-reverse; }
   .wm-actions .btn { width: 100%; }
 }
+
+/* ===== Icon system sizing (Scalps -> Icon migration) ===== */
+.trust-item { display: inline-flex; align-items: center; gap: 6px; }
+.trust-item svg { width: 15px; height: 15px; flex: 0 0 auto; opacity: .9; }
+.wm-gate { display: flex; align-items: center; gap: 8px; }
+.wm-gate svg { width: 16px; height: 16px; flex: 0 0 auto; color: var(--amber, #FF8A1E); }
+.wm-method span svg, .pm-method span svg { width: 20px; height: 20px; }
+/* generic: any leftover icon inside a payment method button */
+button span > svg { vertical-align: middle; }
