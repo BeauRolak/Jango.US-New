@@ -162,14 +162,12 @@ Reusable primitives now available everywhere: .j-hover-lift/.j-glow-pulse/.j-fad
 - All three pages now use the shared global toast system for consistent reactive feedback.
 - Verified live on jango-us-new.vercel.app with full buy/claim/deposit flows working.
 
-### Next: Tournaments, then Training / Social / Profile / Story / Admin, then mobile polish.
 
 ## Session update — Tournaments
 
 - **Tournaments** (/tournaments): rebuilt with Scaps (Ⓢ) branding throughout (prize pools, entry fees). Added "Completed" filter. Status badges with live-pulse animation (live/registering/upcoming/completed). Join confirmation modal showing entry fee + prize pool + field size + mock-money note + register reward toast. Bracket preview modal: full Quarterfinals -> Semifinals -> Final -> Champion tree with winners highlighted. Winner/completed card state, Watch (live) / Registered states. Created/replaced tournaments.css. Mobile + reduced-motion. Zero console errors. Verified join + bracket flows live.
 
 ### Status of confirmed priorities: Wallet ✓, Rank Progression ✓, Shop ✓, Tournaments ✓ — all live with consistent toast feedback.
-### Next: Training, Social/messages, Profile, Story, Admin shell, final mobile polish.
 
 ## Training rebuild (Priority: Training)
 Full rebuild of /training (src/pages/Training.tsx + training.css) as a real onboarding/progression system using the shared toast system.
@@ -186,7 +184,6 @@ Full rebuild of /training (src/pages/Training.tsx + training.css) as a real onbo
 - Currency corrected to Scaps (old file had 'Scalps'). Zero console errors. Verified live: ran drill to 100%, claimed reward -> card flips to Mastered +10, hero XP 40->100, overall mastery 29%->42%, both toasts fired.
 
 ### Status of confirmed priorities: Wallet ✓, Rank Progression ✓, Shop ✓, Tournaments ✓, Training ✓ — all live with consistent toast feedback.
-### Next: Social/messages, Profile, Story, Admin shell, final mobile polish.
 
 ## Social / Messages rebuild
 Full rebuild of /social (src/pages/Social.tsx + social.css) using the shared toast system. Three tabs: Feed, Messages, Friends.
@@ -198,7 +195,6 @@ Full rebuild of /social (src/pages/Social.tsx + social.css) using the shared toa
 - Currency corrected to Scaps (old file had 'Scalps'). Mobile-responsive, prefers-reduced-motion. Zero console errors. Verified live: opened Nova chat, sent a message (bubble + preview + toast), filtered friends to 'gho', invited Ghost (reward toast + Invited state).
 
 ### Status: Wallet ✓, Rank Progression ✓, Shop ✓, Tournaments ✓, Training ✓, Social ✓ — all live with consistent toast feedback.
-### Next: Profile, Story, Admin shell, final mobile polish.
 
 ## Profile rebuild
 Full rebuild of /profile (src/pages/Profile.tsx + profile.css) using the shared toast system; carried over the strong existing structure and improved it.
@@ -211,7 +207,6 @@ Full rebuild of /profile (src/pages/Profile.tsx + profile.css) using the shared 
 - Mobile-responsive (header stacks/centers, 2-col stats, single-col grid), prefers-reduced-motion. Zero console errors.
 
 ### Status: Wallet ✓, Rank Progression ✓, Shop ✓, Tournaments ✓, Training ✓, Social ✓, Profile ✓.
-### Next: Story (cinematic Jango lore), Admin shell, final mobile polish.
 
 ## Story rebuild (cinematic Jango lore)
 Full rebuild of /story (src/pages/Story.tsx + new story.css). Original branded lore (not generic filler).
@@ -223,7 +218,6 @@ Full rebuild of /story (src/pages/Story.tsx + new story.css). Original branded l
 - NOTE: Story.tsx commit briefly errored on Vercel because it imported ./story.css before that file existed; adding story.css (next commit) restored a green Ready/Production build.
 
 ### Status: Wallet ✓, Rank Progression ✓, Shop ✓, Tournaments ✓, Training ✓, Social ✓, Profile ✓, Story ✓.
-### Next: Admin shell, final site-wide mobile polish.
 
 ---
 
@@ -249,7 +243,6 @@ app's intended palette alive at once.
 - Note: base Icon component takes name + SVG props only (no `size` prop) — size via CSS containers.
 
 ### Commits: d3e43d5 (Dashboard tsx), b18149f (index.css tokens), 7009f34 (landing css)
-### Next: apply parity pass to Shop, Rankings/RankTrack, Wallet, Tournaments, Play lobby, etc.
 
 ### Play Lobby rebuilt as competitive arena grid (commits 4bf53aa, 1517db3)
 - Replaced single rotating carousel with a premium game-card grid (10 games).
@@ -281,4 +274,20 @@ app's intended palette alive at once.
   - Verified live: both pages render, 0 console errors.
   - Minor polish TODO: leaderboard header eyebrow/subtitle layout could be widened (cosmetic, non-breaking).
 
-### Wave status: Dashboard, Play, Shop, Rankings/RankTrack DONE. Next: Wallet/Scaps, Tournaments.
+## CURRENCY GATE FIX (CRITICAL) — done
+- User clarified: currency is "Scalps"/"Scalp" (1 Scalp = $1 USD), NOT "Scaps". My earlier work used "Scaps" — wrong.
+- Repo-wide search+replace Scap->Scalp (case-preserving: Scap/scap/SCAP) across 9 files:
+  Juice.tsx, juice.css, Deposit.tsx, Shop.tsx, Social.tsx, Story.tsx, Tournaments.tsx, Training.tsx, Wallet.tsx.
+  Renamed ScapsBalance->ScalpsBalance (Juice only), j-scaps-bump->j-scalps-bump (css+tsx in sync).
+  Re-scanned 95 code files: 0 remaining "Scap". All 9 commits built green; latest Production Ready.
+  (PROGRESS.md retains historical "Scap" in old log lines; that is documentation only.)
+
+## Wallet / Scalps brought to new standard — done
+- Surgical transform (kept all logic + 6 useState modals): Add Scalps / Withdraw / Payment Methods modals intact.
+- Replaced all 8 emojis with Icon system: Lock (trust + gate), Shield (18+/real), Scale (fair play), Card, Bank.
+- wallet.css: added SVG sizing for .trust-item/.wm-gate/method spans.
+- Gated real-money notice intact ("Demo only — no charge will be made"; "Scalps are in-platform credits, not cash").
+- Verified live: balance card, Deposited/Won/Withdrawn, Performance cards, Transactions w/ filters, Add Scalps modal. 0 console errors.
+
+### Wave status: Dashboard, Play, Shop(icons), Rankings/RankTrack, Wallet DONE + currency GATE fixed.
+### Next queue: Tournaments, Shop(full rebuild+3D preview), Profile, Clans, Battle Pass, Social, Settings, Landing, Training/Deposit, then global shell + juice + QA.
