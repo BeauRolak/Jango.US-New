@@ -36,7 +36,7 @@ interface Post {
 }
 
 const FEED: Post[] = [
-  { id: "p1", author: "JangoPlatform", kind: "Win", time: "2m", body: "Beau won a Block Blast match (400-0) and earned 12 Scaps!", likes: 24, comments: 3 },
+  { id: "p1", author: "JangoPlatform", kind: "Win", time: "2m", body: "Beau won a Block Blast match (400-0) and earned 12 Scalps!", likes: 24, comments: 3 },
   { id: "p2", author: "JangoPlatform", kind: "Achievement", time: "11m", body: "Nova reached Gold III in 8-Ball Pool. The ladder climb continues.", likes: 41, comments: 7 },
   { id: "p3", author: "JangoPlatform", kind: "Challenge", time: "26m", body: "ShadowAce called out the lobby for a Mini Golf showdown. Who answers?", likes: 18, comments: 12 },
 ];
