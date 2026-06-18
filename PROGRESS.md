@@ -212,3 +212,15 @@ Full rebuild of /profile (src/pages/Profile.tsx + profile.css) using the shared 
 
 ### Status: Wallet ✓, Rank Progression ✓, Shop ✓, Tournaments ✓, Training ✓, Social ✓, Profile ✓.
 ### Next: Story (cinematic Jango lore), Admin shell, final mobile polish.
+
+## Story rebuild (cinematic Jango lore)
+Full rebuild of /story (src/pages/Story.tsx + new story.css). Original branded lore (not generic filler).
+- Hero: 'MARULA CITY LEGENDS' kicker, huge gradient JANGO wordmark + 'The King of the Table' subtitle, Skill/Risk/Swagger tagline, neon-framed mascot portrait (8-ball + floating crown), purple/blue glow background, 'Enter the Arena' (-> /games) + 'Pay Respects' (reward toast) CTAs.
+- Pillars: Skill, Risk, Swagger, Dominance cards.
+- Chapter timeline: 4 chapters (Born in the Back Rooms -> The Hustle Becomes a Craft -> Crowned at the Table -> The Arena Opens) with numbered glowing rail nodes, era labels, narrative, and concept-art placeholder areas.
+- Marula City lore band with neon skyline art placeholder; finale CTA ('Your story starts now.' -> Start Competing -> /games).
+- Uses react-router-dom useNavigate + shared toast. Mobile-responsive (hero stacks, pillars reflow), prefers-reduced-motion. Zero console errors.
+- NOTE: Story.tsx commit briefly errored on Vercel because it imported ./story.css before that file existed; adding story.css (next commit) restored a green Ready/Production build.
+
+### Status: Wallet ✓, Rank Progression ✓, Shop ✓, Tournaments ✓, Training ✓, Social ✓, Profile ✓, Story ✓.
+### Next: Admin shell, final site-wide mobile polish.
