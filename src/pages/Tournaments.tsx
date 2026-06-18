@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Icon } from "../components/Icon";
 import { toast } from "../components/UI";
 import "./tournaments.css";
 
@@ -71,7 +72,7 @@ export default function Tournaments() {
                 <div><div className="trn-meta-l">STARTS</div><div className="trn-meta-v">{t.starts}</div></div>
               </div>
               {t.status === "completed" ? (
-                <div className="trn-winner">🏆 Winner: <strong>{t.winner}</strong></div>
+                <div className="trn-winner"><Icon name="Trophy" /> Winner: <strong>{t.winner}</strong></div>
               ) : (
                 <>
                   <div className="trn-fill"><div className="trn-fill-bar" style={{ width: pct + "%" }} /></div>
@@ -85,7 +86,7 @@ export default function Tournaments() {
                 ) : t.status === "completed" ? (
                   <button className="trn-join done" disabled>Finished</button>
                 ) : isJoined ? (
-                  <button className="trn-join joined" disabled>✓ Registered</button>
+                  <button className="trn-join joined" disabled><Icon name="Check" /> Registered</button>
                 ) : (
                   <button className="trn-join" onClick={() => setConfirm(t)}>Register</button>
                 )}
@@ -148,7 +149,7 @@ export default function Tournaments() {
               </div>
               <div className="trn-round champ">
                 <div className="trn-round-l">Champion</div>
-                <div className="trn-champ">🏆 {bracket.winner || SAMPLE_PLAYERS[0]}</div>
+                <div className="trn-champ"><Icon name="Trophy" /> {bracket.winner || SAMPLE_PLAYERS[0]}</div>
               </div>
             </div>
             <div className="trn-modal-actions">
