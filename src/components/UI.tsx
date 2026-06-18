@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import React from 'react';
 import './UI.css';
 
@@ -49,5 +50,36 @@ export function Placeholder({ title, note }: { title: string; note?: string }) {
       <h2>{title}</h2>
       <p>{note || 'This section is part of the rebuild and will be wired up next.'}</p>
     </Card>
+  );
+}
+
+
+// ===== Toast system (event-based, no provider needed) =====
+export type ToastType = "success" | "error" | "info" | "reward";
+export function toast(message: string, type: ToastType = "info") {
+  window.dispatchEvent(new CustomEvent("jango-toast", { detail: { message, type, id: Date.now() + Math.random() } }));
+}
+interface ToastItem { id: number; message: string; type: ToastType; }
+export function Toaster() {
+  const [items, setItems] = useState<ToastItem[]>([]);
+  useEffect(() => {
+    const onToast = (e: Event) => {
+      const d = (e as CustomEvent).detail as ToastItem;
+      setItems((prev) => [...prev, d]);
+      setTimeout(() => setItems((prev) => prev.filter((x) => x.id !== d.id)), 3200);
+    };
+    window.addEventListener("jango-toast", onToast);
+    return () => window.removeEventListener("jango-toast", onToast);
+  }, []);
+  const icon: Record<ToastType, string> = { success: "✓", error: "✕", info: "i", reward: "★" };
+  return (
+    <div className="toast-wrap" role="status" aria-live="polite">
+      {items.map((t) => (
+        <div key={t.id} className={"toast toast-" + t.type}>
+          <span className="toast-ic">{icon[t.type]}</span>
+          <span className="toast-msg">{t.message}</span>
+        </div>
+      ))}
+    </div>
   );
 }
