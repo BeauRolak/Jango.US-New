@@ -298,6 +298,15 @@ app's intended palette alive at once.
   champion 'Winner: ShadowAce' with gold Trophy icon. 0 console errors, Vercel build green.
 - Commits: 751dbf5 (Tournaments.tsx emoji->Icon), 228c945 (tournaments.css icon sizing).
 
+## Shop — DONE (queue item 2, verified to spec, no rebuild needed)
+- Page already at Dashboard/Wallet bar: premium rarity cards, glow by tier, item-detail/3D-preview modal,
+  buy-confirm modal w/ 'Balance after' mock update, owned/unowned/equipped states.
+- Verified live: previewed Inferno Frame -> buy-confirm -> balance 117->92 (mock state), card flips to Equip;
+  Classic Ring shows checked Equipped. 0 emojis (header is Gem SVG Icon), 0 console errors.
+- Source confirms: not-enough-Scalps error toast + purchase success toast both present; balance state mock-only.
+- Pricing matches locked tiers: Common 5 / Uncommon 10 / Rare 15 / Epic 20 / Legendary 25 Scalps. Cosmetics only.
+- shop.css responsive: auto-fill grid + media queries @1200/640/420/380px. No changes required -> no commit.
 
-### Wave status: Dashboard, Play, Shop(icons), Rankings/RankTrack, Wallet, Tournaments DONE + currency GATE fixed.
-### Next queue: Shop(full rebuild+3D preview), Profile, Clans, Battle Pass, Social, Settings, Landing, Training/Deposit, then global shell + juice + QA.
+
+### Wave status: Dashboard, Play, Rankings/RankTrack, Wallet, Tournaments, Shop DONE + currency GATE fixed.
+### Next queue: Profile, Clans/Social, Battle Pass, Settings, Training, Deposit, Story, Admin, then global shell + juice + QA.
