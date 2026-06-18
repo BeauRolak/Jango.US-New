@@ -1,0 +1,88 @@
+/* ===== Jango icon system styling ===== */
+/* Consistent glassy icon containers, glow, hover-lift, active-press. */
+
+.icon-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  flex: none; line-height: 0;
+  background: linear-gradient(150deg, hsl(var(--card) / .9), hsl(var(--card) / .55));
+  border: 1px solid hsl(var(--border) / .9);
+  color: hsl(var(--foreground));
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / .06), 0 4px 14px hsl(0 0% 0% / .35);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+}
+
+/* shapes */
+.icon-badge.ib-square { border-radius: 14px; }
+.icon-badge.ib-circle { border-radius: 999px; }
+
+/* sizes: box + icon font-size */
+.icon-badge.ib-sm { width: 30px; height: 30px; font-size: 16px; border-radius: 10px; }
+.icon-badge.ib-md { width: 40px; height: 40px; font-size: 21px; }
+.icon-badge.ib-lg { width: 52px; height: 52px; font-size: 27px; border-radius: 16px; }
+.icon-badge.ib-xl { width: 64px; height: 64px; font-size: 33px; border-radius: 18px; }
+.icon-badge.ib-circle.ib-sm,.icon-badge.ib-circle.ib-md,.icon-badge.ib-circle.ib-lg,.icon-badge.ib-circle.ib-xl{ border-radius:999px; }
+
+/* tones: icon color + tinted bg + glow color var */
+.ib-primary   { color: hsl(var(--primary));   --ib-glow: var(--primary); }
+.ib-secondary { color: hsl(var(--secondary)); --ib-glow: var(--secondary); }
+.ib-accent    { color: hsl(var(--accent));    --ib-glow: var(--accent); }
+.ib-success   { color: hsl(var(--success));   --ib-glow: var(--success); }
+.ib-warning   { color: hsl(var(--warning));   --ib-glow: var(--warning); }
+.ib-danger    { color: hsl(var(--destructive)); --ib-glow: var(--destructive); }
+.ib-gold      { color: hsl(43 96% 60%);       --ib-glow: 43 96% 60%; }
+.ib-neutral   { color: hsl(var(--muted-foreground));  --ib-glow: var(--muted-foreground); }
+
+/* tinted background + ring per tone */
+.ib-primary,.ib-secondary,.ib-accent,.ib-success,.ib-warning,.ib-danger,.ib-gold {
+  border-color: hsl(var(--ib-glow) / .35);
+  background:
+    radial-gradient(120% 120% at 30% 18%, hsl(var(--ib-glow) / .22), transparent 60%),
+    linear-gradient(150deg, hsl(var(--card) / .92), hsl(var(--card) / .5));
+}
+
+/* glow */
+.icon-badge.ib-glow {
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / .08), 0 0 0 1px hsl(var(--ib-glow) / .12),
+    0 6px 18px hsl(var(--ib-glow) / .22), 0 4px 14px hsl(0 0% 0% / .35);
+}
+
+/* hover-lift (when inside an interactive card/link/button) */
+a:hover > .icon-badge, button:hover > .icon-badge, .card:hover .icon-badge.feature-icon,
+.ib-hover:hover, .icon-badge:hover {
+  transform: translateY(-2px);
+  border-color: hsl(var(--ib-glow, var(--primary)) / .6);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / .1), 0 0 0 1px hsl(var(--ib-glow, var(--primary)) / .25),
+    0 10px 26px hsl(var(--ib-glow, var(--primary)) / .3), 0 6px 16px hsl(0 0% 0% / .4);
+}
+
+.icon-badge > svg { display: block; }
+
+/* StatIcon: flatter, no lift */
+.icon-badge.stat-icon { box-shadow: inset 0 1px 0 hsl(0 0% 100% / .05); }
+.icon-badge.stat-icon:hover { transform: none; }
+
+/* NavIcon: plain icon, sizing + color follow nav item */
+.nav-icon { display: inline-flex; align-items: center; justify-content: center; font-size: 19px; line-height: 0; flex: none; }
+.nav-icon > svg { display: block; }
+
+/* ActionIcon: icon-only button */
+.action-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px; border-radius: 11px; font-size: 19px;
+  background: hsl(var(--card) / .7); border: 1px solid hsl(var(--border));
+  color: hsl(var(--muted-foreground)); cursor: pointer;
+  transition: transform .14s ease, background .18s ease, color .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.action-icon:hover { color: hsl(var(--foreground)); border-color: hsl(var(--primary) / .5); transform: translateY(-1px); box-shadow: 0 6px 16px hsl(var(--primary) / .2); }
+.action-icon:active { transform: translateY(0) scale(.94); }
+.action-icon.ai-primary:hover { color: hsl(var(--primary)); }
+.action-icon.ai-danger:hover  { color: hsl(var(--destructive)); border-color: hsl(var(--destructive) / .5); box-shadow: 0 6px 16px hsl(var(--destructive) / .2); }
+.action-icon.ai-success:hover { color: hsl(var(--success)); border-color: hsl(var(--success) / .5); }
+
+/* inline icon helper for use directly in text/buttons */
+.j-ic { display: inline-flex; align-items: center; justify-content: center; line-height: 0; vertical-align: -.16em; }
+
+@media (prefers-reduced-motion: reduce) {
+  .icon-badge, .action-icon { transition: none; }
+  .icon-badge:hover, .action-icon:hover, .action-icon:active { transform: none; }
+}
