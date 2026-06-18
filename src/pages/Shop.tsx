@@ -1,135 +1,140 @@
 import { useState } from "react";
-import "./pages.css";
+import { toast } from "../components/UI";
+import "./shop.css";
 
-type Rarity = "common" | "uncommon" | "rare" | "epic" | "legendary";
-
-interface Item {
-  id: string;
-  name: string;
-  type: string;
-  rarity: Rarity;
-  price: number;
-  icon: string;
-  desc: string;
-  featured?: boolean;
-}
-
-const TABS = [
-  "Featured", "Daily Deals", "Frames", "Badges", "Boards", "Emotes",
-  "Themes", "Victory", "Banners", "Trails", "Dice", "Cards", "My Items",
-];
-
-const RARITY_PRICE: Record<Rarity, string> = {
-  common: "Free – 3",
-  uncommon: "6",
-  rare: "15",
-  epic: "35",
-  legendary: "85",
+type Rarity = "Common" | "Uncommon" | "Rare" | "Epic" | "Legendary";
+const PRICES: Record<Rarity, number> = { Common: 5, Uncommon: 10, Rare: 15, Epic: 20, Legendary: 25 };
+const RARITY_COLOR: Record<Rarity, string> = {
+  Common: "#9aa4b2", Uncommon: "#3ddc84", Rare: "#4d9bff", Epic: "#b15cff", Legendary: "#f5b942",
 };
+
+type Item = { id: string; name: string; icon: string; rarity: Rarity; category: string; desc: string };
 
 const ITEMS: Item[] = [
-  { id: "inferno", name: "Inferno Avatar Frame", type: "Avatar Frame", rarity: "legendary", price: 25, icon: "🔥", desc: "Animated flame border that engulfs your avatar in living fire.", featured: true },
-  { id: "galaxy", name: "Galaxy Avatar", type: "Avatar Frame", rarity: "legendary", price: 85, icon: "🌌", desc: "A swirling cosmos of stars orbits your portrait." },
-  { id: "crown", name: "Champions Crown", type: "Badge", rarity: "legendary", price: 85, icon: "👑", desc: "Worn only by those who reached the top of the ladder." },
-  { id: "goldshower", name: "Gold Shower", type: "Victory Effect", rarity: "epic", price: 35, icon: "💰", desc: "Rain golden coins across the board when you win." },
-  { id: "diamondtrail", name: "Diamond Trail", type: "Trail", rarity: "epic", price: 35, icon: "💎", desc: "A sparkling diamond trail follows your pieces." },
-  { id: "goat", name: "G.O.A.T. Badge", type: "Badge", rarity: "legendary", price: 85, icon: "🐐", desc: "The greatest of all time. Few will ever own it." },
-  { id: "neon", name: "Neon Pulse Frame", type: "Avatar Frame", rarity: "rare", price: 15, icon: "⚡", desc: "A pulsing neon ring that beats with the music of the arena." },
-  { id: "rookie", name: "Rookie Badge", type: "Badge", rarity: "uncommon", price: 6, icon: "🌟", desc: "Mark your arrival in the arena." },
-  { id: "starter", name: "Starter Border", type: "Avatar Frame", rarity: "common", price: 3, icon: "🔷", desc: "A clean, simple border to get you started." },
+  { id: "f1", name: "Inferno Avatar Frame", icon: "🔥", rarity: "Legendary", category: "Frames", desc: "Animated flame border that engulfs your avatar in living fire." },
+  { id: "f2", name: "Galaxy Avatar", icon: "🌌", rarity: "Epic", category: "Frames", desc: "A swirling cosmos frames your face among the stars." },
+  { id: "f3", name: "Neon Pulse Frame", icon: "⚡", rarity: "Rare", category: "Frames", desc: "Electric neon pulses around your avatar." },
+  { id: "f4", name: "Classic Ring", icon: "⭕", rarity: "Common", category: "Frames", desc: "A clean ring border. Simple and sharp." },
+  { id: "b1", name: "Champions Crown", icon: "👑", rarity: "Legendary", category: "Badges", desc: "Worn only by those who have stood at the top." },
+  { id: "b2", name: "G.O.A.T. Badge", icon: "🐐", rarity: "Epic", category: "Badges", desc: "Greatest of all time. Let them know." },
+  { id: "b3", name: "Rising Star", icon: "🌟", rarity: "Uncommon", category: "Badges", desc: "For the up-and-comers making noise." },
+  { id: "b4", name: "Rookie Badge", icon: "🎮", rarity: "Common", category: "Badges", desc: "Everyone starts somewhere." },
+  { id: "t1", name: "Diamond Trail", icon: "💎", rarity: "Epic", category: "Trails", desc: "Your ball leaves a trail of shimmering diamonds." },
+  { id: "t2", name: "Comet Trail", icon: "☄️", rarity: "Rare", category: "Trails", desc: "Streak across the table like a comet." },
+  { id: "e1", name: "Gold Shower Emote", icon: "💰", rarity: "Rare", category: "Emotes", desc: "Rain Scaps on your opponent after a win." },
+  { id: "e2", name: "Mic Drop", icon: "🎤", rarity: "Uncommon", category: "Emotes", desc: "Say nothing. Drop the mic." },
+  { id: "d1", name: "Golden Dice", icon: "🎲", rarity: "Legendary", category: "Dice", desc: "Solid gold dice for the high roller." },
+  { id: "v1", name: "Victory Roar", icon: "🦁", rarity: "Epic", category: "Victory", desc: "A lion’s roar announces your triumph." },
+  { id: "th1", name: "Midnight Theme", icon: "🌙", rarity: "Uncommon", category: "Themes", desc: "Deep navy UI theme for night owls." },
+  { id: "bn1", name: "Aurora Banner", icon: "🌈", rarity: "Rare", category: "Banners", desc: "A shifting aurora behind your profile." },
 ];
 
-const RARITY_LABEL: Record<Rarity, string> = {
-  common: "Common", uncommon: "Uncommon", rare: "Rare", epic: "Epic", legendary: "Legendary",
-};
+const CATEGORIES = ["All", "Frames", "Badges", "Trails", "Emotes", "Victory", "Themes", "Banners", "Dice", "My Items"];
 
 export default function Shop() {
-  const [tab, setTab] = useState("Featured");
-  const [selected, setSelected] = useState<Item | null>(null);
-  const balance = 117;
-  const featured = ITEMS.find((i) => i.featured)!;
+  const [balance, setBalance] = useState(117);
+  const [cat, setCat] = useState("All");
+  const [owned, setOwned] = useState<string[]>(["f4", "b4"]);
+  const [equipped, setEquipped] = useState<string[]>(["f4"]);
+  const [preview, setPreview] = useState<Item | null>(null);
+  const [confirm, setConfirm] = useState<Item | null>(null);
+
+  const visible = ITEMS.filter((i) => cat === "All" ? true : cat === "My Items" ? owned.includes(i.id) : i.category === cat);
+
+  function buy(item: Item) {
+    const price = PRICES[item.rarity];
+    if (owned.includes(item.id)) { toast("You already own this item", "info"); return; }
+    if (balance < price) { toast(`Not enough Scaps — need ${price - balance} more`, "error"); setConfirm(null); return; }
+    setBalance((b) => b - price);
+    setOwned((o) => [...o, item.id]);
+    setConfirm(null);
+    setPreview(null);
+    toast(`Purchased ${item.name} for ${price} Scaps`, "reward");
+  }
+
+  function equip(item: Item) {
+    if (equipped.includes(item.id)) {
+      setEquipped((e) => e.filter((x) => x !== item.id));
+      toast(`Unequipped ${item.name}`, "info");
+    } else {
+      setEquipped((e) => [...e.filter((x) => ITEMS.find((it) => it.id === x)?.category !== item.category), item.id]);
+      toast(`Equipped ${item.name}`, "success");
+    }
+  }
 
   return (
-    <div className={"page shop-page"}>
-      <div className={"shop-head"}>
+    <div className="shop-page">
+      <div className="shop-head">
         <div>
-          <h1 className={"page-title"}>◈ Item Shop</h1>
-          <p className={"page-sub"}>Spend Scalps on cosmetics — no pay-to-win, ever.</p>
+          <h1 className="shop-title">◈ Item Shop</h1>
+          <p className="shop-sub">Spend Scaps on cosmetics — no pay-to-win, ever.</p>
         </div>
-        <div className={"shop-balance"}>
-          <span className={"bal-pill"}>S {balance.toFixed(2)}</span>
-          <button className={"btn-primary"}>+ Add Scalps</button>
-        </div>
+        <div className="shop-bal"><span className="shop-bal-pill">Ⓢ {balance.toFixed(0)} Scaps</span></div>
       </div>
 
-      <div className={"shop-banner"}>
-        1 Scalp = 1 USD. Deposit real money → it becomes Scalps automatically. Use Scalps to wager on games or buy cosmetics.
-      </div>
+      <div className="shop-notice">Cosmetics only — nothing here affects gameplay or odds. Scaps are in-platform credits.</div>
 
-      <div className={"shop-tabs"}>
-        {TABS.map((t) => (
-          <button key={t} className={"shop-tab " + (tab === t ? "active" : "")} onClick={() => setTab(t)}>{t}</button>
+      <div className="shop-cats">
+        {CATEGORIES.map((c) => (
+          <button key={c} className={"shop-cat" + (cat === c ? " on" : "")} onClick={() => setCat(c)}>{c}</button>
         ))}
       </div>
 
-      <div className={"shop-featured"}>
-        <div className={"feat-preview" + " rar-" + featured.rarity}>
-          <span className={"feat-icon"}>{featured.icon}</span>
-        </div>
-        <div className={"feat-info"}>
-          <span className={"overline"}>Featured · {RARITY_LABEL[featured.rarity]}</span>
-          <h2>{featured.name}</h2>
-          <p>{featured.desc}</p>
-          <div className={"feat-buy"}>
-            <span className={"price"}>{featured.price} Scalps</span>
-            <button className={"btn-primary"} onClick={() => setSelected(featured)}>Preview</button>
+      {visible.length === 0 && <div className="shop-empty">Nothing here yet. {cat === "My Items" ? "Buy some cosmetics to fill your collection!" : "Check back soon."}</div>}
+
+      <div className="shop-grid">
+        {visible.map((item) => {
+          const price = PRICES[item.rarity];
+          const isOwned = owned.includes(item.id);
+          const isEquipped = equipped.includes(item.id);
+          const color = RARITY_COLOR[item.rarity];
+          return (
+            <div key={item.id} className={"shop-card rarity-" + item.rarity.toLowerCase()} style={{ ["--rar" as any]: color }}>
+              <div className="shop-rar-tag" style={{ color }}>{item.rarity}</div>
+              <div className="shop-card-icon">{item.icon}</div>
+              <div className="shop-card-name">{item.name}</div>
+              <div className="shop-card-foot">
+                <button className="shop-preview" onClick={() => setPreview(item)}>👁 Preview</button>
+                {isOwned ? (
+                  <button className={"shop-buy owned" + (isEquipped ? " equipped" : "")} onClick={() => equip(item)}>{isEquipped ? "✓ Equipped" : "Equip"}</button>
+                ) : (
+                  <button className="shop-buy" onClick={() => setConfirm(item)}>Ⓢ {price}</button>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {preview && (
+        <div className="shop-modal-overlay" onClick={() => setPreview(null)}>
+          <div className="shop-modal j-pop" onClick={(e) => e.stopPropagation()} style={{ ["--rar" as any]: RARITY_COLOR[preview.rarity] }}>
+            <div className="shop-preview-stage"><div className="shop-preview-icon">{preview.icon}</div></div>
+            <div className="shop-rar-tag big" style={{ color: RARITY_COLOR[preview.rarity] }}>{preview.rarity}</div>
+            <h3 className="shop-modal-name">{preview.name}</h3>
+            <p className="shop-modal-desc">{preview.desc}</p>
+            <div className="shop-modal-actions">
+              <button className="btn btn-ghost" onClick={() => setPreview(null)}>Close</button>
+              {owned.includes(preview.id) ? (
+                <button className="btn btn-primary" onClick={() => equip(preview)}>{equipped.includes(preview.id) ? "Unequip" : "Equip"}</button>
+              ) : (
+                <button className="btn btn-primary" onClick={() => { setConfirm(preview); }}>Ⓢ Buy for {PRICES[preview.rarity]}</button>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
-      <div className={"shop-section-row"}>
-        <h3 className={"section-title"}>Legendary Collection</h3>
-        <span className={"shop-refresh"}>Shop refreshes in 00:00:59</span>
-      </div>
-
-      <div className={"shop-grid"}>
-        {ITEMS.map((item) => (
-          <div key={item.id} className={"rarity-card rar-" + item.rarity}>
-            <div className={"rc-preview"}><span>{item.icon}</span></div>
-            <div className={"rc-body"}>
-              <div className={"rc-title"}>{item.name}</div>
-              <div className={"rc-rarity rar-text-" + item.rarity}>{RARITY_LABEL[item.rarity]}</div>
+      {confirm && (
+        <div className="shop-modal-overlay" onClick={() => setConfirm(null)}>
+          <div className="shop-modal small j-pop" onClick={(e) => e.stopPropagation()} style={{ ["--rar" as any]: RARITY_COLOR[confirm.rarity] }}>
+            <div className="shop-confirm-icon">{confirm.icon}</div>
+            <h3 className="shop-modal-name">Buy {confirm.name}?</h3>
+            <p className="shop-modal-desc">{confirm.rarity} cosmetic · {PRICES[confirm.rarity]} Scaps. Balance after: {balance - PRICES[confirm.rarity]} Scaps.</p>
+            <div className="shop-modal-actions">
+              <button className="btn btn-ghost" onClick={() => setConfirm(null)}>Cancel</button>
+              <button className="btn btn-primary" onClick={() => buy(confirm)}>Confirm Ⓢ {PRICES[confirm.rarity]}</button>
             </div>
-            <div className={"rc-actions"}>
-              <button className={"btn-ghost"} onClick={() => setSelected(item)}>👁 Preview</button>
-              <button className={"btn-buy"}>🛒 {item.price}</button>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className={"pricing-guide"}>
-        <h3 className={"section-title"}>Scalps Pricing Guide</h3>
-        <div className={"guide-row"}>
-          {(Object.keys(RARITY_PRICE) as Rarity[]).map((r) => (
-            <div key={r} className={"guide-pill rar-text-" + r}>
-              <strong>{RARITY_LABEL[r]}</strong> {RARITY_PRICE[r]}
-            </div>
-          ))}
-        </div>
-        <p className={"guide-note"}>All items are purely cosmetic · 1 Scalp = 1 USD · Scalps never expire.</p>
-      </div>
-
-      {selected && (
-        <div className={"modal-backdrop"} onClick={() => setSelected(null)}>
-          <div className={"item-modal rar-" + selected.rarity} onClick={(e) => e.stopPropagation()}>
-            <button className={"modal-close"} onClick={() => setSelected(null)}>×</button>
-            <span className={"overline"}>{RARITY_LABEL[selected.rarity]} · {selected.type}</span>
-            <div className={"modal-preview"}><span>{selected.icon}</span></div>
-            <div className={"modal-hint"}>Drag to rotate · Scroll to zoom</div>
-            <h2>{selected.name}</h2>
-            <p className={"modal-desc"}>{selected.desc}</p>
-            <button className={"btn-primary lg"}>Buy for {selected.price} Scalps</button>
           </div>
         </div>
       )}
