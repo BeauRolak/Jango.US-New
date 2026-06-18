@@ -52,3 +52,45 @@
 .wallet-legal{text-align:center;color:hsl(var(--muted-foreground));font-size:.8rem;margin:0;}
 
 @media(max-width:820px){.wallet-grid-top{grid-template-columns:1fr;}.mini-stats{flex-direction:row;}.perf-grid{grid-template-columns:repeat(2,1fr);}.trust-strip{grid-template-columns:1fr;}}
+
+
+/* ---- Wallet labels & states (added) ---- */
+.balance-label,
+.mini-label { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: hsl(var(--muted-foreground, 220 10% 60%)); font-weight: 700; margin-bottom: 8px; }
+.funds-pill .dot { width: 8px; height: 8px; border-radius: 50%; background: hsl(142 80% 50%); box-shadow: 0 0 10px hsl(142 80% 50% / .9); animation: walletPulse 2s ease-in-out infinite; }
+@keyframes walletPulse { 0%,100% { opacity:1; transform:scale(1);} 50% { opacity:.55; transform:scale(.82);} }
+.mini-num small, .balance-cur { font-size: .55em; color: hsl(var(--muted-foreground,220 10% 60%)); font-weight: 600; }
+.txn-empty { padding: 28px; text-align: center; color: hsl(var(--muted-foreground,220 10% 60%)); font-size: 14px; }
+
+/* ---- Wallet modal ---- */
+.wallet-modal-overlay { position: fixed; inset: 0; background: rgba(4,6,12,.72); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 20px; animation: wmFade .18s ease; }
+@keyframes wmFade { from { opacity: 0; } to { opacity: 1; } }
+.wallet-modal { width: 100%; max-width: 420px; background: linear-gradient(180deg, hsl(222 20% 11%), hsl(222 22% 8%)); border: 1px solid hsl(var(--primary,217 91% 60%) / .25); border-radius: 18px; padding: 24px; box-shadow: 0 24px 70px rgba(0,0,0,.6), 0 0 50px hsl(var(--primary,217 91% 60%) / .12); }
+.j-pop { animation: wmPop .26s cubic-bezier(.22,1.2,.4,1); }
+@keyframes wmPop { from { opacity:0; transform: translateY(10px) scale(.96);} to { opacity:1; transform: none;} }
+.wm-title { font-size: 22px; font-weight: 800; margin: 0 0 4px; letter-spacing: -.02em; }
+.wm-sub { font-size: 13px; color: hsl(var(--muted-foreground,220 10% 60%)); margin: 0 0 18px; line-height: 1.5; }
+.wm-amount { font-family: var(--font-mono, "JetBrains Mono", monospace); font-size: 40px; font-weight: 800; text-align: center; margin: 6px 0 14px; }
+.wm-amount small { font-size: 16px; color: hsl(var(--muted-foreground,220 10% 60%)); }
+.wm-presets { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; flex-wrap: wrap; }
+.wm-preset { padding: 8px 14px; border-radius: 10px; border: 1px solid hsl(0 0% 100% / .1); background: hsl(0 0% 100% / .04); color: inherit; font-weight: 700; cursor: pointer; transition: all .15s ease; font-family: var(--font-mono,monospace); }
+.wm-preset:hover { border-color: hsl(var(--primary,217 91% 60%) / .5); transform: translateY(-1px); }
+.wm-preset.on { background: hsl(var(--primary,217 91% 60%) / .18); border-color: hsl(var(--primary,217 91% 60%)); box-shadow: 0 0 16px hsl(var(--primary,217 91% 60%) / .3); }
+.wm-range { width: 100%; accent-color: hsl(var(--primary,217 91% 60%)); margin-bottom: 16px; cursor: pointer; }
+.wm-methods { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.wm-method { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 12px; border: 1px solid hsl(0 0% 100% / .1); background: hsl(0 0% 100% / .03); color: inherit; font-weight: 600; font-size: 15px; cursor: pointer; transition: all .15s ease; text-align: left; }
+.wm-method span { font-size: 20px; }
+.wm-method:hover { border-color: hsl(var(--primary,217 91% 60%) / .5); background: hsl(var(--primary,217 91% 60%) / .08); transform: translateX(2px); }
+.wm-gate { font-size: 12px; color: hsl(38 92% 62%); background: hsl(38 92% 55% / .08); border: 1px solid hsl(38 92% 55% / .2); border-radius: 10px; padding: 10px 12px; margin-bottom: 18px; text-align: center; }
+.wm-actions { display: flex; gap: 10px; justify-content: flex-end; }
+.wm-actions .btn { min-width: 96px; }
+.wm-actions .btn:disabled { opacity: .55; cursor: not-allowed; }
+
+@media (max-width: 640px) {
+  .wallet-grid-top { grid-template-columns: 1fr; }
+  .perf-grid { grid-template-columns: 1fr 1fr; }
+  .balance-actions { flex-wrap: wrap; }
+  .balance-actions .btn { flex: 1 1 auto; }
+  .wm-actions { flex-direction: column-reverse; }
+  .wm-actions .btn { width: 100%; }
+}
