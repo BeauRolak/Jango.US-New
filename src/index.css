@@ -39,6 +39,27 @@
   --glow-primary: 0 0 24px hsl(217 91% 60% / .45);
   --glow-hero: 0 0 28px rgba(255,61,61,.45);
   --glow-neon-amber: 0 0 2px #FFB347, 0 0 8px #FF8A1E, 0 0 18px #FF2D55, 0 0 32px rgba(255,45,85,.6);
+
+  /* === Jango arena palette (direct-color tokens used across pages.css) === */
+  --bg: hsl(222 22% 5%);
+  --panel: hsl(222 18% 9%);
+  --panel-2: hsl(222 16% 13%);
+  --line: hsl(222 14% 18%);
+  --text: hsl(0 0% 98%);
+  --text-dim: hsl(220 12% 66%);
+  --text-faint: hsl(220 10% 46%);
+  --neon: #3B82F6;
+  --neon-2: #60A5FA;
+  --blue: #3B82F6;
+  --purple: #A855F7;
+  --accent-rgb: 240, 57, 126;
+  --green: #22E08A;
+  --red: #FF4D5E;
+  --gold: #FFC83D;
+  --amber: #FF8A1E;
+  --grad-blue: linear-gradient(135deg, #3B82F6, #A855F7);
+  --font-body: 'Inter', system-ui, sans-serif;
+  --maxw: 1200px;
 }
 
 * { box-sizing: border-box; }
