@@ -119,7 +119,7 @@ export default function Training() {
     setActive(null);
     toast(`${d.title} complete — +${d.xp} XP`, "success");
     setTimeout(() => {
-      toast(`⭐ Reward unlocked: +${d.reward} Scaps training credit`, "reward");
+      toast(`⭐ Reward unlocked: +${d.reward} Scalps training credit`, "reward");
     }, 650);
   }
 
@@ -138,7 +138,7 @@ export default function Training() {
         <div className="tr-hero-text">
           <h1 className="tr-title">Training Arena</h1>
           <p className="tr-sub">
-            Sharpen your skills risk-free. No Scaps wagered, pure practice.
+            Sharpen your skills risk-free. No Scalps wagered, pure practice.
           </p>
         </div>
         <div className="tr-hero-stats">
@@ -275,7 +275,7 @@ export default function Training() {
             </p>
 
             <p className="tr-modal-note">
-              Practice only — no Scaps are wagered or won. Rewards are cosmetic training credit.
+              Practice only — no Scalps are wagered or won. Rewards are cosmetic training credit.
             </p>
 
             <div className="tr-modal-actions">
