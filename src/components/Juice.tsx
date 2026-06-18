@@ -114,9 +114,9 @@ export function ProgressGlow(
   return (<div className={cls}><div className="j-prog-fill" style={{ width: w + "%" }} /></div>);
 }
 
-/* ---------- ScapsBalance (animated count) ---------- */
-export function ScapsBalance(
-  { amount, label = "Scaps", size = "md" }:
+/* ---------- ScalpsBalance (animated count) ---------- */
+export function ScalpsBalance(
+  { amount, label = "Scalps", size = "md" }:
   { amount: number; label?: string; size?: "sm" | "md" }
 ) {
   const [display, setDisplay] = useState(amount);
