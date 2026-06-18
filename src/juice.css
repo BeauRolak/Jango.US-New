@@ -117,16 +117,16 @@
 .j-prog.gold .j-prog-fill { background: linear-gradient(90deg, hsl(43 96% 60%), hsl(38 92% 55%)); box-shadow:0 0 12px hsl(43 96% 60% / .6); }
 .j-prog.success .j-prog-fill { background: linear-gradient(90deg, hsl(var(--success)), hsl(160 80% 45%)); box-shadow:0 0 12px hsl(var(--success) / .6); }
 
-/* ---------- Scaps balance ---------- */
-.j-scaps { display:inline-flex; align-items:center; gap:9px; padding:9px 16px; border-radius:14px;
+/* ---------- Scalps balance ---------- */
+.j-scalps { display:inline-flex; align-items:center; gap:9px; padding:9px 16px; border-radius:14px;
   background: linear-gradient(140deg, hsl(43 96% 60% / .16), hsl(var(--card) / .85));
   border:1px solid hsl(43 96% 60% / .35); box-shadow: inset 0 1px 0 hsl(0 0% 100% / .06), 0 6px 18px hsl(43 96% 50% / .15); }
-.j-scaps .coin { display:inline-flex; width:26px; height:26px; border-radius:999px; align-items:center; justify-content:center;
+.j-scalps .coin { display:inline-flex; width:26px; height:26px; border-radius:999px; align-items:center; justify-content:center;
   background: radial-gradient(circle at 35% 30%, #FFE08A, #F5A623 70%); color:#5a3a00; font-weight:900; font-size:13px; box-shadow:0 0 12px hsl(43 96% 55% / .6); flex:none; }
-.j-scaps .amt { font:800 19px/1 var(--font-head); color:hsl(var(--foreground)); font-variant-numeric: tabular-nums; }
-.j-scaps .lbl { font:600 11px/1 var(--font-mono); letter-spacing:.12em; text-transform:uppercase; color:hsl(var(--muted-foreground)); }
-.j-scaps.bump { animation: jScapsBump .5s cubic-bezier(.2,1.4,.4,1); }
-@keyframes jScapsBump { 0%{transform:scale(1)} 35%{transform:scale(1.12)} 100%{transform:scale(1)} }
+.j-scalps .amt { font:800 19px/1 var(--font-head); color:hsl(var(--foreground)); font-variant-numeric: tabular-nums; }
+.j-scalps .lbl { font:600 11px/1 var(--font-mono); letter-spacing:.12em; text-transform:uppercase; color:hsl(var(--muted-foreground)); }
+.j-scalps.bump { animation: jScalpsBump .5s cubic-bezier(.2,1.4,.4,1); }
+@keyframes jScalpsBump { 0%{transform:scale(1)} 35%{transform:scale(1.12)} 100%{transform:scale(1)} }
 
 /* ---------- rank badge ---------- */
 .j-rank { display:inline-flex; align-items:center; justify-content:center; width:56px; height:56px; border-radius:16px; flex:none; position:relative;
@@ -199,12 +199,12 @@
 
 /* ---------- animated number ---------- */
 .j-num { font-variant-numeric: tabular-nums; }
-.j-num.bump { animation: jScapsBump .5s cubic-bezier(.2,1.4,.4,1); }
+.j-num.bump { animation: jScalpsBump .5s cubic-bezier(.2,1.4,.4,1); }
 
 /* ---------- reduced motion guard ---------- */
 @media (prefers-reduced-motion: reduce) {
   .j-arena::before, .j-btn-grad, .j-btn-grad.j-pulse, .j-prog-fill::after, .j-reward, .j-pill .dot.live,
-  .j-reward-toast, .j-confetti i, .j-modal, .j-modal-back, .j-page, .j-stagger > *, .j-skel, .j-scaps.bump, .j-num.bump {
+  .j-reward-toast, .j-confetti i, .j-modal, .j-modal-back, .j-page, .j-stagger > *, .j-skel, .j-scalps.bump, .j-num.bump {
     animation: none !important; }
   .j-card, .j-btn, .j-chip { transition: none !important; }
   .j-stagger > * { opacity: 1 !important; }
