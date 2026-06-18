@@ -30,7 +30,7 @@ export default function Deposit() {
         <div>
           <Link to="/wallet" className="dep-back">← Wallet</Link>
           <h1 className="dep-title">Add Funds</h1>
-          <p className="dep-sub">Top up your Scaps balance to enter matches and tournaments.</p>
+          <p className="dep-sub">Top up your Scalps balance to enter matches and tournaments.</p>
         </div>
         <div className="dep-limits">
           <span className="dep-limit-pill">Min $1.00</span>
