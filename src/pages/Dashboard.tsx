@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import "./pages.css";
-import { Icon } from "../components/Icon";
+import { Icon, type IconName } from "../components/Icon";
 import { StatusPill } from "../components/Juice";
 
-const ARENA: { name: string; diff: string; icon: string }[] = [
+const ARENA: { name: string; diff: string; icon: IconName }[] = [
   { name: "Chess", diff: "Advanced", icon: "Crown" },
   { name: "Mini Golf", diff: "Medium", icon: "Target" },
   { name: "Connect 4", diff: "Beginner", icon: "Dice" },
@@ -16,7 +16,7 @@ const ARENA: { name: string; diff: string; icon: string }[] = [
   { name: "Stack Tower", diff: "Easy", icon: "Building" },
 ];
 
-const FEATURES = [
+const FEATURES: { title: string; desc: string; icon: IconName }[] = [
   { title: "Real-Time Gameplay", desc: "Live matches against real opponents with instant action.", icon: "Bolt" },
   { title: "Skill-Based Matches", desc: "No luck. Every win is earned through pure skill.", icon: "Target" },
   { title: "Global Leaderboards", desc: "Climb the ranks and prove you are the best.", icon: "Chart" },
@@ -42,10 +42,10 @@ export default function Dashboard() {
         <p className="hero-sub">Real players. Real competition. Pure skill.</p>
         <div className="hero-cta">
           <Link to="/play" className="btn-grad">
-            <Icon name="Play" size={18} /> Start Playing
+            <Icon name="Play" /> Start Playing
           </Link>
           <Link to="/play" className="btn-outline">
-            <Icon name="Gamepad" size={18} /> View Games
+            <Icon name="Gamepad" /> View Games
           </Link>
         </div>
         <div className="stats-row">
@@ -66,19 +66,17 @@ export default function Dashboard() {
           {ARENA.map((g) => (
             <Link to="/play" className="game-card" key={g.name}>
               <div className="game-card-glow" aria-hidden="true" />
-              <div className="game-icon">
-                <Icon name={g.icon as never} size={26} />
-              </div>
+              <div className="game-icon"><Icon name={g.icon} /></div>
               <div className="game-info">
                 <div className="game-name">{g.name}</div>
                 <span className="diff-badge">{g.diff}</span>
               </div>
-              <Icon name="ArrowUpRight" size={16} className="game-go" />
+              <Icon name="ArrowUpRight" className="game-go" />
             </Link>
           ))}
         </div>
         <div className="center">
-          <Link to="/play" className="btn-outline">Join the Arena <Icon name="ArrowRight" size={16} /></Link>
+          <Link to="/play" className="btn-outline">Join the Arena <Icon name="ArrowRight" /></Link>
         </div>
       </section>
 
@@ -87,7 +85,7 @@ export default function Dashboard() {
         <div className="features-grid">
           {FEATURES.map((f) => (
             <div className="feature-card" key={f.title}>
-              <div className="feature-ic"><Icon name={f.icon as never} size={22} /></div>
+              <div className="feature-ic"><Icon name={f.icon} /></div>
               <div className="feature-title">{f.title}</div>
               <div className="feature-desc">{f.desc}</div>
             </div>
@@ -99,13 +97,13 @@ export default function Dashboard() {
         <div className="origins-inner">
           <div className="eyebrow">• ARENA ORIGINS •</div>
           <h2 className="section-title">Born from the love of the game.</h2>
-          <Link to="/story" className="btn-outline">Read the Origin Story <Icon name="ArrowRight" size={16} /></Link>
+          <Link to="/story" className="btn-outline">Read the Origin Story <Icon name="ArrowRight" /></Link>
         </div>
       </section>
 
       <section className="final-cta">
         <h2 className="section-title">Ready to prove your skill?</h2>
-        <Link to="/play" className="btn-grad">Create Free Account <Icon name="ArrowRight" size={16} /></Link>
+        <Link to="/play" className="btn-grad">Create Free Account <Icon name="ArrowRight" /></Link>
       </section>
 
       <footer className="landing-footer">
