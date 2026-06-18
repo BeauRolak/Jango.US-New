@@ -11,9 +11,9 @@ interface Drill {
   game: string;
   title: string;
   desc: string;
-  difficulty: number; // 1-5 stars
+  difficulty: number;
   best: string;
-  reward: number; // Scaps cosmetic-credit reward (mock)
+  reward: number;
   xp: number;
 }
 
@@ -31,7 +31,7 @@ const PACKS: Pack[] = [
   {
     id: "pool",
     game: "8-Ball Pool",
-    emoji: "\u{1F3B1}",
+    emoji: "🎱",
     accent: "#7c5cff",
     blurb: "Master cushion angles, spin and safety play.",
     requiredLevel: 0,
@@ -43,7 +43,7 @@ const PACKS: Pack[] = [
   {
     id: "golf",
     game: "Mini Golf",
-    emoji: "\u26F3",
+    emoji: "⛳",
     accent: "#34d399",
     blurb: "Sharpen power control and green reading.",
     requiredLevel: 0,
@@ -55,7 +55,7 @@ const PACKS: Pack[] = [
   {
     id: "chess",
     game: "Chess",
-    emoji: "\u265F\uFE0F",
+    emoji: "♟️",
     accent: "#f59e0b",
     blurb: "Openings, tactics and clean endgame technique.",
     requiredLevel: 3,
@@ -67,7 +67,7 @@ const PACKS: Pack[] = [
   {
     id: "reflex",
     game: "Air Hockey & Reflex",
-    emoji: "\u{1F3D2}",
+    emoji: "🏒",
     accent: "#38bdf8",
     blurb: "Split-second blocks, counters and threat-spotting.",
     requiredLevel: 5,
@@ -79,7 +79,7 @@ const PACKS: Pack[] = [
 ];
 
 const DIFFS: Diff[] = ["Easy", "Medium", "Hard", "Expert", "Champion"];
-const PLAYER_LEVEL = 6; // mock current level
+const PLAYER_LEVEL = 6;
 
 export default function Training() {
   const [difficulty, setDifficulty] = useState<Diff>("Medium");
@@ -117,9 +117,9 @@ export default function Training() {
   function completeDrill(d: Drill) {
     setProgress((prev) => ({ ...prev, [d.id]: 100 }));
     setActive(null);
-    toast(`${d.title} complete \u2014 +${d.xp} XP`, "success");
+    toast(`${d.title} complete — +${d.xp} XP`, "success");
     setTimeout(() => {
-      toast(`\u2B50 Reward unlocked: +${d.reward} Scaps training credit`, "reward");
+      toast(`⭐ Reward unlocked: +${d.reward} Scaps training credit`, "reward");
     }, 650);
   }
 
@@ -130,12 +130,10 @@ export default function Training() {
     });
   }
 
-  const stars = (n: number) =>
-    "\u2605".repeat(n) + "\u2606".repeat(5 - n);
+  const stars = (n: number) => "★".repeat(n) + "☆".repeat(5 - n);
 
   return (
     <div className="training-page">
-      {/* Hub header */}
       <header className="tr-hero">
         <div className="tr-hero-text">
           <h1 className="tr-title">Training Arena</h1>
@@ -159,7 +157,6 @@ export default function Training() {
         </div>
       </header>
 
-      {/* Overall progress */}
       <section className="tr-overall">
         <div className="tr-overall-top">
           <span className="tr-overall-label">Overall mastery</span>
@@ -170,7 +167,6 @@ export default function Training() {
         </div>
       </section>
 
-      {/* Difficulty selector */}
       <section className="tr-diff-card">
         <div className="tr-diff-text">
           <h3>Practice Bot Difficulty</h3>
@@ -192,7 +188,6 @@ export default function Training() {
         </div>
       </section>
 
-      {/* Training packs */}
       {PACKS.map((pack) => {
         const packLocked = PLAYER_LEVEL < pack.requiredLevel;
         const packDone = pack.drills.filter((d) => (progress[d.id] || 0) >= 100).length;
@@ -211,7 +206,7 @@ export default function Training() {
                 </div>
               </div>
               {packLocked ? (
-                <span className="tr-pack-lock">\u{1F512} Unlocks at Lv {pack.requiredLevel}</span>
+                <span className="tr-pack-lock">🔒 Unlocks at Lv {pack.requiredLevel}</span>
               ) : (
                 <span className="tr-pack-count">{packDone}/{pack.drills.length} done</span>
               )}
@@ -242,12 +237,12 @@ export default function Training() {
 
                     {st === "complete" ? (
                       <div className="tr-drill-done">
-                        <span>\u2713 Mastered</span>
-                        <span className="tr-drill-reward">+{d.reward} \u24C8</span>
+                        <span>✓ Mastered</span>
+                        <span className="tr-drill-reward">+{d.reward} Ⓢ</span>
                       </div>
                     ) : st === "locked" ? (
                       <Btn variant="ghost" className="tr-drill-btn" disabled>
-                        \u{1F512} Locked
+                        🔒 Locked
                       </Btn>
                     ) : (
                       <Btn className="tr-drill-btn" onClick={() => startDrill(pack, d)}>
@@ -262,11 +257,10 @@ export default function Training() {
         );
       })}
 
-      {/* Active drill modal (mock practice flow) */}
       {active && (
         <div className="tr-modal-overlay" onClick={() => setActive(null)}>
           <div className="tr-modal" onClick={(e) => e.stopPropagation()}>
-            <span className="tr-modal-tag">{active.tag} \u00B7 {difficulty}</span>
+            <span className="tr-modal-tag">{active.tag} · {difficulty}</span>
             <h2 className="tr-modal-title">{active.title}</h2>
             <p className="tr-modal-desc">{active.desc}</p>
 
@@ -277,11 +271,11 @@ export default function Training() {
               />
             </div>
             <p className="tr-modal-pct">
-              {Math.min(100, progress[active.id] || 0)}% \u2014 reward on completion: +{active.reward} \u24C8
+              {Math.min(100, progress[active.id] || 0)}% — reward on completion: +{active.reward} Ⓢ
             </p>
 
             <p className="tr-modal-note">
-              Practice only \u2014 no Scaps are wagered or won. Rewards are cosmetic training credit.
+              Practice only — no Scaps are wagered or won. Rewards are cosmetic training credit.
             </p>
 
             <div className="tr-modal-actions">
@@ -295,7 +289,7 @@ export default function Training() {
               )}
             </div>
             {(progress[active.id] || 0) >= 100 && (
-              <p className="tr-modal-ready">Drill complete \u2014 claim your reward!</p>
+              <p className="tr-modal-ready">Drill complete — claim your reward!</p>
             )}
           </div>
         </div>
