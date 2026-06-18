@@ -136,7 +136,7 @@ export function ScalpsBalance(
     return () => window.clearInterval(id);
   }, [amount]);
   return (
-    <span className={`j-scaps ${bump ? "bump" : ""}`} style={size === "sm" ? { padding: "6px 12px" } : undefined}>
+    <span className={`j-scalps ${bump ? "bump" : ""}`} style={size === "sm" ? { padding: "6px 12px" } : undefined}>
       <span className="coin">S</span>
       <span className="amt j-num">{display.toLocaleString(undefined, { minimumFractionDigits: display % 1 ? 2 : 0 })}</span>
       <span className="lbl">{label}</span>
@@ -160,7 +160,7 @@ export function ActionModal(
 ) {
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escalpe") onClose(); };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
