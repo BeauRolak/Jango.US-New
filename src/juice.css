@@ -1,0 +1,211 @@
+/* =====================================================================
+   JANGO JUICE LAYER
+   Dopamine + old-site parity primitives. Imported once in main.tsx.
+   Builds on index.css tokens. All motion respects reduced-motion.
+   ===================================================================== */
+
+/* ---------- deeper arena base + ambient drift ---------- */
+.j-arena {
+  position: relative; min-height: 100%;
+  background:
+    radial-gradient(1200px 600px at 78% -8%, hsl(var(--accent) / .10), transparent 60%),
+    radial-gradient(1000px 560px at 12% 4%, hsl(var(--primary) / .10), transparent 60%),
+    radial-gradient(900px 700px at 50% 120%, hsl(var(--secondary) / .08), transparent 60%);
+}
+.j-arena::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background-image:
+    radial-gradient(hsl(0 0% 100% / .045) 1px, transparent 1.4px);
+  background-size: 34px 34px;
+  mask-image: radial-gradient(900px 700px at 50% 30%, #000 35%, transparent 80%);
+  animation: jArenaDrift 26s linear infinite;
+}
+@keyframes jArenaDrift { to { background-position: 34px 68px; } }
+
+/* ---------- page hero ---------- */
+.j-hero { position: relative; padding: 8px 0 22px; }
+.j-hero-eyebrow {
+  font: 700 11px/1 var(--font-mono); letter-spacing: .32em; text-transform: uppercase;
+  color: hsl(var(--primary)); opacity: .85; margin-bottom: 12px;
+}
+.j-hero-title { font: 800 clamp(30px, 5vw, 52px)/1.02 var(--font-head); letter-spacing: -.02em; margin: 0; }
+.j-hero-title .grad {
+  background: var(--grad-hero, linear-gradient(135deg,#FF2D78,#FF6A2C 50%,#FFC93C));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.j-hero-sub { color: hsl(var(--muted-foreground)); margin-top: 12px; font-size: 15px; }
+
+/* ---------- glow card ---------- */
+.j-card {
+  position: relative; border-radius: 18px; padding: 20px;
+  background: linear-gradient(160deg, hsl(var(--card) / .96), hsl(var(--card) / .68));
+  border: 1px solid hsl(var(--card-border));
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / .04), 0 10px 30px hsl(0 0% 0% / .4);
+  transition: transform .22s cubic-bezier(.2,.7,.2,1), box-shadow .22s ease, border-color .22s ease;
+  overflow: hidden;
+}
+.j-card::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: radial-gradient(420px 200px at var(--mx, 50%) -20%, hsl(var(--j-glow, var(--primary)) / .16), transparent 70%);
+  opacity: 0; transition: opacity .25s ease;
+}
+.j-card.j-hoverable:hover { transform: translateY(-4px); border-color: hsl(var(--j-glow, var(--primary)) / .5);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / .07), 0 18px 44px hsl(var(--j-glow, var(--primary)) / .26), 0 12px 30px hsl(0 0% 0% / .45); }
+.j-card.j-hoverable:hover::after { opacity: 1; }
+.j-card:active.j-hoverable { transform: translateY(-1px) scale(.997); }
+
+/* glow tones */
+.j-glow-primary{--j-glow:var(--primary)} .j-glow-secondary{--j-glow:var(--secondary)}
+.j-glow-accent{--j-glow:var(--accent)} .j-glow-success{--j-glow:var(--success)}
+.j-glow-warning{--j-glow:var(--warning)} .j-glow-gold{--j-glow:43 96% 60%}
+
+/* ---------- animated gradient button (the PLAY button feel) ---------- */
+.j-btn {
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+  font: 700 15px/1 var(--font-head); letter-spacing: .01em; cursor: pointer;
+  padding: 13px 24px; border-radius: 14px; border: none; color: #fff; isolation: isolate;
+  transition: transform .14s cubic-bezier(.2,.7,.2,1), box-shadow .2s ease, filter .2s ease;
+}
+.j-btn > svg { width: 1.15em; height: 1.15em; }
+.j-btn:active { transform: translateY(1px) scale(.97); }
+.j-btn-grad {
+  background: linear-gradient(120deg, #FF2D78, #FF6A2C 52%, #FFC93C);
+  background-size: 180% 180%; animation: jGradShift 6s ease infinite;
+  box-shadow: 0 8px 24px hsl(14 90% 55% / .4), inset 0 1px 0 hsl(0 0% 100% / .25);
+}
+.j-btn-grad:hover { filter: brightness(1.06); box-shadow: 0 12px 34px hsl(14 90% 55% / .55), inset 0 1px 0 hsl(0 0% 100% / .3); transform: translateY(-2px); }
+@keyframes jGradShift { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+.j-btn-grad.j-pulse { animation: jGradShift 6s ease infinite, jBtnPulse 2.6s ease-in-out infinite; }
+@keyframes jBtnPulse { 0%,100%{box-shadow:0 8px 24px hsl(14 90% 55% / .4), inset 0 1px 0 hsl(0 0% 100% / .25)} 50%{box-shadow:0 10px 36px hsl(14 90% 55% / .65), 0 0 0 6px hsl(14 90% 55% / .08), inset 0 1px 0 hsl(0 0% 100% / .3)} }
+.j-btn-ghost { background: hsl(var(--card) / .55); border: 1px solid hsl(var(--card-border)); color: hsl(var(--foreground)); }
+.j-btn-ghost:hover { border-color: hsl(var(--primary) / .55); background: hsl(var(--card) / .8); transform: translateY(-1px); box-shadow: 0 8px 22px hsl(var(--primary) / .18); }
+
+/* ---------- mode / status chips ---------- */
+.j-chip {
+  display: inline-flex; align-items: center; gap: 7px; padding: 8px 14px; border-radius: 999px;
+  font: 600 13px/1 var(--font-sans); cursor: pointer; user-select: none;
+  background: hsl(var(--card) / .6); border: 1px solid hsl(var(--card-border)); color: hsl(var(--foreground));
+  transition: transform .14s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.j-chip > svg { width: 15px; height: 15px; }
+.j-chip:hover { transform: translateY(-1px); }
+.j-chip-success{ color:hsl(var(--success)); } .j-chip-success:hover{ border-color:hsl(var(--success)/.6); box-shadow:0 6px 16px hsl(var(--success)/.2); }
+.j-chip-warning{ color:hsl(var(--warning)); } .j-chip-warning:hover{ border-color:hsl(var(--warning)/.6); box-shadow:0 6px 16px hsl(var(--warning)/.2); }
+.j-chip-primary{ color:hsl(var(--primary)); } .j-chip-primary:hover{ border-color:hsl(var(--primary)/.6); box-shadow:0 6px 16px hsl(var(--primary)/.2); }
+.j-chip-accent{ color:hsl(var(--accent)); } .j-chip-accent:hover{ border-color:hsl(var(--accent)/.6); box-shadow:0 6px 16px hsl(var(--accent)/.2); }
+.j-chip-neutral{ color:hsl(var(--muted-foreground)); }
+
+/* ---------- status pill ---------- */
+.j-pill { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font:700 11px/1 var(--font-mono); letter-spacing:.06em; text-transform:uppercase; }
+.j-pill .dot { width:6px; height:6px; border-radius:999px; background:currentColor; box-shadow:0 0 8px currentColor; }
+.j-pill .dot.live { animation: jPing 1.4s ease-in-out infinite; }
+@keyframes jPing { 0%,100%{opacity:1; transform:scale(1)} 50%{opacity:.5; transform:scale(.7)} }
+.j-pill-live{ color:hsl(var(--success)); background:hsl(var(--success)/.12); border:1px solid hsl(var(--success)/.3); }
+.j-pill-soon{ color:hsl(var(--warning)); background:hsl(var(--warning)/.12); border:1px solid hsl(var(--warning)/.3); }
+.j-pill-off{ color:hsl(var(--muted-foreground)); background:hsl(var(--muted)/.5); border:1px solid hsl(var(--card-border)); }
+.j-pill-accent{ color:hsl(var(--accent)); background:hsl(var(--accent)/.12); border:1px solid hsl(var(--accent)/.3); }
+
+/* ---------- progress glow bar ---------- */
+.j-prog { position: relative; height: 10px; border-radius: 999px; background: hsl(var(--muted) / .7); overflow: hidden; border: 1px solid hsl(var(--card-border)); }
+.j-prog-fill { position: relative; height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--secondary)));
+  box-shadow: 0 0 12px hsl(var(--primary) / .6); transition: width .9s cubic-bezier(.2,.8,.2,1); }
+.j-prog-fill::after { content:""; position:absolute; inset:0; border-radius:inherit;
+  background: linear-gradient(90deg, transparent, hsl(0 0% 100% / .35), transparent); background-size: 200% 100%;
+  animation: jShine 2.2s linear infinite; }
+@keyframes jShine { to { background-position: -200% 0; } }
+.j-prog.gold .j-prog-fill { background: linear-gradient(90deg, hsl(43 96% 60%), hsl(38 92% 55%)); box-shadow:0 0 12px hsl(43 96% 60% / .6); }
+.j-prog.success .j-prog-fill { background: linear-gradient(90deg, hsl(var(--success)), hsl(160 80% 45%)); box-shadow:0 0 12px hsl(var(--success) / .6); }
+
+/* ---------- Scaps balance ---------- */
+.j-scaps { display:inline-flex; align-items:center; gap:9px; padding:9px 16px; border-radius:14px;
+  background: linear-gradient(140deg, hsl(43 96% 60% / .16), hsl(var(--card) / .85));
+  border:1px solid hsl(43 96% 60% / .35); box-shadow: inset 0 1px 0 hsl(0 0% 100% / .06), 0 6px 18px hsl(43 96% 50% / .15); }
+.j-scaps .coin { display:inline-flex; width:26px; height:26px; border-radius:999px; align-items:center; justify-content:center;
+  background: radial-gradient(circle at 35% 30%, #FFE08A, #F5A623 70%); color:#5a3a00; font-weight:900; font-size:13px; box-shadow:0 0 12px hsl(43 96% 55% / .6); flex:none; }
+.j-scaps .amt { font:800 19px/1 var(--font-head); color:hsl(var(--foreground)); font-variant-numeric: tabular-nums; }
+.j-scaps .lbl { font:600 11px/1 var(--font-mono); letter-spacing:.12em; text-transform:uppercase; color:hsl(var(--muted-foreground)); }
+.j-scaps.bump { animation: jScapsBump .5s cubic-bezier(.2,1.4,.4,1); }
+@keyframes jScapsBump { 0%{transform:scale(1)} 35%{transform:scale(1.12)} 100%{transform:scale(1)} }
+
+/* ---------- rank badge ---------- */
+.j-rank { display:inline-flex; align-items:center; justify-content:center; width:56px; height:56px; border-radius:16px; flex:none; position:relative;
+  font-size:28px; box-shadow: inset 0 1px 0 hsl(0 0% 100% / .12); }
+.j-rank.bronze{ background:linear-gradient(150deg,#7a4b25,#b87333); color:#ffe8d0; box-shadow:0 0 18px #b8733355, inset 0 1px 0 hsl(0 0% 100% / .15); }
+.j-rank.silver{ background:linear-gradient(150deg,#7d8590,#c8d0d8); color:#1a1e24; box-shadow:0 0 18px #c8d0d855, inset 0 1px 0 hsl(0 0% 100% / .2); }
+.j-rank.gold{ background:linear-gradient(150deg,#caa12f,#ffd95e); color:#3a2c00; box-shadow:0 0 22px #ffd95e66, inset 0 1px 0 hsl(0 0% 100% / .25); }
+.j-rank.plat{ background:linear-gradient(150deg,#2b8c8c,#67e8e8); color:#062626; box-shadow:0 0 22px #67e8e866, inset 0 1px 0 hsl(0 0% 100% / .25); }
+.j-rank.diamond{ background:linear-gradient(150deg,#3b6fd4,#7db8ff); color:#04132e; box-shadow:0 0 24px #7db8ff66, inset 0 1px 0 hsl(0 0% 100% / .25); }
+.j-rank.master{ background:linear-gradient(150deg,#7d2bd4,#c77dff); color:#fff; box-shadow:0 0 26px #c77dff77, inset 0 1px 0 hsl(0 0% 100% / .25); }
+.j-rank.locked{ background:hsl(var(--muted)/.6); color:hsl(var(--muted-foreground)); box-shadow:none; }
+
+/* ---------- rarity glow (shop/cosmetics) ---------- */
+.j-rar { --rc: var(--muted-foreground); }
+.j-rar.common{ --rc: 0 0% 60%; } .j-rar.uncommon{ --rc: 142 70% 50%; } .j-rar.rare{ --rc: 217 91% 62%; }
+.j-rar.epic{ --rc: 270 75% 66%; } .j-rar.legendary{ --rc: 38 95% 56%; }
+.j-rar-art { position:relative; border-radius:14px; aspect-ratio: 1 / .82; display:flex; align-items:center; justify-content:center; overflow:hidden;
+  background: radial-gradient(120% 100% at 50% 0%, hsl(var(--rc) / .42), hsl(var(--rc) / .08) 60%, hsl(var(--card) / .9));
+  border:1px solid hsl(var(--rc) / .4); box-shadow: inset 0 1px 0 hsl(0 0% 100% / .08); }
+.j-rar-art > svg { width:42%; height:42%; color: hsl(var(--rc)); filter: drop-shadow(0 0 10px hsl(var(--rc) / .55)); }
+.j-rar-label{ font:700 10px/1 var(--font-mono); letter-spacing:.14em; text-transform:uppercase; color:hsl(var(--rc)); }
+
+/* ---------- pulsing reward card ---------- */
+.j-reward { position:relative; border-radius:18px; padding:20px; overflow:hidden;
+  background: linear-gradient(150deg, hsl(43 96% 60% / .16), hsl(var(--accent) / .12), hsl(var(--card) / .9));
+  border:1px solid hsl(43 96% 60% / .35); animation: jRewardPulse 2.8s ease-in-out infinite; }
+@keyframes jRewardPulse { 0%,100%{ box-shadow:0 0 0 0 hsl(43 96% 60% / 0), 0 10px 28px hsl(0 0% 0% / .35);} 50%{ box-shadow:0 0 0 5px hsl(43 96% 60% / .1), 0 14px 34px hsl(43 96% 50% / .25);} }
+
+/* ---------- reward / confetti popup ---------- */
+.j-reward-pop { position: fixed; top: 84px; right: 26px; z-index: 90; display:flex; flex-direction:column; gap:10px; pointer-events:none; }
+.j-reward-toast { display:flex; align-items:center; gap:12px; padding:14px 18px; border-radius:16px; min-width:240px;
+  background: linear-gradient(150deg, hsl(43 96% 60% / .22), hsl(var(--card) / .96));
+  border:1px solid hsl(43 96% 60% / .45); box-shadow:0 16px 40px hsl(0 0% 0% / .5), 0 0 30px hsl(43 96% 55% / .25);
+  animation: jRewardIn .5s cubic-bezier(.2,1.3,.4,1), jRewardOut .4s ease 2.8s forwards; }
+@keyframes jRewardIn { from{ opacity:0; transform: translateX(40px) scale(.9);} to{ opacity:1; transform:none;} }
+@keyframes jRewardOut { to{ opacity:0; transform: translateX(40px) scale(.95);} }
+.j-reward-toast .ic { display:inline-flex; width:40px; height:40px; border-radius:12px; align-items:center; justify-content:center; flex:none;
+  background: radial-gradient(circle at 35% 30%, #FFE08A, #F5A623 75%); color:#5a3a00; font-size:22px; box-shadow:0 0 16px hsl(43 96% 55% / .7); }
+.j-reward-toast .t1 { font:800 15px/1.1 var(--font-head); }
+.j-reward-toast .t2 { font:600 12px/1.2 var(--font-sans); color:hsl(var(--muted-foreground)); margin-top:3px; }
+
+.j-confetti { position: fixed; inset: 0; pointer-events: none; z-index: 95; overflow: hidden; }
+.j-confetti i { position:absolute; top:-12px; width:9px; height:14px; border-radius:2px; opacity:.95; animation: jConfetti linear forwards; }
+@keyframes jConfetti { 0%{ transform: translateY(-20px) rotate(0); opacity:1;} 100%{ transform: translateY(108vh) rotate(720deg); opacity:.6;} }
+
+/* ---------- modal ---------- */
+.j-modal-back { position:fixed; inset:0; z-index:80; display:flex; align-items:center; justify-content:center; padding:20px;
+  background: hsl(222 30% 3% / .68); backdrop-filter: blur(7px); animation: jBackIn .22s ease; }
+@keyframes jBackIn { from{ opacity:0;} to{ opacity:1;} }
+.j-modal { width:100%; max-width:460px; border-radius:20px; padding:24px; position:relative;
+  background: linear-gradient(160deg, hsl(var(--card)), hsl(var(--background)));
+  border:1px solid hsl(var(--card-border)); box-shadow:0 30px 80px hsl(0 0% 0% / .6), inset 0 1px 0 hsl(0 0% 100% / .05);
+  animation: jModalIn .28s cubic-bezier(.2,1.1,.3,1); }
+@keyframes jModalIn { from{ opacity:0; transform: translateY(16px) scale(.96);} to{ opacity:1; transform:none;} }
+.j-modal-close { position:absolute; top:14px; right:14px; }
+
+/* ---------- page transition ---------- */
+.j-page { animation: jPageIn .4s cubic-bezier(.2,.7,.2,1); }
+@keyframes jPageIn { from{ opacity:0; transform: translateY(10px);} to{ opacity:1; transform:none;} }
+.j-stagger > * { opacity:0; animation: jPageIn .5s cubic-bezier(.2,.7,.2,1) forwards; }
+.j-stagger > *:nth-child(1){animation-delay:.02s} .j-stagger > *:nth-child(2){animation-delay:.07s}
+.j-stagger > *:nth-child(3){animation-delay:.12s} .j-stagger > *:nth-child(4){animation-delay:.17s}
+.j-stagger > *:nth-child(5){animation-delay:.22s} .j-stagger > *:nth-child(6){animation-delay:.27s}
+.j-stagger > *:nth-child(7){animation-delay:.32s} .j-stagger > *:nth-child(8){animation-delay:.37s}
+
+/* ---------- skeleton ---------- */
+.j-skel { border-radius:10px; background: linear-gradient(90deg, hsl(var(--muted)/.5), hsl(var(--muted)/.85), hsl(var(--muted)/.5));
+  background-size:200% 100%; animation: jSkel 1.3s linear infinite; }
+@keyframes jSkel { to{ background-position:-200% 0;} }
+
+/* ---------- animated number ---------- */
+.j-num { font-variant-numeric: tabular-nums; }
+.j-num.bump { animation: jScapsBump .5s cubic-bezier(.2,1.4,.4,1); }
+
+/* ---------- reduced motion guard ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .j-arena::before, .j-btn-grad, .j-btn-grad.j-pulse, .j-prog-fill::after, .j-reward, .j-pill .dot.live,
+  .j-reward-toast, .j-confetti i, .j-modal, .j-modal-back, .j-page, .j-stagger > *, .j-skel, .j-scaps.bump, .j-num.bump {
+    animation: none !important; }
+  .j-card, .j-btn, .j-chip { transition: none !important; }
+  .j-stagger > * { opacity: 1 !important; }
+}
