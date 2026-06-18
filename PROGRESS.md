@@ -153,3 +153,13 @@ Commits: OLD_SITE_AUDIT.md (create), index.css (arena atmosphere + juice primiti
 - Rankings/RankTrack dopamine pass. Shop (5-tier Scaps pricing + buy/equip toasts). Tournaments flow. Then Training/Social/Profile/Story/Admin. Mobile pass throughout.
 
 Reusable primitives now available everywhere: .j-hover-lift/.j-glow-pulse/.j-fade-up/.j-pop/.j-grad-text/.j-skeleton + toast().
+
+## Session update — Wallet, Rank Progression, Shop
+
+- **Wallet** (/wallet): full premium mock rebuild. Fixed "Scalps" -> "Scaps" everywhere. Add Scaps / Withdraw modals with preset chips + slider, payment-method placeholders (card/bank/crypto, disabled), gated "no real money" notice, live balance + transaction updates, toast feedback on every action (processing/success/error). Mobile layout. Zero console errors.
+- **Rank Progression** (/rank-progression): high-dopamine rebuild. Glowing current-rank badge, animated gradient progress bar, next-rank preview card, claimable reward cards per tier (locked/unlocked/claimed) with reward toast, pulsing tier ladder. Mobile + reduced-motion. Zero errors.
+- **Shop** (/shop): rebuilt with exact 5-tier Scaps pricing (Common 5 / Uncommon 10 / Rare 15 / Epic 20 / Legendary 25). Rarity-colored glow cards + tags, preview modal (floating 3D icon), buy confirm modal, owned/equip flow, buy success (reward toast), not-enough-Scaps error toast. Created shop.css. Cosmetics only, no pay-to-win. Mobile grid. Zero errors.
+- All three pages now use the shared global toast system for consistent reactive feedback.
+- Verified live on jango-us-new.vercel.app with full buy/claim/deposit flows working.
+
+### Next: Tournaments, then Training / Social / Profile / Story / Admin, then mobile polish.
