@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Icon } from "../components/Icon";
 import { toast } from "../components/UI";
 import "./wallet.css";
 
@@ -136,9 +137,9 @@ export default function Wallet() {
       </div>
 
       <div className="trust-strip">
-        <div className="trust-item">🔒 Mock wallet — no real money moves here</div>
-        <div className="trust-item">🆎+ Real deposits are gated &amp; require verification</div>
-        <div className="trust-item">⚖️ Play responsibly · set spending limits in Settings</div>
+        <div className="trust-item"><Icon name="Lock" /> Mock wallet — no real money moves here</div>
+        <div className="trust-item"><Icon name="Shield" /> Real deposits are gated &amp; require verification</div>
+        <div className="trust-item"><Icon name="Scale" /> Play responsibly · set spending limits in Settings</div>
       </div>
       <div className="wallet-legal">Scalps are in-platform credits used for entry fees and cosmetics. This is a demo wallet; deposits, withdrawals and payouts shown here are simulated and do not move real funds.</div>
 
@@ -150,11 +151,11 @@ export default function Wallet() {
                 <h3 className="wm-title">Payment Methods</h3>
                 <p className="wm-sub">Add a method to enable real deposits. (Placeholders — not connected.)</p>
                 <div className="wm-methods">
-                  <button className="wm-method" onClick={() => toast("Card setup is not available in the demo", "info")}><span>💳</span> Credit / Debit Card</button>
-                  <button className="wm-method" onClick={() => toast("Bank transfer is not available in the demo", "info")}><span>🏦</span> Bank Transfer</button>
+                  <button className="wm-method" onClick={() => toast("Card setup is not available in the demo", "info")}><span><Icon name="Card" /></span> Credit / Debit Card</button>
+                  <button className="wm-method" onClick={() => toast("Bank transfer is not available in the demo", "info")}><span><Icon name="Bank" /></span> Bank Transfer</button>
                   <button className="wm-method" onClick={() => toast("Crypto is not available in the demo", "info")}><span>₿</span> Crypto Wallet</button>
                 </div>
-                <div className="wm-gate">🔒 Real-money methods are disabled in this demo build.</div>
+                <div className="wm-gate"><Icon name="Lock" /> Real-money methods are disabled in this demo build.</div>
                 <div className="wm-actions"><button className="btn btn-ghost" onClick={() => setModal(null)}>Close</button></div>
               </>
             ) : (
@@ -168,7 +169,7 @@ export default function Wallet() {
                   ))}
                 </div>
                 <input className="wm-range" type="range" min={1} max={modal === "withdraw" ? Math.max(1, Math.floor(balance)) : 500} value={amount} onChange={(e) => setAmount(Number(e.target.value))} />
-                <div className="wm-gate">🔒 Demo only — {modal === "add" ? "no charge will be made" : "no payout will be sent"}.</div>
+                <div className="wm-gate"><Icon name="Lock" /> Demo only — {modal === "add" ? "no charge will be made" : "no payout will be sent"}.</div>
                 <div className="wm-actions">
                   <button className="btn btn-ghost" disabled={busy} onClick={() => setModal(null)}>Cancel</button>
                   <button className="btn btn-primary" disabled={busy} onClick={modal === "add" ? doAdd : doWithdraw}>{busy ? "Processing…" : modal === "add" ? `Add ${amount} Scalps` : `Withdraw ${amount} Scalps`}</button>
