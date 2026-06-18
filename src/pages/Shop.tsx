@@ -22,7 +22,7 @@ const ITEMS: Item[] = [
   { id: "b4", name: "Rookie Badge", icon: "Gamepad", rarity: "Common", category: "Badges", desc: "Everyone starts somewhere." },
   { id: "t1", name: "Diamond Trail", icon: "Gem", rarity: "Epic", category: "Trails", desc: "Your ball leaves a trail of shimmering diamonds." },
   { id: "t2", name: "Comet Trail", icon: "Sparkles", rarity: "Rare", category: "Trails", desc: "Streak across the table like a comet." },
-  { id: "e1", name: "Gold Shower Emote", icon: "Coins", rarity: "Rare", category: "Emotes", desc: "Rain Scaps on your opponent after a win." },
+  { id: "e1", name: "Gold Shower Emote", icon: "Coins", rarity: "Rare", category: "Emotes", desc: "Rain Scalps on your opponent after a win." },
   { id: "e2", name: "Mic Drop", icon: "Bell", rarity: "Uncommon", category: "Emotes", desc: "Say nothing. Drop the mic." },
   { id: "d1", name: "Golden Dice", icon: "Dice", rarity: "Legendary", category: "Dice", desc: "Solid gold dice for the high roller." },
   { id: "v1", name: "Victory Roar", icon: "Crown", rarity: "Epic", category: "Victory", desc: "A lion’s roar announces your triumph." },
@@ -45,12 +45,12 @@ export default function Shop() {
   function buy(item: Item) {
     const price = PRICES[item.rarity];
     if (owned.includes(item.id)) { toast("You already own this item", "info"); return; }
-    if (balance < price) { toast(`Not enough Scaps — need ${price - balance} more`, "error"); setConfirm(null); return; }
+    if (balance < price) { toast(`Not enough Scalps — need ${price - balance} more`, "error"); setConfirm(null); return; }
     setBalance((b) => b - price);
     setOwned((o) => [...o, item.id]);
     setConfirm(null);
     setPreview(null);
-    toast(`Purchased ${item.name} for ${price} Scaps`, "reward");
+    toast(`Purchased ${item.name} for ${price} Scalps`, "reward");
   }
 
   function equip(item: Item) {
@@ -68,12 +68,12 @@ export default function Shop() {
       <div className="shop-head">
         <div>
           <h1 className="shop-title">◈ Item Shop</h1>
-          <p className="shop-sub">Spend Scaps on cosmetics — no pay-to-win, ever.</p>
+          <p className="shop-sub">Spend Scalps on cosmetics — no pay-to-win, ever.</p>
         </div>
-        <div className="shop-bal"><span className="shop-bal-pill">Ⓢ {balance.toFixed(0)} Scaps</span></div>
+        <div className="shop-bal"><span className="shop-bal-pill">Ⓢ {balance.toFixed(0)} Scalps</span></div>
       </div>
 
-      <div className="shop-notice">Cosmetics only — nothing here affects gameplay or odds. Scaps are in-platform credits.</div>
+      <div className="shop-notice">Cosmetics only — nothing here affects gameplay or odds. Scalps are in-platform credits.</div>
 
       <div className="shop-cats">
         {CATEGORIES.map((c) => (
@@ -131,7 +131,7 @@ export default function Shop() {
           <div className="shop-modal small j-pop" onClick={(e) => e.stopPropagation()} style={{ ["--rar" as any]: RARITY_COLOR[confirm.rarity] }}>
             <div className="shop-confirm-icon"><Icon name={confirm.icon} /></div>
             <h3 className="shop-modal-name">Buy {confirm.name}?</h3>
-            <p className="shop-modal-desc">{confirm.rarity} cosmetic · {PRICES[confirm.rarity]} Scaps. Balance after: {balance - PRICES[confirm.rarity]} Scaps.</p>
+            <p className="shop-modal-desc">{confirm.rarity} cosmetic · {PRICES[confirm.rarity]} Scalps. Balance after: {balance - PRICES[confirm.rarity]} Scalps.</p>
             <div className="shop-modal-actions">
               <button className="btn btn-ghost" onClick={() => setConfirm(null)}>Cancel</button>
               <button className="btn btn-primary" onClick={() => buy(confirm)}>Confirm Ⓢ {PRICES[confirm.rarity]}</button>
