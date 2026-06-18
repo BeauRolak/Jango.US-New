@@ -1,5 +1,6 @@
 // build-bump: deposit route v2 1781737701811
 import { Routes, Route } from "react-router-dom";
+import { Toaster } from "./components/UI";
 import type { ReactNode } from "react";
 import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
@@ -77,6 +78,7 @@ export default function App() {
         <Route path="/settings" element={<P><Settings /></P>} />
         <Route path="*" element={<P><Dashboard /></P>} />
       </Routes>
+      <Toaster />
     </Layout>
   );
 }
