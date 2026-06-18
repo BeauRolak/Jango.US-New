@@ -95,3 +95,29 @@ Verified live AFTER fix: Mini Golf — buttons visible; Start Match launches the
 Game route pattern: /games/<name>. Only minigolf.css used the bad tokens; the other 14 CSS files use correct design-system tokens (which is why they rendered fine).
 
 Remaining Step-5 polish (TODO, no blockers): spot-play the other 13 to confirm each bot loop end-to-end; check mobile/touch responsiveness; ensure win/lose end screens are on-brand. NO real-time multiplayer / wager / escrow (needs backend + owner decisions).
+
+
+---
+
+## Phase 1 + Phase 2 kickoff — Forensic audit + Arena atmosphere (autonomous)
+
+### Phase 1: Forensic deep-dive of live old site (READ-ONLY reference)
+Extracted REAL computed tokens from html.dark and wrote /docs/OLD_SITE_AUDIT.md. Key findings:
+- Base bg #0D0E12; display font "Space Grotesk" (hero H1 = 700 / 82px / -2.05px tracking); body Inter; mono JetBrains.
+- Premium feel comes from a ~9-layer ARENA ATMOSPHERE: base vertical gradient (#070912 -> #0b0d19 -> #0d0e12) + 4 drifting radial glows (blue/purple/pink/indigo, .05-.09 alpha) + subtle blue GRID overlay (rgba(60,131,246,.024) 1px) + central spotlight (70% 55% at 50% 40%) + bottom vignette.
+- Game cards are per-game color-coded (border <hue>/.3, bg <hue>/.10, radius 12px, hover box-shadow glow). Primary CTA = solid blue with colored drop-shadow glow.
+
+### Gap diagnosis (old vs current new build)
+- Current new build had ZERO animated atmosphere layers and 0 @keyframes => read as flat/dated. That was the #1 cause of the "looks 15 years older" problem.
+
+### Phase 2 (started): global design-system atmosphere + juice primitives
+- Upgraded src/index.css: richer 6-layer arena background, body::before blue grid overlay (masked), body::after spotlight+vignette with arenaGlowDrift animation. Tightened heading tracking to -.02em/700.
+- Added reusable JUICE primitives: .j-hover-lift, .j-glow-pulse, .j-float, .j-fade-up, .j-pop, .j-grad-text (animated gradient text), .j-skeleton, plus keyframes; prefers-reduced-motion respected.
+- LIVE & verified: arenaGlowDrift active, grid 64px, spotlight rendering, zero console errors. Atmosphere depth now visibly present on landing.
+
+### Next
+- Apply .j-* primitives + per-game color-coded cards across Arena grid and all pages.
+- Rebuild Play page to exact match (perspective floor, carousel, glowing icon, gradient pill PLAY, mode chips).
+- Continue Phase 1 capture of authed Dashboard/Play/Shop/Settings as login allows.
+
+Commits: OLD_SITE_AUDIT.md (create), index.css (arena atmosphere + juice primitives).
