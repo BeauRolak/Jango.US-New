@@ -103,3 +103,8 @@
 .wm-method span svg, .pm-method span svg { width: 20px; height: 20px; }
 /* generic: any leftover icon inside a payment method button */
 button span > svg { vertical-align: middle; }
+
+
+/* O1: emoji -> Icon svg sizing (Wallet) */
+.txn-icon svg { width: 15px; height: 15px; }
+.balance-actions .btn svg { width: 15px; height: 15px; margin-right: 2px; vertical-align: -2px; }
