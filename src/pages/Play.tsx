@@ -69,13 +69,13 @@ export default function Play() {
         </button>
       </header>
 
-      <section className="play-hero">
+      <section className="play-hero page-enter">
         <div className="play-eyebrow">SKILL-BASED COMPETITION</div>
         <h1 className="play-headline">
           Play Skill Games.<br />
-          <span className="grad-text">Win Real Money.</span>
+          <span className="grad-text">Compete for Scalps.</span>
         </h1>
-        <p className="play-subhead">Instant payouts · Real competition · 3% rake</p>
+        <p className="play-subhead">Skill-based 1v1 & tournaments · Winner takes the pot · 3% platform rake</p>
         <div className="mode-chips">
           {MODES.map((m) => (
             <button
@@ -94,7 +94,7 @@ export default function Play() {
           <h2 className="lobby-title">Choose your arena</h2>
           <span className="lobby-count">{GAMES.length} games live</span>
         </div>
-        <div className="game-grid">
+        <div className="game-grid stagger-list">
           {GAMES.map((g, i) => (
             <article
               key={g.name}
