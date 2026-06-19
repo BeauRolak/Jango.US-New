@@ -344,3 +344,37 @@ app's intended palette alive at once.
 - Unified feedback(kind) maps each event to sound+haptic; backward compatible with existing feedback('tap') calls.
 - Settings keys in localStorage: jango_sound, jango_haptics, jango_intensity. (Settings UI wiring next.)
 - Build hiccups fixed: unused FeedbackKind/settingOn (noUnusedLocals); Tone name clash -> SoundTone; AudioContext ctor typing; _ctx null guard; broke rewardPop<->feedback recursion. Final commit 7db855f Ready/green, 0 console errors.
+
+
+## MEGATASK v2 (The Leap) — session start
+
+### OPEN DECISIONS FOR BEAU (pinned — do not guess)
+1. Two-currency: separate soft currency (Coins) for cosmetics vs Scalps for wagering? (Recommended: yes.)
+2. Eligible jurisdictions/states for real-money play? (drives geo-compliance)
+3. KYC/AML provider + thresholds (deposit? withdrawal over $X?)
+4. Deposit rails: crypto only, or add card/bank on-ramp?
+5. Rake: 3% everywhere or per-mode/tournament?
+6. Responsible-gaming defaults (limits, reality-check cadence, cool-off length)
+7. Backend plan: reuse/port Railway backend or rebuild? (gates real money, real-time PvP, KYC, geo, result validation)
+8. Bonus balance + wagering-requirement multiplier?
+9. VIP/loyalty/rakeback?
+10. Confirm soft-currency name (Coins) + cosmetics are Coins-only.
+11. PWA-first vs native apps? (Recommended: PWA-first.)
+12. Promotions posture (deposit bonus / daily spin / referral) in or out for launch?
+13. Admin/ops console: when, and separate app?
+14. Music + mascot, or SFX-only?
+15. Icon strategy: reuse old-site extracted SVGs (recommended) or fresh set?
+16. Confirm exact display/headline font from old site for self-hosting.
+
+### TRACK P — Game Functional Integrity: MiniGolf (DONE in code, see harness note)
+- Full rewrite of MiniGolf.tsx turn/hole state machine (commit fa609bc), then a stale-closure fix (commit 558a7ee). Both Vercel green.
+- Root causes removed that previously caused the hole-advance soft-lock:
+  - Side effects (setTurn / scheduleBot / finishHole) were nested INSIDE setState updater callbacks (impure, double-invoke risk). Now: updaters are pure; all transitions run via window.setTimeout(...) and dedicated useEffects.
+  - Bot turn now scheduled by a dedicated useEffect watching [turn, done, holeIdx, started, matchOver, difficulty] with re-entry guards (clearBotTimer, sunk/moving checks) so the bot ALWAYS takes its turn and never double-fires.
+  - transitionRef guard prevents double advance from one settle.
+  - strokesRef snapshots the live score so finishHole records correct strokes even across re-renders.
+  - onBallStopped routed through onBallStoppedRef so the rAF loop (deps [hole,draw]) always calls the LATEST closure -> no stale holeIdx/score on holes 2 and 3.
+  - Hole-advance flow: ball sinks (engine sets moving=false+sunk=true same step) -> onBallStopped records + setTimeout(advanceTurn,650) -> advanceTurn: if both done -> finishHole; else pass/keep turn -> finishHole records hole scores, then 900ms later either setMatchOver(true) on last hole or setHoleIdx+1 with full reset (strokes/done/turn/banner) + resetBall via useEffect([holeIdx]).
+- Verified: start screen (difficulty chips + Start Match), play screen (Hole x/3, Par, You/Bot scores, felt+walls+cup+flag+ball render), input increments strokes, 0 console errors, build green.
+- HARNESS LIMITATION (cannot fully auto-QA real-time canvas games): in this automation browser the game tab is treated as document.hidden=true, so requestAnimationFrame AND setInterval are throttled to ~0. The physics loop literally cannot advance frames while automated, so a full vs-bot playthrough (sink -> auto-advance hole -> final scorecard -> result) cannot be observed here. A ball mid-flight reads moving=true frozen ONLY because rAF is paused by the hidden tab; on a real visible tab the loop runs normally. The fix is verified by code logic + clean compile/deploy; full P4 playthrough QA needs a real foreground browser (Beau or a headed test run). Logged in /docs/GAME_QA.md.
+- NOTE: Play grid icons are already clean inline SVGs (Chess/crown, Pool/target, etc.) — NOT emoji — contrary to the brief's assumption. Will still grep repo-wide for any emoji stragglers (Track O1) in a later batch.
