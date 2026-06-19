@@ -39,7 +39,7 @@ function ctx() {
   if (typeof window === "undefined") return null;
   try {
     if (!_ctx) { const AC = (window as any).AudioContext || (window as any).webkitAudioContext; if (AC) _ctx = new AC(); }
-    if (_ctx.state === "suspended") _ctx.resume();
+    if (_ctx && _ctx.state === "suspended") _ctx.resume();
     return _ctx;
   } catch { return null; }
 }
@@ -106,12 +106,10 @@ export function triggerHaptic(type: string) {
 }
 
 export function triggerEffect(type: string, el?: HTMLElement | null) {
-  if (prefersReducedMotion()) return;
-  if (type === "reward" || type === "rank_up") { rewardPop(); return; }
-  if (el) {
-    const cls = type === "purchase" || type === "equip" ? "reward-pop" : type === "error" ? "j-pop" : "count-up";
-    el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls);
-  }
+  if (prefersReducedMotion() || !el) return;
+  const cls = type === "purchase" || type === "equip" || type === "reward" || type === "rank_up"
+    ? "reward-pop" : type === "error" ? "j-pop" : "count-up";
+  el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls);
 }
 
 // Unified event map: one call fires sound + haptic together
