@@ -29,6 +29,8 @@ export default function Layout({ children }: { children: ReactNode }) {
   const toggle = (k: string) => setMenu(menu === k ? null : k);
   return (
     <div className="app-shell">
+      <div className="j-arena" aria-hidden="true" />
+      <div className="j-arena-vignette" aria-hidden="true" />
       <header className="topnav">
         <div className="topnav-inner">
           <Link to="/" className="jango-logo" onClick={close}>JANGO</Link>
