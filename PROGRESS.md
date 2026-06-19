@@ -320,3 +320,12 @@ app's intended palette alive at once.
 
 ### Wave status: Dashboard, Play, Rankings/RankTrack, Wallet, Tournaments, Shop, Profile DONE + currency GATE fixed.
 ### Next queue: Clans/Social, Battle Pass, Settings, Training, Deposit, Story, Admin, then global shell + juice + QA.
+
+## Premium Quality Bar Pass
+
+### Foundation (motion + atmosphere)
+- Added Jango motion system to index.css: reusable classes page-enter, section-enter, slide-in, stagger-list, motion-card, shine-sweep, motion-art, idle-glow, selected-pulse, motion-button, btn-loading, count-up, reward-pop, glow-pulse, unlock-pulse, progress-fill, modal-enter, modal-backdrop-enter, modal-icon-pop, toast-enter, nav-link underline, balance-pulse, avatar-glow, dropdown-enter.
+- Added animated arena atmosphere (.j-arena): drifting blue/purple neon (jArenaDrift) + panning grid (jGridPan) + vignette, mounted globally in Layout. z-index behind content.
+- All heavy motion gated behind prefers-reduced-motion. 0 console errors. Vercel green (cd2a026 index.css, 9208c7b Layout).
+- Aesthetic locked: faithful blue->purple neon on near-black, executed at higher craft (deeper blacks, cleaner gradients, more depth/glass/glow).
+- Scope: deep & slow. Order: foundation -> shared card/button/modal/header -> juice -> Dashboard -> Play -> Tournaments -> Shop -> Wallet -> Profile -> remaining.
