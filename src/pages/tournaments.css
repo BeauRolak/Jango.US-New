@@ -86,3 +86,45 @@
 .trn-title svg { width: 0.9em; height: 0.9em; vertical-align: -0.12em; color: var(--gold); }
 .trn-winner svg { width: 1em; height: 1em; vertical-align: -0.14em; color: var(--gold); margin-right: 0.35rem; }
 .btn svg { width: 1em; height: 1em; vertical-align: -0.14em; margin-right: 0.3rem; flex-shrink: 0; }
+
+/* ---- Tournament prize / rake breakdown ---- */
+.trn-rake {
+  margin: 16px 0 4px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(59,130,246,0.08), rgba(168,85,247,0.06));
+  border: 1px solid rgba(96,165,250,0.22);
+}
+.trn-rake-head {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+}
+.trn-rake-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.92rem;
+  padding: 6px 0;
+  color: var(--text);
+}
+.trn-rake-row + .trn-rake-row { border-top: 1px solid rgba(255,255,255,0.05); }
+.trn-rake-row span { color: var(--text-dim); }
+.trn-rake-row b { color: var(--text); font-variant-numeric: tabular-nums; }
+.trn-rake-fee b { color: var(--amber, #FF8A1E); }
+.trn-rake-win {
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(96,165,250,0.3) !important;
+}
+.trn-rake-win span { color: var(--text); font-weight: 600; }
+.trn-rake-win b {
+  font-size: 1.15rem;
+  background: var(--grad-blue, linear-gradient(135deg,#3B82F6,#A855F7));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
