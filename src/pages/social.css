@@ -121,3 +121,13 @@
   .so-tab, .so-thread, .so-post-actions button, .so-chat-send { transition: none !important; }
   .so-online-dot { box-shadow: none; }
 }
+
+/* O1: emoji -> Icon SVG sizing */
+.so-chat-empty-icon svg { width: 34px; height: 34px; color: hsl(0 0% 55%); }
+.so-search-icon svg { width: 16px; height: 16px; color: hsl(0 0% 55%); }
+.so-empty-icon svg { width: 34px; height: 34px; color: hsl(0 0% 55%); }
+.so-chat-send svg { width: 18px; height: 18px; }
+.so-chat-back svg { width: 18px; height: 18px; }
+.so-invited svg { width: 13px; height: 13px; vertical-align: -1px; margin-right: 3px; }
+.so-chat-invite svg,
+.so-friend-actions svg { width: 14px; height: 14px; vertical-align: -2px; margin-right: 4px; }
