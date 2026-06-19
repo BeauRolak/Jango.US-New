@@ -89,3 +89,13 @@
   .st-portrait-crown { animation: none !important; }
   .st-pillar { transition: none !important; }
 }
+
+/* O1: emoji -> Icon SVG sizing */
+.st-pillar-icon { display: inline-grid; place-items: center; }
+.st-pillar-icon svg { width: 30px; height: 30px; color: hsl(217 91% 70%); }
+.st-kicker svg { width: 15px; height: 15px; vertical-align: -2px; margin-right: 4px; }
+.st-portrait-emoji { display: grid; place-items: center; }
+.st-portrait-emoji svg { width: 64px; height: 64px; color: hsl(0 0% 90%); }
+.st-portrait-crown svg { width: 28px; height: 28px; color: hsl(38 92% 60%); }
+.st-finale-icon { display: grid; place-items: center; }
+.st-finale-icon svg { width: 48px; height: 48px; color: hsl(38 92% 60%); }
