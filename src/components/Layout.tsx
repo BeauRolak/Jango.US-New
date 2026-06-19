@@ -1,6 +1,7 @@
 import { NavLink, useLocation, Link } from 'react-router-dom';
 import { ReactNode, useState } from 'react';
 import './Layout.css';
+import { useScalps } from "../lib/mockData";
 
 const COMPETE = [
   { to: '/leaderboard', label: 'Leaderboard' },
@@ -25,6 +26,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   const [menu, setMenu] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const loc = useLocation();
+  const { formatted } = useScalps();
   const close = () => { setMenu(null); setMobileOpen(false); };
   const toggle = (k: string) => setMenu(menu === k ? null : k);
   return (
@@ -49,7 +51,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           </nav>
           <div className="topnav-right">
             <button className="icon-btn bell" aria-label="Notifications">{'\uD83D\uDD14'}<span className="badge">3</span></button>
-            <Link to="/wallet" className="balance-pill"><span className="coin">S</span><span className="balance-num">117.00</span><span className="bal-plus">+</span></Link>
+            <Link to="/wallet" className="balance-pill"><span className="coin">S</span><span className="balance-num">{formatted}</span><span className="bal-plus">+</span></Link>
             <div className="tnl-drop">
               <button className="avatar-btn" onClick={()=>toggle('avatar')}>P<span className="rank-dot" /></button>
               {menu==='avatar' && (
