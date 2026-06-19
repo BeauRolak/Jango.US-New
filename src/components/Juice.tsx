@@ -43,8 +43,8 @@ function ctx() {
     return _ctx;
   } catch { return null; }
 }
-type Tone = { f: number; t: number; type?: OscillatorType; g?: number; slide?: number };
-const SOUND_MAP: Record<string, Tone[]> = {
+type SoundTone = { f: number; t: number; type?: OscillatorType; g?: number; slide?: number };
+const SOUND_MAP: Record<string, SoundTone[]> = {
   ui_click: [{ f: 420, t: 0.05, g: 0.05 }],
   ui_hover: [{ f: 660, t: 0.03, g: 0.02 }],
   success: [{ f: 600, t: 0.07, g: 0.05 }, { f: 880, t: 0.1, g: 0.05 }],
