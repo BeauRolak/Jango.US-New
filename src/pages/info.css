@@ -1,0 +1,108 @@
+/* Legal / info pages (Terms, Privacy, Fair Play, Responsible Gaming, Contact) */
+.info-page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 8px 4px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.info-hero {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 24px 26px;
+}
+.info-hero-icon {
+  flex: 0 0 auto;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: linear-gradient(135deg, hsl(217 91% 60% / 0.18), hsl(270 75% 65% / 0.18));
+  border: 1px solid hsl(0 0% 100% / 0.08);
+}
+.info-hero-icon svg { width: 28px; height: 28px; color: hsl(217 91% 70%); }
+.info-hero-text h1 { font-size: 1.9rem; margin: 0 0 4px; line-height: 1.1; }
+.info-hero-text p { margin: 0; color: hsl(0 0% 70%); font-size: 0.98rem; }
+
+.info-draft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px;
+  border-radius: 12px;
+  background: hsl(38 92% 55% / 0.10);
+  border: 1px solid hsl(38 92% 55% / 0.32);
+  color: hsl(38 95% 72%);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.info-draft svg { width: 18px; height: 18px; flex: 0 0 auto; }
+
+.info-body { padding: 8px 28px 18px; }
+
+.info-section { padding: 18px 0; border-bottom: 1px solid hsl(0 0% 100% / 0.06); }
+.info-section:last-child { border-bottom: none; }
+.info-section h2 {
+  font-size: 1.12rem;
+  margin: 0 0 8px;
+  color: hsl(0 0% 96%);
+}
+.info-section p {
+  margin: 0 0 8px;
+  color: hsl(0 0% 74%);
+  line-height: 1.65;
+  font-size: 0.96rem;
+}
+.info-section a {
+  color: hsl(217 91% 68%);
+  text-decoration: none;
+  font-weight: 500;
+}
+.info-section a:hover { text-decoration: underline; }
+
+.info-contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+.info-contact-card {
+  padding: 18px;
+  text-align: center;
+}
+.info-contact-icon {
+  width: 42px; height: 42px;
+  margin: 0 auto 10px;
+  display: grid; place-items: center;
+  border-radius: 11px;
+  background: hsl(217 91% 60% / 0.14);
+}
+.info-contact-icon svg { width: 22px; height: 22px; color: hsl(217 91% 70%); }
+.info-contact-card h3 { margin: 0 0 4px; font-size: 0.98rem; }
+.info-contact-card p { margin: 0; color: hsl(0 0% 66%); font-size: 0.88rem; }
+
+.info-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 0 4px;
+  font-size: 0.86rem;
+  color: hsl(0 0% 52%);
+}
+.info-back {
+  color: hsl(217 91% 68%);
+  text-decoration: none;
+  font-weight: 600;
+}
+.info-back:hover { text-decoration: underline; }
+
+@media (max-width: 560px) {
+  .info-hero { flex-direction: column; text-align: center; }
+  .info-body { padding: 8px 16px 14px; }
+}
