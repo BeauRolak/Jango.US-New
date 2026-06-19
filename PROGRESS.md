@@ -335,3 +335,12 @@ app's intended palette alive at once.
 - Tournaments entry modal now shows Prize Breakdown: Entry fee, Total prize pool, Jango rake (3%), Winner takes (pot*0.97). Styled .trn-rake block (amber rake, gradient winner payout). Gated 'mock Scalps, no real money moves' notice kept. Verified live: 420 pool -> -13 rake -> 407 winner. 0 console errors.
 - Model represented visually/structurally (entry fees, pots, 3% rake, payouts) while all money movement stays mocked per instruction.
 - Commits: Play d827f4f, play.css 2e41780, Tournaments 557f0e6, tournaments.css 760a8fb. All Vercel green.
+
+### Effects + Sounds + Haptics engine (global)
+- Rewrote feedback() in Juice.tsx into full engine: playSound, triggerHaptic, triggerEffect, useFeedback hook, plus getFeedbackSettings/setFeedbackSetting.
+- Sound: WebAudio synthesized premium UI tones (ui_click/ui_hover/success/error/reward_claim/purchase/equip/tournament_join/rank_up/notification). SOUND_FILES map left empty so real assets can be dropped in later (takes priority over synth). Respects sound toggle + intensity (low/normal/high volume).
+- Haptics: navigator.vibrate patterns (light/medium/confirm/success/error/reward/rank_up). Respects haptics toggle, off at intensity low, fails silently if unsupported.
+- Effects: reward-pop/count-up/j-pop element classes; respects prefers-reduced-motion.
+- Unified feedback(kind) maps each event to sound+haptic; backward compatible with existing feedback('tap') calls.
+- Settings keys in localStorage: jango_sound, jango_haptics, jango_intensity. (Settings UI wiring next.)
+- Build hiccups fixed: unused FeedbackKind/settingOn (noUnusedLocals); Tone name clash -> SoundTone; AudioContext ctor typing; _ctx null guard; broke rewardPop<->feedback recursion. Final commit 7db855f Ready/green, 0 console errors.
