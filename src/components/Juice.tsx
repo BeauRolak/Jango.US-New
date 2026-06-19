@@ -19,20 +19,136 @@ function settingOn(key: string, fallback = true): boolean {
 
 /** Fire light haptics + (stubbed) sound for a meaningful action,
  *  honoring the user's haptics/sound settings. Safe on desktop. */
-export function feedback(kind: FeedbackKind = "tap") {
-  if (settingOn("jango.haptics", true) && typeof navigator !== "undefined" && "vibrate" in navigator) {
-    const pattern = kind === "reward" ? [8, 30, 14] : kind === "success" ? [10, 20] : kind === "error" ? [24] : 8;
-    try { navigator.vibrate(pattern); } catch {}
+// ---------- Feedback engine: sound + haptics + effects ----------
+const FB_KEYS = { sound: "jango_sound", haptics: "jango_haptics", intensity: "jango_intensity" };
+
+export function getFeedbackSettings() {
+  let sound = true, haptics = true, intensity = "normal";
+  try {
+    const s = localStorage.getItem(FB_KEYS.sound); if (s !== null) sound = s === "1";
+    const h = localStorage.getItem(FB_KEYS.haptics); if (h !== null) haptics = h === "1";
+    const i = localStorage.getItem(FB_KEYS.intensity); if (i) intensity = i;
+  } catch {}
+  return { sound, haptics, intensity };
+}
+export function setFeedbackSetting(key: "sound" | "haptics" | "intensity", value: boolean | string) {
+  try {
+    if (key === "intensity") localStorage.setItem(FB_KEYS.intensity, String(value));
+    else localStorage.setItem(FB_KEYS[key], value ? "1" : "0");
+    window.dispatchEvent(new CustomEvent("jango-feedback-settings"));
+  } catch {}
+}
+function prefersReducedMotion() {
+  try { return window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch { return false; }
+}
+
+// Web Audio synth: short, clean premium UI tones (stub — swap for files later via SOUND_FILES)
+let _ctx: AudioContext | null = null;
+function ctx() {
+  if (typeof window === "undefined") return null;
+  try {
+    if (!_ctx) _ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    if (_ctx.state === "suspended") _ctx.resume();
+    return _ctx;
+  } catch { return null; }
+}
+type Tone = { f: number; t: number; type?: OscillatorType; g?: number; slide?: number };
+const SOUND_MAP: Record<string, Tone[]> = {
+  ui_click: [{ f: 420, t: 0.05, g: 0.05 }],
+  ui_hover: [{ f: 660, t: 0.03, g: 0.02 }],
+  success: [{ f: 600, t: 0.07, g: 0.05 }, { f: 880, t: 0.1, g: 0.05 }],
+  error: [{ f: 220, t: 0.12, type: "sawtooth", g: 0.05, slide: -40 }],
+  reward_claim: [{ f: 660, t: 0.08, g: 0.05 }, { f: 880, t: 0.08, g: 0.05 }, { f: 1175, t: 0.14, g: 0.06 }],
+  purchase: [{ f: 520, t: 0.06, g: 0.05 }, { f: 780, t: 0.1, g: 0.05 }],
+  equip: [{ f: 700, t: 0.05, g: 0.04 }, { f: 1040, t: 0.09, g: 0.05 }],
+  tournament_join: [{ f: 440, t: 0.07, g: 0.05 }, { f: 660, t: 0.07, g: 0.05 }, { f: 990, t: 0.12, g: 0.06 }],
+  rank_up: [{ f: 523, t: 0.09, g: 0.06 }, { f: 659, t: 0.09, g: 0.06 }, { f: 784, t: 0.09, g: 0.06 }, { f: 1047, t: 0.16, g: 0.07 }],
+  notification: [{ f: 880, t: 0.06, g: 0.04 }, { f: 1175, t: 0.08, g: 0.04 }],
+};
+// SOUND_FILES: drop real assets here later, takes priority over synth
+const SOUND_FILES: Record<string, string> = {};
+const _buffers: Record<string, HTMLAudioElement> = {};
+
+export function playSound(event: string) {
+  const { sound, intensity } = getFeedbackSettings();
+  if (!sound) return;
+  const vol = intensity === "low" ? 0.5 : intensity === "high" ? 1.3 : 1;
+  if (SOUND_FILES[event]) {
+    try {
+      let a = _buffers[event];
+      if (!a) { a = new Audio(SOUND_FILES[event]); _buffers[event] = a; }
+      a.currentTime = 0; a.volume = Math.min(1, 0.6 * vol); a.play().catch(() => {});
+    } catch {}
+    return;
   }
-  if (settingOn("jango.sound", false)) {
-    // Sound is prepared/stubbed - no asset shipped yet, so this is a no-op hook.
-    window.dispatchEvent(new CustomEvent("jango-sound", { detail: { kind } }));
+  const tones = SOUND_MAP[event] || SOUND_MAP.ui_click;
+  const c = ctx(); if (!c) return;
+  let when = c.currentTime;
+  for (const tone of tones) {
+    try {
+      const osc = c.createOscillator();
+      const gain = c.createGain();
+      osc.type = tone.type || "sine";
+      osc.frequency.setValueAtTime(tone.f, when);
+      if (tone.slide) osc.frequency.linearRampToValueAtTime(tone.f + tone.slide, when + tone.t);
+      const peak = (tone.g ?? 0.05) * vol;
+      gain.gain.setValueAtTime(0.0001, when);
+      gain.gain.exponentialRampToValueAtTime(peak, when + 0.005);
+      gain.gain.exponentialRampToValueAtTime(0.0001, when + tone.t);
+      osc.connect(gain); gain.connect(c.destination);
+      osc.start(when); osc.stop(when + tone.t + 0.02);
+      when += tone.t * 0.85;
+    } catch {}
   }
 }
 
-function prefersReducedMotion() {
-  return typeof window !== "undefined" && window.matchMedia &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const HAPTIC_MAP: Record<string, number | number[]> = {
+  light: 10, medium: [18], confirm: [20, 30, 20],
+  success: [20, 30, 20], error: [50, 40, 50], reward: [25, 40, 25, 40, 50], rank_up: [30, 40, 30, 40, 60],
+};
+export function triggerHaptic(type: string) {
+  const { haptics, intensity } = getFeedbackSettings();
+  if (!haptics || intensity === "low") return;
+  if (typeof navigator === "undefined" || !navigator.vibrate) return;
+  const pat = HAPTIC_MAP[type] ?? HAPTIC_MAP.light;
+  try { navigator.vibrate(pat); } catch {}
+}
+
+export function triggerEffect(type: string, el?: HTMLElement | null) {
+  if (prefersReducedMotion()) return;
+  if (type === "reward" || type === "rank_up") { rewardPop(); return; }
+  if (el) {
+    const cls = type === "purchase" || type === "equip" ? "reward-pop" : type === "error" ? "j-pop" : "count-up";
+    el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls);
+  }
+}
+
+// Unified event map: one call fires sound + haptic together
+const EVENT_FEEDBACK: Record<string, { sound: string; haptic: string }> = {
+  tap: { sound: "ui_click", haptic: "light" },
+  click: { sound: "ui_click", haptic: "light" },
+  hover: { sound: "ui_hover", haptic: "light" },
+  success: { sound: "success", haptic: "success" },
+  error: { sound: "error", haptic: "error" },
+  reward: { sound: "reward_claim", haptic: "reward" },
+  purchase: { sound: "purchase", haptic: "success" },
+  equip: { sound: "equip", haptic: "success" },
+  tournament_join: { sound: "tournament_join", haptic: "success" },
+  save: { sound: "success", haptic: "success" },
+  rank_up: { sound: "rank_up", haptic: "rank_up" },
+  notification: { sound: "notification", haptic: "light" },
+};
+
+export function feedback(kind: string = "tap", el?: HTMLElement | null) {
+  const map = EVENT_FEEDBACK[kind] || EVENT_FEEDBACK.tap;
+  playSound(map.sound);
+  triggerHaptic(map.haptic);
+  if (kind === "reward" || kind === "rank_up") triggerEffect(kind, el);
+  else if (el) triggerEffect(kind, el);
+}
+
+export function useFeedback() {
+  return { fire: feedback, playSound, triggerHaptic, triggerEffect, getSettings: getFeedbackSettings };
 }
 
 type Tone = "primary" | "secondary" | "accent" | "success" | "warning" | "gold";
