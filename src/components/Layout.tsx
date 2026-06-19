@@ -1,7 +1,8 @@
 import { NavLink, useLocation, Link } from 'react-router-dom';
 import { ReactNode, useState } from 'react';
 import './Layout.css';
-import { useScalps } from "../lib/mockData";
+import { Icon } from "./Icon";
+import { useScalps, NOTIFICATIONS } from "../lib/mockData";
 
 const COMPETE = [
   { to: '/leaderboard', label: 'Leaderboard' },
@@ -27,6 +28,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const loc = useLocation();
   const { formatted } = useScalps();
+  const unread = NOTIFICATIONS.filter((n) => n.unread).length;
   const close = () => { setMenu(null); setMobileOpen(false); };
   const toggle = (k: string) => setMenu(menu === k ? null : k);
   return (
@@ -50,7 +52,44 @@ export default function Layout({ children }: { children: ReactNode }) {
             <NavLink to="/shop" className={({isActive})=> isActive ? 'tnl active' : 'tnl'}>Shop</NavLink>
           </nav>
           <div className="topnav-right">
-            <button className="icon-btn bell" aria-label="Notifications">{'\uD83D\uDD14'}<span className="badge">3</span></button>
+            <div className="tnl-drop">
+              <button
+                className="icon-btn bell"
+                aria-label="Notifications"
+                onClick={() => toggle("notif")}
+              >
+                <Icon name="Bell" />
+                {unread > 0 && <span className="badge">{unread}</span>}
+              </button>
+              {menu === "notif" && (
+                <div className="dropdown dropdown-right notif-dd">
+                  <div className="dd-head notif-head">
+                    <div className="dd-name">Notifications</div>
+                    <div className="notif-count">{unread} new</div>
+                  </div>
+                  <div className="notif-list">
+                    {NOTIFICATIONS.map((n) => (
+                      <div
+                        key={n.id}
+                        className={"notif-item" + (n.unread ? " unread" : "")}
+                      >
+                        <span className="notif-icon">
+                          <Icon name={n.icon} />
+                        </span>
+                        <span className="notif-text">
+                          <span className="notif-title">{n.title}</span>
+                          <span className="notif-body">{n.body}</span>
+                          <span className="notif-time">{n.time}</span>
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <Link to="/social" className="notif-all" onClick={close}>
+                    View all activity
+                  </Link>
+                </div>
+              )}
+            </div>
             <Link to="/wallet" className="balance-pill"><span className="coin">S</span><span className="balance-num">{formatted}</span><span className="bal-plus">+</span></Link>
             <div className="tnl-drop">
               <button className="avatar-btn" onClick={()=>toggle('avatar')}>P<span className="rank-dot" /></button>
