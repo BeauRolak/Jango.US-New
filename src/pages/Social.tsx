@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Icon } from "../components/Icon";
 import { Btn, toast } from "../components/UI";
 import "./social.css";
 
@@ -182,7 +183,7 @@ export default function Social() {
               <div className="so-post-actions">
                 <button onClick={() => toast("Liked", "info")}>Like {p.likes}</button>
                 <button onClick={() => toast("Comments coming soon", "info")}>Comment {p.comments}</button>
-                <button onClick={() => toast("Challenge sent", "reward")}>⚔️ Challenge</button>
+                <button onClick={() => toast("Challenge sent", "reward")}><Icon name="Swords" /> Challenge</button>
                 <button onClick={() => toast("Shared to your profile", "success")}>Share</button>
               </div>
             </article>
@@ -221,14 +222,14 @@ export default function Social() {
           <div className="so-chat">
             {!current ? (
               <div className="so-chat-empty">
-                <span className="so-chat-empty-icon">💬</span>
+                <span className="so-chat-empty-icon"><Icon name="Message" /></span>
                 <p>Select a conversation to start messaging.</p>
               </div>
             ) : (
               <>
                 <div className="so-chat-head">
                   <button className="so-chat-back" onClick={() => setActiveThread(null)} aria-label="Back to conversations">
-                    ←
+                    <Icon name="ArrowLeft" />
                   </button>
                   <div className={"so-avatar so-presence-" + current.presence}>{current.name[0]}</div>
                   <div className="so-chat-head-meta">
@@ -240,7 +241,7 @@ export default function Social() {
                     className="so-chat-invite"
                     onClick={() => toast("Match invite sent to " + current.name, "reward")}
                   >
-                    ⚔️ Invite
+                    <Icon name="Swords" /> Invite
                   </Btn>
                 </div>
 
@@ -261,7 +262,7 @@ export default function Social() {
                     onChange={(e) => setDraft(e.target.value)}
                     onKeyDown={(e) => { if (e.key === "Enter") sendMessage(); }}
                   />
-                  <button className="so-chat-send" onClick={sendMessage} aria-label="Send message">➤</button>
+                  <button className="so-chat-send" onClick={sendMessage} aria-label="Send message"><Icon name="Send" /></button>
                 </div>
               </>
             )}
@@ -272,7 +273,7 @@ export default function Social() {
       {tab === "friends" && (
         <section className="so-friends">
           <div className="so-search">
-            <span className="so-search-icon">🔍</span>
+            <span className="so-search-icon"><Icon name="Search" /></span>
             <input
               className="so-search-input"
               placeholder="Search players by name..."
@@ -287,7 +288,7 @@ export default function Social() {
 
           {filteredFriends.length === 0 ? (
             <div className="so-empty">
-              <span className="so-empty-icon">👥</span>
+              <span className="so-empty-icon"><Icon name="Users" /></span>
               <p>No players match "{search}".</p>
               <Btn variant="ghost" onClick={() => setSearch("")}>Clear search</Btn>
             </div>
@@ -309,14 +310,14 @@ export default function Social() {
                       Message
                     </Btn>
                     {invited[f.id] ? (
-                      <span className="so-invited">✓ Invited</span>
+                      <span className="so-invited"><Icon name="Check" /> Invited</span>
                     ) : (
                       <Btn
                         className="so-friend-invite"
                         disabled={f.presence === "offline"}
                         onClick={() => invite(f.name, f.id)}
                       >
-                        ⚔️ Invite
+                        <Icon name="Swords" /> Invite
                       </Btn>
                     )}
                   </div>
