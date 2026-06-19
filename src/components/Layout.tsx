@@ -84,6 +84,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           <div className="footer-links">
             <Link to="/terms">Terms of Service</Link><Link to="/privacy">Privacy Policy</Link>
             <Link to="/contact">Contact</Link><Link to="/fair-play">Fair Play</Link>
+            <Link to="/responsible-gaming">Responsible Gaming</Link>
           </div>
           <div className="footer-legal">{'\u00A9'} 2026 Jango.us. All rights reserved. <span className="footer-18">Players must be 18+. Play responsibly.</span></div>
         </div>
