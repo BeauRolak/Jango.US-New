@@ -29,6 +29,7 @@ export default function MiniGolf() {
   const animRef = useRef<number>(0);
   const botTimerRef = useRef<number | null>(null);
   const transitionRef = useRef(false);
+  const onBallStoppedRef = useRef<(b: BallState) => void>(() => {});
 
   turnRef.current = turn;
 
@@ -120,7 +121,7 @@ export default function MiniGolf() {
         let nb = b;
         for (let i = 0; i < 2; i++) nb = step(nb, hole);
         ballRef.current = nb;
-        if (!nb.moving) onBallStopped(nb);
+        if (!nb.moving) onBallStoppedRef.current(nb);
       }
       draw();
       animRef.current = requestAnimationFrame(loop);
@@ -145,6 +146,7 @@ export default function MiniGolf() {
     transitionRef.current = true;
     window.setTimeout(advanceTurn, 650);
   };
+  onBallStoppedRef.current = onBallStopped;
 
   // Decide what happens after a shot settles. Pure read of refs/latest state.
   const advanceTurn = () => {
