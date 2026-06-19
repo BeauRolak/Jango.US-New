@@ -103,3 +103,9 @@
   .pf-xp-fill, .pf-ach, .pf-modal-overlay, .pf-modal { transition: none !important; animation: none !important; }
   .pf-avatar { box-shadow: none; }
 }
+
+/* Inline Icon sizing (migrated from emoji) */
+.pf-ach-icon svg { width: 1.6rem; height: 1.6rem; }
+.streak svg { width: 0.95em; height: 0.95em; vertical-align: -0.12em; color: var(--amber); margin-right: 0.15rem; }
+.pf-edit-btn svg { width: 0.95em; height: 0.95em; vertical-align: -0.12em; margin-right: 0.3rem; }
+.pf-modal-close svg { width: 1.05rem; height: 1.05rem; }
