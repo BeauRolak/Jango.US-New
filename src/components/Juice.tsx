@@ -6,16 +6,7 @@ import { Icon, IconName } from "./Icon";
    Pairs with juice.css. No emojis. Respects reduced-motion + settings.
    ===================================================================== */
 
-/* ---------- settings-aware feedback (haptics + sound) ---------- */
-type FeedbackKind = "tap" | "success" | "reward" | "error";
 
-function settingOn(key: string, fallback = true): boolean {
-  try {
-    const v = localStorage.getItem(key);
-    if (v === null) return fallback;
-    return v === "true" || v === "1" || v === "on";
-  } catch { return fallback; }
-}
 
 /** Fire light haptics + (stubbed) sound for a meaningful action,
  *  honoring the user's haptics/sound settings. Safe on desktop. */
