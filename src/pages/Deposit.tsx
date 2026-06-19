@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Icon } from "../components/Icon";
 import { Link } from "react-router-dom";
 import "./deposit.css";
 
@@ -28,7 +29,7 @@ export default function Deposit() {
 
       <header className="dep-head">
         <div>
-          <Link to="/wallet" className="dep-back">← Wallet</Link>
+          <Link to="/wallet" className="dep-back"><Icon name="ArrowLeft" /> Wallet</Link>
           <h1 className="dep-title">Add Funds</h1>
           <p className="dep-sub">Top up your Scalps balance to enter matches and tournaments.</p>
         </div>
@@ -40,15 +41,15 @@ export default function Deposit() {
 
       <div className="trust-strip">
         <div className="trust-item">
-          <span className="trust-ic">🔒</span>
+          <span className="trust-ic"><Icon name="Lock" /></span>
           <div><strong>Secure</strong><span>256-bit encrypted</span></div>
         </div>
         <div className="trust-item">
-          <span className="trust-ic">⚡</span>
+          <span className="trust-ic"><Icon name="Bolt" /></span>
           <div><strong>Instant</strong><span>Auto-credited on confirm</span></div>
         </div>
         <div className="trust-item">
-          <span className="trust-ic">🛡️</span>
+          <span className="trust-ic"><Icon name="Shield" /></span>
           <div><strong>Protected</strong><span>Funds held in escrow</span></div>
         </div>
       </div>
@@ -77,9 +78,9 @@ export default function Deposit() {
 
           <h2 className={"dep-h dep-h-spaced"}>Card & App Payments</h2>
           <div className="soon-list">
-            <div className="soon-opt"><span>💳 Credit / Debit Card</span><span className="soon-tag">Coming Soon</span></div>
-            <div className="soon-opt"><span>🍎 Apple Pay</span><span className="soon-tag">Coming Soon</span></div>
-            <div className="soon-opt"><span>🟢 Cash App</span><span className="soon-tag">Coming Soon</span></div>
+            <div className="soon-opt"><span className="soon-lbl"><Icon name="Card" /> Credit / Debit Card</span><span className="soon-tag">Coming Soon</span></div>
+            <div className="soon-opt"><span className="soon-lbl"><Icon name="Card" /> Apple Pay</span><span className="soon-tag">Coming Soon</span></div>
+            <div className="soon-opt"><span className="soon-lbl"><Icon name="Card" /> Cash App</span><span className="soon-tag">Coming Soon</span></div>
           </div>
         </section>
 
@@ -117,7 +118,7 @@ export default function Deposit() {
             </div>
           ) : (
             <div className="detail-empty">
-              <span className="empty-ic">💰</span>
+              <span className="empty-ic"><Icon name="Coins" /></span>
               <p>Select a crypto on the left to begin your deposit.</p>
             </div>
           )}
