@@ -94,3 +94,13 @@
 @media (prefers-reduced-motion: reduce) {
   .tr-bar-fill, .tr-drill-bar-fill, .tr-modal-bar-fill, .tr-drill, .tr-modal-overlay, .tr-modal { transition: none !important; animation: none !important; }
 }
+
+
+/* O1: emoji -> Icon svg sizing (Training) */
+.tr-pack-emoji svg { width: 30px; height: 30px; color: var(--accent); }
+.tr-pack-lock { display: inline-flex; align-items: center; gap: 5px; }
+.tr-pack-lock svg { width: 13px; height: 13px; }
+.tr-drill-stars { display: inline-flex; align-items: center; gap: 2px; letter-spacing: 0; }
+.tr-drill-stars svg { width: 14px; height: 14px; }
+.tr-star-on { color: #f5c451; }
+.tr-star-off { color: rgba(245,196,81,0.28); }
