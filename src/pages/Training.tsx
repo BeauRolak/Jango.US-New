@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Btn, toast } from "../components/UI";
+import { Icon, type IconName } from "../components/Icon";
 import "./training.css";
 
 type Diff = "Easy" | "Medium" | "Hard" | "Expert" | "Champion";
@@ -20,7 +21,7 @@ interface Drill {
 interface Pack {
   id: string;
   game: string;
-  emoji: string;
+  emoji: IconName;
   accent: string;
   blurb: string;
   drills: Drill[];
@@ -31,7 +32,7 @@ const PACKS: Pack[] = [
   {
     id: "pool",
     game: "8-Ball Pool",
-    emoji: "🎱",
+    emoji: "Dice",
     accent: "#7c5cff",
     blurb: "Master cushion angles, spin and safety play.",
     requiredLevel: 0,
@@ -43,7 +44,7 @@ const PACKS: Pack[] = [
   {
     id: "golf",
     game: "Mini Golf",
-    emoji: "⛳",
+    emoji: "Target",
     accent: "#34d399",
     blurb: "Sharpen power control and green reading.",
     requiredLevel: 0,
@@ -55,7 +56,7 @@ const PACKS: Pack[] = [
   {
     id: "chess",
     game: "Chess",
-    emoji: "♟️",
+    emoji: "Crown",
     accent: "#f59e0b",
     blurb: "Openings, tactics and clean endgame technique.",
     requiredLevel: 3,
@@ -67,7 +68,7 @@ const PACKS: Pack[] = [
   {
     id: "reflex",
     game: "Air Hockey & Reflex",
-    emoji: "🏒",
+    emoji: "Bolt",
     accent: "#38bdf8",
     blurb: "Split-second blocks, counters and threat-spotting.",
     requiredLevel: 5,
@@ -119,7 +120,7 @@ export default function Training() {
     setActive(null);
     toast(`${d.title} complete — +${d.xp} XP`, "success");
     setTimeout(() => {
-      toast(`⭐ Reward unlocked: +${d.reward} Scalps training credit`, "reward");
+      toast(`Reward unlocked: +${d.reward} Scalps training credit`, "reward");
     }, 650);
   }
 
@@ -130,7 +131,13 @@ export default function Training() {
     });
   }
 
-  const stars = (n: number) => "★".repeat(n) + "☆".repeat(5 - n);
+  const stars = (n: number) => (
+    <>
+      {Array.from({ length: 5 }, (_, i) => (
+        <Icon key={i} name="Star" className={i < n ? "tr-star-on" : "tr-star-off"} />
+      ))}
+    </>
+  );
 
   return (
     <div className="training-page">
@@ -199,14 +206,14 @@ export default function Training() {
           >
             <div className="tr-pack-head">
               <div className="tr-pack-id">
-                <span className="tr-pack-emoji">{pack.emoji}</span>
+                <span className="tr-pack-emoji"><Icon name={pack.emoji} /></span>
                 <div>
                   <h2 className="tr-pack-title">{pack.game} Pack</h2>
                   <p className="tr-pack-blurb">{pack.blurb}</p>
                 </div>
               </div>
               {packLocked ? (
-                <span className="tr-pack-lock">🔒 Unlocks at Lv {pack.requiredLevel}</span>
+                <span className="tr-pack-lock"><Icon name="Lock" /> Unlocks at Lv {pack.requiredLevel}</span>
               ) : (
                 <span className="tr-pack-count">{packDone}/{pack.drills.length} done</span>
               )}
@@ -237,12 +244,12 @@ export default function Training() {
 
                     {st === "complete" ? (
                       <div className="tr-drill-done">
-                        <span>✓ Mastered</span>
+                        <span><Icon name="Check" /> Mastered</span>
                         <span className="tr-drill-reward">+{d.reward} Ⓢ</span>
                       </div>
                     ) : st === "locked" ? (
                       <Btn variant="ghost" className="tr-drill-btn" disabled>
-                        🔒 Locked
+                        <Icon name="Lock" /> Locked
                       </Btn>
                     ) : (
                       <Btn className="tr-drill-btn" onClick={() => startDrill(pack, d)}>
