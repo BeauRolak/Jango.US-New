@@ -23,9 +23,9 @@ const NAV_ICONS: Record<string, IconName> = {
   "Danger Zone": "AlertCircle",
 };
 
-function Toggle({ label, sub, on, settingKey }: { label: string; sub?: string; on: boolean; settingKey?: "sound" | "haptics" }) {
+function Toggle({ label, sub, on, settingKey }: { label: string; sub?: string; on?: boolean; settingKey?: "sound" | "haptics" }) {
   const { fire } = useFeedback();
-  const init = settingKey ? !!getFeedbackSettings()[settingKey] : on;
+  const init = settingKey ? !!getFeedbackSettings()[settingKey] : !!on;
   const [v, setVRaw] = useState(init);
   const setV = (next: boolean) => {
     setVRaw(next);
