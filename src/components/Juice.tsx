@@ -1,5 +1,6 @@
-import { ReactNode, useEffect, useRef, useState, CSSProperties } from "react";
+import { useCallback, ReactNode, useEffect, useRef, useState, CSSProperties } from "react";
 import { Icon, IconName } from "./Icon";
+import { toast } from "./UI";
 
 /* =====================================================================
    JANGO JUICE LAYER - reusable reactive/dopamine components.
@@ -136,13 +137,49 @@ export function feedback(kind: string = "tap", el?: HTMLElement | null) {
   else if (el) triggerEffect(kind, el);
 }
 
+const TOAST_TYPE_FOR_KIND: Record<string, "success" | "error" | "info" | "reward"> = {
+  success: "success",
+  save: "success",
+  equip: "success",
+  purchase: "reward",
+  reward: "reward",
+  rank_up: "reward",
+  tournament_join: "success",
+  error: "error",
+  notification: "info",
+  tap: "info",
+  click: "info",
+  hover: "info",
+};
+
+/**
+ * useFeedback() — the single reusable action-feedback hook for the whole app.
+ * fire(kind, message?, el?) triggers, consistently in one place:
+ *   1. a visual effect (triggerEffect)
+ *   2. a sound (if enabled in settings)
+ *   3. a haptic (if enabled + supported)
+ *   4. a toast (only when a message is provided)
+ */
 export function useFeedback() {
-  return { fire: feedback, playSound, triggerHaptic, triggerEffect, getSettings: getFeedbackSettings };
+  const fire = useCallback(
+    (kind: string = "tap", message?: string, el?: HTMLElement | null) => {
+      feedback(kind, el);
+      if (message) {
+        const type = TOAST_TYPE_FOR_KIND[kind] || "info";
+        toast(message, type);
+      }
+    },
+    []
+  );
+  return {
+    fire,
+    feedback,
+    playSound,
+    triggerHaptic,
+    triggerEffect,
+    getSettings: getFeedbackSettings,
+  };
 }
-
-type Tone = "primary" | "secondary" | "accent" | "success" | "warning" | "gold";
-
-/* ---------- PageHero ---------- */
 export function PageHero(
   { eyebrow, title, gradWord, sub, action }:
   { eyebrow?: string; title: ReactNode; gradWord?: string; sub?: string; action?: ReactNode }
