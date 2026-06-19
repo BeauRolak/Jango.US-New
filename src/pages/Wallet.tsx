@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Icon } from "../components/Icon";
 import { toast } from "../components/UI";
+import { useScalps } from "../lib/mockData";
 import "./wallet.css";
 
 type Txn = {
@@ -25,6 +26,7 @@ const FILTERS = ["All", "Deposits", "Winnings", "Wagers", "Withdrawals"] as cons
 const PRESETS = [5, 10, 25, 50, 100];
 
 export default function Wallet() {
+  const { set: setSharedBalance } = useScalps();
   const [txns, setTxns] = useState<Txn[]>(SEED_TXNS);
   const [filter, setFilter] = useState<string>("All");
   const [modal, setModal] = useState<null | "add" | "withdraw" | "methods">(null);
@@ -33,6 +35,11 @@ export default function Wallet() {
 
   const seedNet = SEED_TXNS.reduce((a, t) => a + (t.dir === "in" ? t.amount : -t.amount), 0);
   const balance = txns.reduce((s, t) => s + (t.dir === "in" ? t.amount : -t.amount), 117 - seedNet);
+
+  // Keep the shared top-bar balance in sync with the wallet ledger (A6/A10).
+  useEffect(() => {
+    setSharedBalance(balance);
+  }, [balance, setSharedBalance]);
   const deposited = txns.filter((t) => t.kind === "deposit").reduce((s, t) => s + t.amount, 0);
   const won = txns.filter((t) => t.kind === "winning").reduce((s, t) => s + t.amount, 0);
   const withdrawn = txns.filter((t) => t.kind === "withdrawal").reduce((s, t) => s + t.amount, 0);
