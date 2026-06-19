@@ -455,3 +455,4 @@ app's intended palette alive at once.
 ### Next
 - A5 Settings parity vs old site; remaining A1 dead-end sweep (audit every clickable); O1 full emoji grep across all files incl games; O2 extract real SVG icons from old site DOM.
 - Game work: Pool (eightball) + one more decouple/headless-test pass (MiniGolf done).
+
