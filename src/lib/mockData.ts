@@ -77,3 +77,56 @@ export function useScalps() {
 
   return { balance, formatted: formatScalps(balance), set, add, spend };
 }
+
+export type Notification = {
+  id: string;
+  icon: "Trophy" | "Swords" | "Coins" | "Users" | "Bell" | "Flame";
+  title: string;
+  body: string;
+  time: string;
+  unread: boolean;
+};
+
+/** Demo notifications shown in the top-bar bell panel (A7). */
+export const NOTIFICATIONS: Notification[] = [
+  {
+    id: "n1",
+    icon: "Swords",
+    title: "Match found",
+    body: "Your ranked Mini Golf match vs ShadowAce is ready.",
+    time: "2m ago",
+    unread: true,
+  },
+  {
+    id: "n2",
+    icon: "Trophy",
+    title: "Tournament starting soon",
+    body: "Friday Night Showdown begins in 15 minutes.",
+    time: "12m ago",
+    unread: true,
+  },
+  {
+    id: "n3",
+    icon: "Coins",
+    title: "Payout received",
+    body: "You won 19.40 Scalps (pot 20.00, 3% rake).",
+    time: "1h ago",
+    unread: true,
+  },
+  {
+    id: "n4",
+    icon: "Users",
+    title: "Friend request",
+    body: "NovaStrike wants to add you as a friend.",
+    time: "3h ago",
+    unread: false,
+  },
+  {
+    id: "n5",
+    icon: "Flame",
+    title: "Daily streak",
+    body: "You are on a 4-day win streak. Keep it going!",
+    time: "Yesterday",
+    unread: false,
+  },
+];
