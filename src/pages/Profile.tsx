@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Icon, type IconName } from "../components/Icon";
 import { Btn, toast } from "../components/UI";
 import "./profile.css";
 
@@ -15,12 +16,12 @@ const MATCHES: Match[] = [
 ];
 
 const ACHIEVEMENTS: Achievement[] = [
-  { id: "a1", icon: "🔥", name: "Hot Streak", desc: "Win 5 matches in a row", unlocked: true },
-  { id: "a2", icon: "🎯", name: "Sharpshooter", desc: "Win a Pool match without a miss", unlocked: true },
-  { id: "a3", icon: "🏆", name: "Champion", desc: "Win a tournament bracket", unlocked: true },
-  { id: "a4", icon: "⚡", name: "Speed Demon", desc: "Win a match in under 60s", unlocked: false },
-  { id: "a5", icon: "👑", name: "King of the Table", desc: "Reach Diamond in any game", unlocked: false },
-  { id: "a6", icon: "🎖️", name: "Centurion", desc: "Play 100 ranked matches", unlocked: false },
+  { id: "a1", icon: "Flame", name: "Hot Streak", desc: "Win 5 matches in a row", unlocked: true },
+  { id: "a2", icon: "Target", name: "Sharpshooter", desc: "Win a Pool match without a miss", unlocked: true },
+  { id: "a3", icon: "Trophy", name: "Champion", desc: "Win a tournament bracket", unlocked: true },
+  { id: "a4", icon: "Bolt", name: "Speed Demon", desc: "Win a match in under 60s", unlocked: false },
+  { id: "a5", icon: "Crown", name: "King of the Table", desc: "Reach Diamond in any game", unlocked: false },
+  { id: "a6", icon: "Medal", name: "Centurion", desc: "Play 100 ranked matches", unlocked: false },
 ];
 
 const COSMETICS: Cosmetic[] = [
@@ -74,13 +75,13 @@ export default function Profile() {
           <div className="pf-name-row">
             <h1 className="pf-name">{username}</h1>
             <span className="pf-you">You</span>
-            <Btn variant="ghost" className="pf-edit-btn" onClick={openEdit}>✎ Edit Profile</Btn>
+            <Btn variant="ghost" className="pf-edit-btn" onClick={openEdit}><Icon name="Edit" /> Edit Profile</Btn>
           </div>
           <p className="pf-title">{title}</p>
           <div className="pf-tags">
             <span className="pf-tag rank">Silver · 1200</span>
             <span className="pf-tag">Lv {level}</span>
-            <span className="pf-tag streak">🔥 6 day streak</span>
+            <span className="pf-tag streak"><Icon name="Flame" /> 6 day streak</span>
             <span className="pf-tag good">Excellent (80/100)</span>
           </div>
           <div className="pf-xp">
@@ -139,7 +140,7 @@ export default function Profile() {
                     : toast("Locked: " + a.desc, "error")
                 }
               >
-                <span className="pf-ach-icon">{a.unlocked ? a.icon : "🔒"}</span>
+                <span className="pf-ach-icon">{a.unlocked ? <Icon name={a.icon as IconName} /> : <Icon name="Lock" />}</span>
                 <span className="pf-ach-name">{a.name}</span>
               </button>
             ))}
@@ -170,7 +171,7 @@ export default function Profile() {
           <div className="pf-modal" onClick={(e) => e.stopPropagation()}>
             <div className="pf-modal-head">
               <h2>Edit Profile</h2>
-              <button className="pf-modal-close" onClick={() => setEditing(false)} aria-label="Close">✕</button>
+              <button className="pf-modal-close" onClick={() => setEditing(false)} aria-label="Close"><Icon name="Close" /></button>
             </div>
             <label className="pf-field">
               <span>Username</span>
