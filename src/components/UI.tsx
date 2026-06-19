@@ -24,7 +24,7 @@ export function Card(
   { children, className = "", ...rest }:
   { children: ReactNode; className?: string } & React.HTMLAttributes<HTMLDivElement>
 ) {
-  return <div className={`card ${className}`} {...rest}>{children}</div>;
+  return <div className={`motion-card shine-sweep card ${className}`} {...rest}>{children}</div>;
 }
 
 /* ---------- Button ---------- */
@@ -33,7 +33,7 @@ export function Btn(
   { children: ReactNode; variant?: "primary" | "ghost" | "secondary" | "danger" | "accent" | "gold" } & ButtonHTMLAttributes<HTMLButtonElement>
 ) {
   return (
-    <button className={`btn btn-${variant} ${className}`} {...rest}>{children}</button>
+    <button className={`motion-button btn btn-${variant} ${className}`} {...rest}>{children}</button>
   );
 }
 
@@ -103,7 +103,7 @@ export function Toaster() {
   return (
     <div className="toast-wrap" role="status" aria-live="polite">
       {items.map((t) => (
-        <div key={t.id} className={`toast toast-${t.type}`}>
+        <div key={t.id} className={`toast-enter toast toast-${t.type}`}>
           <span className="toast-ic" aria-hidden="true"><Icon name={TOAST_ICON[t.type]} /></span>
           <span className="toast-msg">{t.message}</span>
         </div>
