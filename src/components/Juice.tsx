@@ -195,6 +195,8 @@ export function PageHero(
 }
 
 /* ---------- GlowCard / MotionCard ---------- */
+type Tone = "primary" | "secondary" | "accent" | "success" | "warning" | "gold";
+
 export function GlowCard(
   { children, tone = "primary", hoverable = true, className = "", style, onClick }:
   { children: ReactNode; tone?: Tone; hoverable?: boolean; className?: string; style?: CSSProperties; onClick?: () => void }
