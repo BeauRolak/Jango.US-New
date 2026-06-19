@@ -107,6 +107,13 @@ export default function Tournaments() {
               <div><div className="trn-meta-l">PRIZE POOL</div><div className="trn-meta-v big">Ⓢ {confirm.pot.toLocaleString()}</div></div>
               <div><div className="trn-meta-l">FIELD</div><div className="trn-meta-v big">{confirm.players}/{confirm.cap}</div></div>
             </div>
+            <div className="trn-rake">
+              <div className="trn-rake-head">Prize breakdown</div>
+              <div className="trn-rake-row"><span>Entry fee</span><b>{confirm.buyIn} Scalps</b></div>
+              <div className="trn-rake-row"><span>Total prize pool</span><b>{confirm.pot.toLocaleString()} Scalps</b></div>
+              <div className="trn-rake-row trn-rake-fee"><span>Jango rake (3%)</span><b>-{Math.round(confirm.pot * 0.03).toLocaleString()} Scalps</b></div>
+              <div className="trn-rake-row trn-rake-win"><span>Winner takes</span><b>{Math.round(confirm.pot * 0.97).toLocaleString()} Scalps</b></div>
+            </div>
             <div className="trn-modal-note">Entry fee is mock Scalps — no real money moves. Prizes are simulated.</div>
             <div className="trn-modal-actions">
               <button className="btn btn-ghost" onClick={() => setConfirm(null)}>Cancel</button>
