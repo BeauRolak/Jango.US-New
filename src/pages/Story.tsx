@@ -1,9 +1,10 @@
 import { useNavigate } from "react-router-dom";
+import { Icon, type IconName } from "../components/Icon";
 import { Btn, toast } from "../components/UI";
 import "./story.css";
 
 interface Chapter { num: string; title: string; era: string; body: string; }
-interface Pillar { icon: string; title: string; body: string; }
+interface Pillar { icon: IconName; title: string; body: string; }
 
 const CHAPTERS: Chapter[] = [
   {
@@ -33,10 +34,10 @@ const CHAPTERS: Chapter[] = [
 ];
 
 const PILLARS: Pillar[] = [
-  { icon: "🎯", title: "Skill", body: "Every outcome is earned. Read the angle, make the shot, own the result." },
-  { icon: "🎲", title: "Risk", body: "Stake your Scalps, call your shot, and live with the line you chose." },
-  { icon: "🔥", title: "Swagger", body: "Win with style. The table remembers the players who play without fear." },
-  { icon: "👑", title: "Dominance", body: "Master every table game and stake your claim at the top of the ladder." },
+  { icon: "Target", title: "Skill", body: "Every outcome is earned. Read the angle, make the shot, own the result." },
+  { icon: "Dice", title: "Risk", body: "Stake your Scalps, call your shot, and live with the line you chose." },
+  { icon: "Flame", title: "Swagger", body: "Win with style. The table remembers the players who play without fear." },
+  { icon: "Crown", title: "Dominance", body: "Master every table game and stake your claim at the top of the ladder." },
 ];
 
 export default function Story() {
@@ -52,7 +53,7 @@ export default function Story() {
           <div className="st-glow st-glow-b" />
         </div>
         <div className="st-hero-inner">
-          <span className="st-kicker">🌆 Marula City Legends</span>
+          <span className="st-kicker"><Icon name="Building" /> Marula City Legends</span>
           <h1 className="st-title">
             <span className="st-title-sub">JANGO</span>
             <span className="st-title-main">The King of the Table</span>
@@ -62,13 +63,13 @@ export default function Story() {
           </p>
           <div className="st-hero-cta">
             <Btn className="st-cta" onClick={() => navigate("/games")}>Enter the Arena</Btn>
-            <Btn variant="ghost" onClick={() => toast("Jango tips his cue to you — good luck at the table", "reward")}>👑 Pay Respects</Btn>
+            <Btn variant="ghost" onClick={() => toast("Jango tips his cue to you — good luck at the table", "reward")}><Icon name="Crown" /> Pay Respects</Btn>
           </div>
         </div>
         <div className="st-hero-portrait" aria-hidden="true">
           <div className="st-portrait-frame">
-            <span className="st-portrait-emoji">🎱</span>
-            <span className="st-portrait-crown">👑</span>
+            <span className="st-portrait-emoji"><Icon name="Gamepad" /></span>
+            <span className="st-portrait-crown"><Icon name="Crown" /></span>
           </div>
           <span className="st-portrait-caption">Jango — Arena Mascot</span>
         </div>
@@ -78,7 +79,7 @@ export default function Story() {
       <section className="st-pillars">
         {PILLARS.map((p) => (
           <div key={p.title} className="st-pillar">
-            <span className="st-pillar-icon">{p.icon}</span>
+            <span className="st-pillar-icon"><Icon name={p.icon} /></span>
             <h3 className="st-pillar-title">{p.title}</h3>
             <p className="st-pillar-body">{p.body}</p>
           </div>
@@ -113,7 +114,7 @@ export default function Story() {
           <div className="st-city-skyline" />
         </div>
         <div className="st-city-text">
-          <span className="st-kicker">🌆 The Setting</span>
+          <span className="st-kicker"><Icon name="Building" /> The Setting</span>
           <h2 className="st-section-title">Marula City</h2>
           <p>
             A rain-slick metropolis lit by purple and electric-blue neon, where every district has a table and every table has a story. Champions are made in its arenas; legends are made in its back rooms. This is where Jango.US was born.
@@ -123,7 +124,7 @@ export default function Story() {
 
       {/* Closing CTA */}
       <section className="st-finale">
-        <span className="st-finale-icon">🏆</span>
+        <span className="st-finale-icon"><Icon name="Trophy" /></span>
         <h2 className="st-finale-title">Your story starts now.</h2>
         <p className="st-finale-text">Climb the ranks, earn your Scalps, and write your own chapter at Jango's table.</p>
         <Btn className="st-cta" onClick={() => navigate("/games")}>Start Competing</Btn>
