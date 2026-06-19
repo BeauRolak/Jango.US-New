@@ -38,7 +38,7 @@ let _ctx: AudioContext | null = null;
 function ctx() {
   if (typeof window === "undefined") return null;
   try {
-    if (!_ctx) { const AC: typeof AudioContext = (window.AudioContext || (window as any).webkitAudioContext); _ctx = new AC(); }
+    if (!_ctx) { const AC = (window as any).AudioContext || (window as any).webkitAudioContext; if (AC) _ctx = new AC(); }
     if (_ctx.state === "suspended") _ctx.resume();
     return _ctx;
   } catch { return null; }
