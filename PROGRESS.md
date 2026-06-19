@@ -307,6 +307,16 @@ app's intended palette alive at once.
 - Pricing matches locked tiers: Common 5 / Uncommon 10 / Rare 15 / Epic 20 / Legendary 25 Scalps. Cosmetics only.
 - shop.css responsive: auto-fill grid + media queries @1200/640/420/380px. No changes required -> no commit.
 
+## Profile — DONE (queue item 3)
+- Strong layout kept (identity header, avatar+online dot, rank/level/streak pills, XP bar, 4 stat cards,
+  match history W/L + rating deltas, achievements 3/6 locked/unlocked, equipped cosmetics, edit modal).
+- Removed all 10 emoji -> Icon system: achievement data icons now IconName strings (Flame/Target/Trophy/
+  Bolt/Crown/Medal), rendered <Icon name={a.icon as IconName}/>; locked -> <Icon name=Lock/>; streak Flame;
+  Edit-Profile pencil -> Edit; modal close -> Close. Added Icon import.
+- profile.css: inline-svg sizing for .pf-ach-icon/.streak/.pf-edit-btn/.pf-modal-close.
+- Verified live: all icons crisp, 0 emoji, 0 console errors, Vercel green. Commits 7a6dbc (tsx), 647563 (css).
+- Note (juice pass): unlocked achievement icons could get a tier color/glow for extra dopamine.
 
-### Wave status: Dashboard, Play, Rankings/RankTrack, Wallet, Tournaments, Shop DONE + currency GATE fixed.
-### Next queue: Profile, Clans/Social, Battle Pass, Settings, Training, Deposit, Story, Admin, then global shell + juice + QA.
+
+### Wave status: Dashboard, Play, Rankings/RankTrack, Wallet, Tournaments, Shop, Profile DONE + currency GATE fixed.
+### Next queue: Clans/Social, Battle Pass, Settings, Training, Deposit, Story, Admin, then global shell + juice + QA.
