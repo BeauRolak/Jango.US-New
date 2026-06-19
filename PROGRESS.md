@@ -476,3 +476,10 @@ Files with decorative emoji to convert to Icon (remaining unless marked DONE):
 - DONE so far this session (all Vercel green, verified live): A1 (footer+bell dead-ends), A4 (5 legal pages), A6 (persisted consistent balance), A7 (notifications panel), A10 (src/lib/mockData.ts: USER, useScalps, NOTIFICATIONS), O1 bell + Deposit.
 - NEXT QUEUE (depth order): finish O1 sweep (Social, Story, Training, Wallet arrows); A5 Settings parity vs old site; O2 extract real SVGs from old-site DOM (tab 1214845897, READ-ONLY) for game art + RPS hands + chess pieces; game decouple/headless-test pass for eightball (Pool) then connect4/airhockey (MiniGolf already done — match.ts/match.test.ts/bot.ts/GAME_QA.md).
 - mockData.ts is the shared layer — wire more pages (Dashboard stats, Profile) to USER for consistency (A6/A10 extension).
+
+
+## Session 2026-06-18 (cont 3) — O1 Social + Story done
+- O1 Social.tsx DONE: 9 emojis -> Icon (Swords/Message/ArrowLeft/Send/Search/Users/Check). Commits ef57553 + 391b404 (css). Verified live: 0 emoji.
+- O1 Story.tsx DONE: 10 emojis -> Icon. PILLARS data icon field retyped to IconName (Target/Dice/Flame/Crown); inline Building/Gamepad/Crown/Trophy. Commits d33b7f9 + 9b8f5e6 (css). Verified live: 0 emoji, 4 pillar icons.
+- O1 remaining: Training.tsx (300 lines; emoji data field render@201 + star ratings 121/132 + locks 208/244 + check 239 — privacy filter blocks safe reads via JS, do this read via read_page/get_page_text on the blob OR fetch+careful indexOf; map drill emoji 1f3b1/26f3/265f/1f3d2 -> Gamepad/Target/Lock-ish, stars -> Star icon). Wallet.tsx arrows (2197/2193/2191 trend glyphs -> ArrowUpRight/ArrowDown) lines 103/137 — minor/functional. RPS hand gestures (270a/b/c) + Chess glyphs (2654-265f) = O2/decision territory, KEPT for now.
+- O1 pages fully clean now: Deposit, Social, Story, Layout(bell). Plus earlier emoji work on Wallet/Tournaments/Profile per older log.
