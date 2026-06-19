@@ -329,3 +329,9 @@ app's intended palette alive at once.
 - All heavy motion gated behind prefers-reduced-motion. 0 console errors. Vercel green (cd2a026 index.css, 9208c7b Layout).
 - Aesthetic locked: faithful blue->purple neon on near-black, executed at higher craft (deeper blacks, cleaner gradients, more depth/glass/glow).
 - Scope: deep & slow. Order: foundation -> shared card/button/modal/header -> juice -> Dashboard -> Play -> Tournaments -> Shop -> Wallet -> Profile -> remaining.
+
+### Product model + rake (Play, Tournaments)
+- Play hero copy now rake-aware: 'Play Skill Games. Compete for Scalps.' / 'Skill-based 1v1 & tournaments - Winner takes the pot - 3% platform rake'. Added page-enter + stagger-list motion; premium hover/shine/press on .glaunch cards, mode chips, play button.
+- Tournaments entry modal now shows Prize Breakdown: Entry fee, Total prize pool, Jango rake (3%), Winner takes (pot*0.97). Styled .trn-rake block (amber rake, gradient winner payout). Gated 'mock Scalps, no real money moves' notice kept. Verified live: 420 pool -> -13 rake -> 407 winner. 0 console errors.
+- Model represented visually/structurally (entry fees, pots, 3% rake, payouts) while all money movement stays mocked per instruction.
+- Commits: Play d827f4f, play.css 2e41780, Tournaments 557f0e6, tournaments.css 760a8fb. All Vercel green.
