@@ -101,7 +101,7 @@ export default function Wallet() {
           <div className="funds-pill"><span className="dot" /> Funds available</div>
           <div className="balance-actions">
             <button className="btn btn-primary" onClick={() => { setAmount(25); setModal("add"); }}>+ Add Scalps</button>
-            <button className="btn btn-ghost" onClick={() => { setAmount(10); setModal("withdraw"); }}>↗ Withdraw</button>
+            <button className="btn btn-ghost" onClick={() => { setAmount(10); setModal("withdraw"); }}><Icon name="ArrowUpRight" /> Withdraw</button>
             <button className="btn btn-ghost" onClick={() => setModal("methods")}>Payment Methods</button>
           </div>
         </div>
@@ -135,7 +135,7 @@ export default function Wallet() {
           {filtered.length === 0 && <div className="txn-empty">No {filter.toLowerCase()} yet.</div>}
           {filtered.map((t) => (
             <div className="txn-row" key={t.id}>
-              <div className={"txn-icon " + (t.dir === "in" ? "in" : "out")}>{t.dir === "in" ? "↓" : "↑"}</div>
+              <div className={"txn-icon " + (t.dir === "in" ? "in" : "out")}>{t.dir === "in" ? <Icon name="ArrowDown" /> : <Icon name="ArrowUpRight" />}</div>
               <div className="txn-info"><div className="txn-type">{t.type}</div><div className="txn-note">{t.note}</div></div>
               <div className="txn-right"><div className={"txn-amt " + (t.dir === "in" ? "" : "neg")}>{t.dir === "in" ? "+" : "-"}{t.amount.toFixed(2)} Scalps</div><div className="txn-time">{t.time}</div></div>
             </div>
