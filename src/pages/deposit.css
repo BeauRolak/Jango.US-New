@@ -83,3 +83,12 @@
   .dep-detail { position: static; }
   .trust-strip { grid-template-columns: 1fr; }
 }
+
+/* O1: emoji -> Icon SVG sizing */
+.trust-ic { display: inline-grid; place-items: center; }
+.trust-ic svg { width: 22px; height: 22px; color: hsl(217 91% 70%); }
+.soon-lbl { display: inline-flex; align-items: center; gap: 8px; }
+.soon-lbl svg { width: 18px; height: 18px; color: hsl(0 0% 70%); }
+.empty-ic svg { width: 34px; height: 34px; color: hsl(0 0% 55%); }
+.dep-back { display: inline-flex; align-items: center; gap: 6px; }
+.dep-back svg { width: 16px; height: 16px; }
