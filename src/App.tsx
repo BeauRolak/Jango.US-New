@@ -35,6 +35,7 @@ import BlockBlast from "./games/blockblast/BlockBlast";
 import Tron from "./games/tron/Tron";
 import CupKing from "./games/cupking/CupKing";
 import Racing from "./games/racing/Racing";
+import { Terms, Privacy, FairPlay, ResponsibleGaming, Contact } from "./pages/Info";
 
 function P({ children }: { children: ReactNode }) {
   return <div className={"page-fade"}>{children}</div>;
@@ -77,6 +78,11 @@ export default function App() {
         <Route path="/social" element={<P><Social /></P>} />
         <Route path="/story" element={<P><Story /></P>} />
         <Route path="/settings" element={<P><Settings /></P>} />
+        <Route path="/terms" element={<P><Terms /></P>} />
+        <Route path="/privacy" element={<P><Privacy /></P>} />
+        <Route path="/fair-play" element={<P><FairPlay /></P>} />
+        <Route path="/responsible-gaming" element={<P><ResponsibleGaming /></P>} />
+        <Route path="/contact" element={<P><Contact /></P>} />
         <Route path="*" element={<P><Dashboard /></P>} />
       </Routes>
       <Toaster />
