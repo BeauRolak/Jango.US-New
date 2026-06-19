@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { toast } from "../components/UI";
+import { getFeedbackSettings, setFeedbackSetting, useFeedback } from "../components/Juice";
 import { Icon, type IconName } from "../components/Icon";
 import "./pages.css";
 import "./settings.css";
@@ -22,8 +23,15 @@ const NAV_ICONS: Record<string, IconName> = {
   "Danger Zone": "AlertCircle",
 };
 
-function Toggle({ label, sub, on }: { label: string; sub?: string; on?: boolean }) {
-  const [v, setV] = useState(!!on);
+function Toggle({ label, sub, on, settingKey }: { label: string; sub?: string; on: boolean; settingKey?: "sound" | "haptics" }) {
+  const { fire } = useFeedback();
+  const init = settingKey ? !!getFeedbackSettings()[settingKey] : on;
+  const [v, setVRaw] = useState(init);
+  const setV = (next: boolean) => {
+    setVRaw(next);
+    if (settingKey) setFeedbackSetting(settingKey, next);
+    fire(next ? "success" : "tap");
+  };
   return (
     <div className={"set-toggle"}>
       <div className={"set-toggle-text"}>
@@ -107,11 +115,11 @@ export default function Settings() {
           </>)}
 
           {tab === "Gameplay" && (<>
-            <Card title={"Audio & Feedback"}><Toggle label={"Sound Effects"} sub={"Background hum, clicks, win/loss chimes"} on /><div className={"slider-row"}><span>Master Volume</span><input type={"range"} defaultValue={70} /></div><Toggle label={"Haptic Feedback"} sub={"Vibrations for moves and interactions (mobile)"} on /></Card>
+            <Card title={"Audio & Feedback"}><Toggle settingKey="sound" label={"Sound Effects"} sub={"Background hum, clicks, win/loss chimes"} on /><div className={"slider-row"}><span>Master Volume</span><input type={"range"} defaultValue={70} /></div><Toggle settingKey="haptics" label={"Haptic Feedback"} sub={"Vibrations for moves and interactions (mobile)"} on /></Card>
             <Card title={"Visual Preferences"}><Toggle label={"Animations"} sub={"Piece movement, card flips, and transition effects"} on /><Toggle label={"Turn Timer Display"} sub={"Show a countdown clock for timed moves"} on /></Card>
             <Card title={"Matchmaking & Rematch"}><Toggle label={"Quick Rematch"} sub={"Offer an instant rematch button at end of game"} on /><Toggle label={"Auto-Join Matchmaking"} sub={"Automatically enter matchmaking queue when ready"} /><div className={"seg-row"}><span>Preferred Mode</span><div className={"seg"}><button className={"active"}>Ranked</button><button>Casual</button></div></div></Card>
             <Card title={"Phone View"}><Toggle label={"Phone Mode"} sub={"Wraps the app in a phone-shaped container"} /></Card>
-            <Card title={"Mobile Controls"}><div className={"seg-row"}><span>Hand Position</span><div className={"seg"}><button className={"active"}>Right</button><button>Left</button></div></div><div className={"slider-row"}><span>Control Size (56px)</span><input type={"range"} defaultValue={56} /></div><div className={"slider-row"}><span>Opacity (90%)</span><input type={"range"} defaultValue={90} /></div><Toggle label={"Haptic on Press"} sub={"Vibrate when tapping on-screen controls"} on /><div className={"dpad-preview"}><div className={"dpad"}><span/><span/><span/><span/></div></div></Card>
+            <Card title={"Mobile Controls"}><div className={"seg-row"}><span>Hand Position</span><div className={"seg"}><button className={"active"}>Right</button><button>Left</button></div></div><div className={"slider-row"}><span>Control Size (56px)</span><input type={"range"} defaultValue={56} /></div><div className={"slider-row"}><span>Opacity (90%)</span><input type={"range"} defaultValue={90} /></div><Toggle settingKey="haptics" label={"Haptic on Press"} sub={"Vibrate when tapping on-screen controls"} on /><div className={"dpad-preview"}><div className={"dpad"}><span/><span/><span/><span/></div></div></Card>
             <Save label={"Save Preferences"} />
           </>)}
 
