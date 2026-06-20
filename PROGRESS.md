@@ -538,3 +538,17 @@ Files with decorative emoji to convert to Icon (remaining unless marked DONE):
 ### Next (per original priority order)
 - Priority 3: Play / Game Lobby deep premium pass (src/pages/Play.tsx + play.css).
 - Then pause for direction before Priorities 4-6 (Tournaments/Shop/Wallet, Profile/Rankings/Battle Pass, remaining pages) per original instruction.
+
+## Session update 2026-06-19 (cont.) — Priority 3: Play / Game Lobby deep premium pass — DONE (live, Vercel green, zero console errors)
+
+- Full rebuild of `src/pages/Play.tsx` as the arena floor. New stylesheet `src/pages/playlobby.css` (root class renamed `.plobby` to avoid colliding with existing `.lobby` in play.css).
+- Hero: "Choose Your Arena" (blue->purple gradient), product copy on skill games + Scalps + 3% rake + payout-before-entry, stat pills (players online / active matches / live games), Quick Match + Tournaments CTAs.
+- Search + filters: live text search (name/desc), category chips (All/Board/Arcade/Sports/Classic), Status select (Playable/Rebuilding/Coming soon), Difficulty select, result count, empty-state with reset.
+- 15 custom game cards (Mini Golf, 8-Ball, Air Hockey, Chess, Connect Four, RPS, Dots & Boxes, Bowling, Cup King, Stack Tower, Block Blast, Tron, Basketball, Football, Racing). Each: per-game hue identity (HSL --hue), glassy art with shine-sweep + icon zoom on hover, border glow + lift, StatusPill, difficulty chip, player/match counts, entry in Scalps, Play + Bot CTAs. SVG icons only, no emojis.
+- Polished locked states: rebuilding (Cup King, Tron) and coming-soon (Basketball, Football, Racing) get grayscale art, lock label, dashed disabled button, and an error toast on click. Routing not broken — all 15 map to real /games/* routes.
+- Match-entry modal (ActionModal): game + difficulty, entry fee, total pot (2 players), 3% rake, winner payout, mock/gated notice, Cancel + Play/Confirm. Confirm fires feedback + navigates to the game route; bot match navigates with ?mode=bot.
+- Global feedback wired via useFeedback().fire (tap on filter/click, success on confirm, error/tournament_join semantics). Verified live: Play modal opens with correct Scalps + 3% breakdown, search filters to 1 result, locked states render, zero console errors, mobile grid stacks cleanly.
+- Build note: 1 failed Vercel build (TS2322) from AnimatedButton onClick intersection type `(() => void) & MouseEventHandler` — fixed by using zero-arg arrow handlers on AnimatedButtons (native <button>/<input>/<select> keep their (e)=> handlers).
+- Commits: 9a5ee8e (playlobby.css), e2a4d83 (Play.tsx, build errored), 40adabf (TS fix — GREEN, production).
+
+### Next: pause for direction before Priorities 4-6 (Tournaments/Shop/Wallet, Profile/Rankings/Battle Pass, remaining pages) per original instruction.
