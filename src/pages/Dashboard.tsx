@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./pages.css";
 import "./dashboard.css";
 import { Icon, type IconName } from "../components/Icon";
 import {
+import { FeaturedGameHero } from '../components/GameArt';
+import { GAMES } from '../games/registry';
   GlowCard,
   AnimatedButton,
   ProgressGlow,
@@ -51,6 +53,8 @@ const RAKE = 0.03;
 
 export default function Dashboard() {
   const { fire } = useFeedback();
+  const navigate = useNavigate();
+  const gamePath = (id: string) => (GAMES.find((g) => g.id === id)?.path) || '/play';
   const [joinOpen, setJoinOpen] = useState(false);
   const [claimed, setClaimed] = useState(false);
 
@@ -102,6 +106,15 @@ export default function Dashboard() {
             <span><Icon name="Coins" /> 1 Scalp = $1</span>
           </div>
         </div>
+      </section>
+
+      {/* ===== FEATURED ARENA (dynamic game art) ===== */}
+      <section className="dash-arena" style={{ margin: '4px 0 8px' }}>
+        <FeaturedGameHero
+          onPlay={(id) => { fire('tournament_join'); navigate(gamePath(id)); }}
+          onBot={(id) => { fire('tap'); navigate(gamePath(id)); }}
+          onTournament={() => { fire('tap'); navigate('/tournaments'); }}
+        />
       </section>
 
       {/* ===== STAT STRIP ===== */}
