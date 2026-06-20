@@ -552,3 +552,38 @@ Files with decorative emoji to convert to Icon (remaining unless marked DONE):
 - Commits: 9a5ee8e (playlobby.css), e2a4d83 (Play.tsx, build errored), 40adabf (TS fix — GREEN, production).
 
 ### Next: pause for direction before Priorities 4-6 (Tournaments/Shop/Wallet, Profile/Rankings/Battle Pass, remaining pages) per original instruction.
+
+---
+
+## Priority 4 — Tournaments / Shop / Wallet (Deep Premium Re-Audit) — DONE
+
+Re-audited and upgraded all three economy pages to the new Dashboard/Play quality bar using the Juice component library (PageHero, GlowCard, AnimatedButton, StatusPill, ProgressGlow, ScalpsBalance, ActionModal, useFeedback). All money movement is mocked/gated — no real deposits, withdrawals, or payouts.
+
+### Tournaments (src/pages/Tournaments.tsx + src/pages/tarena.css)
+- Arena hero ("Enter the Arena"), live stat strip (total prize pools, live now, open to register).
+- Search + status filter chips (All/Live/Registering/Upcoming/Completed).
+- Premium GlowCard tournament cards with per-event hue accent, status pills, gold prize pool, entry/format/starts meta, fill progress bar, player counts.
+- Join-confirm ActionModal with prize breakdown: total pool, 3% Jango rake, winner-takes payout after rake; gated/mock notice.
+- Bracket preview ActionModal (quarter/semi/final + champion), completed-tournament champion state.
+- useFeedback wired (tap, tournament_join). Commits: 52f23ba (tarena.css), 9bb5c3b (rebuild, errored), 61b9176 (TS fix, GREEN).
+
+### Shop (src/pages/Shop.tsx + src/pages/sarena.css)
+- Cosmetic-store hero ("The Jango Shop"), ScalpsBalance badge, cosmetics-only gated notice, category chips incl. "My Items".
+- Rarity-glow GlowCard item cards (per-rarity color, shine sweep, owned/equipped tags).
+- Item detail / buy-confirm ActionModal: price, balance, balance-after line, not-enough-Scalps error, owned/equipped states.
+- Purchase + equip feedback (purchase, equip, error). Commits: e69e710 (sarena.css), ec32a6b (Shop.tsx, GREEN first try).
+
+### Wallet (src/pages/Wallet.tsx + src/pages/warena.css)
+- Wallet hero ("Scalps Balance"), premium balance GlowCard with bump animation, Funds Available pill.
+- Reads/writes the GLOBAL Scalps balance via useScalps() {balance,set} — navbar stays in sync.
+- Status cards (Deposited/Won/Withdrawn) + Performance (Net P/L, Wagered, Biggest Win, Tx count).
+- Add Scalps ActionModal (presets, payment-method placeholders, gated notice) and Withdraw ActionModal (destination placeholder, gated).
+- Live transaction history with directional in/out colors, kind icons, filters; add/withdraw prepend new mock txns.
+- Feedback (purchase, save, tap, error). Commits: eef076a (warena.css), 0a98b91 (Wallet.tsx, GREEN first try).
+
+### Component-API note learned this priority
+- Icon component takes NO `size` prop — use SVG `width`/`height` (or CSS sizing). AnimatedButton `icon` prop takes an `IconName` STRING, not a JSX <Icon> element. (Caused Tournaments TS2322 9bb5c3b; fixed in 61b9176.)
+
+All three pages verified live: premium render, working modals with Scalps + 3% rake / balance-after math, feedback toasts, owned/equipped/joined states, zero console errors, namespaced CSS (.tarena-*/.sarena-*/.warena-*) to avoid collisions. Mobile: page content has no horizontal overflow (only the pre-existing global navbar overflows below ~300px).
+
+Next: Priority 5 — Profile / Rankings / Battle Pass.
