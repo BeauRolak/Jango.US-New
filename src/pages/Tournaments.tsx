@@ -100,22 +100,22 @@ export default function Tournaments() {
 
       <div className="tarena-stats">
         <div className="tarena-stat">
-          <div className="tarena-stat-v"><span className="tarena-stat-ico"><Icon name="Coins" size={20} /></span>Ⓢ {fmt(totalPool)}</div>
+          <div className="tarena-stat-v"><span className="tarena-stat-ico"><Icon name="Coins" width={20} height={20} /></span>Ⓢ {fmt(totalPool)}</div>
           <div className="tarena-stat-l">Total Prize Pools</div>
         </div>
         <div className="tarena-stat">
-          <div className="tarena-stat-v"><span className="tarena-stat-ico"><Icon name="Flame" size={20} /></span>{liveCount}</div>
+          <div className="tarena-stat-v"><span className="tarena-stat-ico"><Icon name="Flame" width={20} height={20} /></span>{liveCount}</div>
           <div className="tarena-stat-l">Live Now</div>
         </div>
         <div className="tarena-stat">
-          <div className="tarena-stat-v"><span className="tarena-stat-ico"><Icon name="Users" size={20} /></span>{openCount}</div>
+          <div className="tarena-stat-v"><span className="tarena-stat-ico"><Icon name="Users" width={20} height={20} /></span>{openCount}</div>
           <div className="tarena-stat-l">Open To Register</div>
         </div>
       </div>
 
       <div className="tarena-controls">
         <div className="tarena-search">
-          <span className="tarena-search-ico"><Icon name="Search" size={17} /></span>
+          <span className="tarena-search-ico"><Icon name="Search" width={17} height={17} /></span>
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -147,7 +147,7 @@ export default function Tournaments() {
               <div className="tarena-card-in">
                 <div className="tarena-top">
                   <StatusPill label={pill.label} kind={pill.kind} live={pill.live} />
-                  <span className="tarena-game"><Icon name="Gamepad" size={14} /> {t.game}</span>
+                  <span className="tarena-game"><Icon name="Gamepad" width={14} height={14} /> {t.game}</span>
                 </div>
                 <div className="tarena-name">{t.name}</div>
                 <div className="tarena-pool">
@@ -161,7 +161,7 @@ export default function Tournaments() {
                 </div>
                 {t.status === "completed" && t.winner ? (
                   <div className="tarena-champ">
-                    <span className="tarena-champ-ico"><Icon name="Trophy" size={22} /></span>
+                    <span className="tarena-champ-ico"><Icon name="Trophy" width={22} height={22} /></span>
                     <div>
                       <div className="tarena-champ-l">Champion</div>
                       <div className="tarena-champ-n">{t.winner}</div>
@@ -174,21 +174,21 @@ export default function Tournaments() {
                   </>
                 )}
                 <div className="tarena-actions">
-                  <AnimatedButton variant="ghost" fbKind="tap" className="tarena-bracket" icon={<Icon name="Chart" size={15} />} onClick={() => openBracket(t)}>
+                  <AnimatedButton variant="ghost" fbKind="tap" className="tarena-bracket" icon="Chart" onClick={() => openBracket(t)}>
                     Bracket
                   </AnimatedButton>
                   {t.status === "completed" ? (
                     <button className="tarena-cta tarena-fin" disabled>Finished</button>
                   ) : isJoined ? (
-                    <AnimatedButton variant="grad" fbKind="success" className="tarena-cta" icon={<Icon name="Check" size={15} />} onClick={() => openBracket(t)}>
+                    <AnimatedButton variant="grad" fbKind="success" className="tarena-cta" icon="Check" onClick={() => openBracket(t)}>
                       Entered
                     </AnimatedButton>
                   ) : t.status === "live" ? (
-                    <AnimatedButton variant="grad" fbKind="tap" className="tarena-cta" icon={<Icon name="Play" size={15} />} onClick={() => openJoin(t)}>
+                    <AnimatedButton variant="grad" fbKind="tap" className="tarena-cta" icon="Play" onClick={() => openJoin(t)}>
                       Watch &amp; Join
                     </AnimatedButton>
                   ) : (
-                    <AnimatedButton variant="grad" fbKind="reward" className="tarena-cta" icon={<Icon name="Swords" size={15} />} onClick={() => openJoin(t)}>
+                    <AnimatedButton variant="grad" fbKind="reward" className="tarena-cta" icon="Swords" onClick={() => openJoin(t)}>
                       Register
                     </AnimatedButton>
                   )}
@@ -231,7 +231,7 @@ export default function Tournaments() {
               <div className="tarena-break-row win"><span>Winner takes</span><span className="v">Ⓢ {fmt(payoutOf(joinT.pot))}</span></div>
             </div>
             <div className="tarena-note">
-              <span className="tarena-note-ico"><Icon name="Info" size={16} /></span>
+              <span className="tarena-note-ico"><Icon name="Info" width={16} height={16} /></span>
               <span>Entry is mock Scalps — no real money moves and no Scalps are charged. Payouts are simulated for this preview build.</span>
             </div>
           </div>
@@ -258,7 +258,7 @@ export default function Tournaments() {
               </div>
             ))}
             <div className="tarena-bk-champ">
-              <Icon name="Trophy" size={30} />
+              <Icon name="Trophy" width={30} height={30} />
               <div className="tarena-bk-rl">Champion</div>
               <div className="tarena-champ-n">NovaKing</div>
             </div>
