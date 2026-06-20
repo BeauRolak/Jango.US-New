@@ -61,15 +61,15 @@ export default function Dashboard() {
   const secondPlace = Math.round(prizePool * 0.3);
   const thirdPlace = prizePool - firstPlace - secondPlace;
 
-  function claimReward(e: React.MouseEvent<HTMLButtonElement>) {
+  function claimReward(e?: React.MouseEvent<HTMLButtonElement>) {
     if (claimed) return;
     setClaimed(true);
-    fire("reward_claim", "Daily reward claimed: Ⓢ 50", e.currentTarget);
+    fire("reward_claim", "Daily reward claimed: Ⓢ 50", e?.currentTarget ?? null);
   }
 
-  function confirmJoin(e: React.MouseEvent<HTMLButtonElement>) {
+  function confirmJoin(e?: React.MouseEvent<HTMLButtonElement>) {
     setJoinOpen(false);
-    fire("tournament_join", "Seat reserved — Friday Night Arena", e.currentTarget);
+    fire("tournament_join", "Seat reserved — Friday Night Arena", e?.currentTarget ?? null);
   }
 
   return (
@@ -124,7 +124,7 @@ export default function Dashboard() {
             <h2><Icon name="Coins" /> Your Scalps</h2>
             <Link to="/wallet" className="dash-panel__link">Wallet <Icon name="ArrowRight" /></Link>
           </div>
-          <ScalpsBalance amount={MOCK_SCALPS} label="Available balance" size={42} />
+          <ScalpsBalance amount={MOCK_SCALPS} label="Available balance" size="md" />
           <p className="dash-wallet__note">
             Scalps power every entry and every payout. 1 Scalp = $1 USD.
           </p>
@@ -246,7 +246,7 @@ export default function Dashboard() {
             <span className="dash-reward__icon"><Icon name="Calendar" /></span>
             <span className="dash-reward__title">Daily reward</span>
             <span className="dash-reward__desc">Claim Ⓢ 50 just for showing up.</span>
-            <AnimatedButton variant={claimed ? "ghost" : "grad"} icon={claimed ? "CheckCircle" : "Sparkles"} fbKind="reward_claim" onClick={claimReward}>
+            <AnimatedButton variant={claimed ? "ghost" : "grad"} icon={claimed ? "CheckCircle" : "Sparkles"} fbKind="reward" onClick={claimReward}>
               {claimed ? "Claimed" : "Claim Ⓢ 50"}
             </AnimatedButton>
           </GlowCard>
@@ -349,7 +349,7 @@ export default function Dashboard() {
             <AnimatedButton variant="ghost" icon="Close" fbKind="tap" onClick={() => setJoinOpen(false)}>
               Cancel
             </AnimatedButton>
-            <AnimatedButton variant="grad" icon="CheckCircle" fbKind="tournament_join" onClick={confirmJoin}>
+            <AnimatedButton variant="grad" icon="CheckCircle" fbKind="tap" onClick={confirmJoin}>
               Confirm seat
             </AnimatedButton>
           </div>
