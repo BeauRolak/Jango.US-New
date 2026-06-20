@@ -1,0 +1,74 @@
+/* Tournaments — premium arena event hub. Namespaced .tarena-* to avoid collisions. */
+.tarena-page{max-width:1240px;margin:0 auto;padding:0 20px 96px;}
+.tarena-stats{display:flex;flex-wrap:wrap;gap:14px;margin:26px 0 30px;}
+.tarena-stat{position:relative;flex:1 1 180px;min-width:160px;padding:18px 20px;border-radius:18px;background:linear-gradient(160deg,rgba(124,92,255,.12),rgba(40,30,80,.18));border:1px solid rgba(124,92,255,.22);overflow:hidden;}
+.tarena-stat::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 80% at 100% 0,rgba(124,92,255,.20),transparent 60%);pointer-events:none;}
+.tarena-stat-v{font-size:26px;font-weight:800;letter-spacing:-.02em;color:#fff;display:flex;align-items:center;gap:8px;}
+.tarena-stat-l{margin-top:4px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(180,170,220,.8);}
+.tarena-stat-ico{color:#9d86ff;display:inline-flex;}
+.tarena-controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:24px;}
+.tarena-search{position:relative;flex:1 1 240px;min-width:200px;}
+.tarena-search input{width:100%;padding:11px 14px 11px 40px;border-radius:12px;background:rgba(20,16,38,.7);border:1px solid rgba(124,92,255,.22);color:#fff;font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s;}
+.tarena-search input:focus{border-color:rgba(124,92,255,.6);box-shadow:0 0 0 3px rgba(124,92,255,.18);}
+.tarena-search .tarena-search-ico{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:rgba(160,150,200,.7);display:inline-flex;}
+.tarena-chips{display:flex;flex-wrap:wrap;gap:8px;}
+.tarena-chip{padding:9px 16px;border-radius:999px;font-size:13px;font-weight:700;cursor:pointer;border:1px solid rgba(124,92,255,.22);background:rgba(20,16,38,.5);color:rgba(190,182,224,.92);transition:transform .15s,background .2s,border-color .2s,color .2s;user-select:none;}
+.tarena-chip:hover{transform:translateY(-1px);border-color:rgba(124,92,255,.5);color:#fff;}
+.tarena-chip.on{background:linear-gradient(120deg,#5b8cff,#8b5cff);border-color:transparent;color:#fff;box-shadow:0 6px 20px rgba(124,92,255,.32);}
+.tarena-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:20px;}
+.tarena-card{position:relative;padding:0;overflow:hidden;}
+.tarena-card-in{padding:20px;}
+.tarena-accent{position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--ta-h,#7c5cff),transparent);opacity:.9;}
+.tarena-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px;}
+.tarena-game{font-size:12px;font-weight:700;letter-spacing:.04em;color:rgba(175,167,210,.85);display:flex;align-items:center;gap:6px;}
+.tarena-name{font-size:21px;font-weight:800;letter-spacing:-.02em;color:#fff;margin:2px 0 12px;}
+.tarena-pool{display:flex;align-items:baseline;gap:8px;margin-bottom:14px;}
+.tarena-pool-num{font-size:30px;font-weight:800;letter-spacing:-.03em;background:linear-gradient(120deg,#ffd76a,#ffb43d);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;display:flex;align-items:center;gap:6px;}
+.tarena-pool-l{font-size:12px;color:rgba(170,162,205,.75);font-weight:600;}
+.tarena-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+.tarena-meta-l{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(160,152,195,.7);}
+.tarena-meta-v{font-size:14px;font-weight:700;color:#fff;margin-top:3px;display:flex;align-items:center;gap:4px;}
+.tarena-fill{margin-bottom:8px;}
+.tarena-players{font-size:12px;color:rgba(175,167,210,.8);margin-bottom:14px;font-weight:600;}
+.tarena-champ{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;margin-bottom:14px;background:linear-gradient(120deg,rgba(255,196,77,.14),rgba(255,160,40,.08));border:1px solid rgba(255,196,77,.34);}
+.tarena-champ-ico{color:#ffce5a;display:inline-flex;}
+.tarena-champ-l{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,206,90,.85);}
+.tarena-champ-n{font-size:15px;font-weight:800;color:#fff;}
+.tarena-actions{display:flex;gap:10px;}
+.tarena-actions .tarena-bracket{flex:0 0 auto;}
+.tarena-actions .tarena-cta{flex:1 1 auto;}
+.tarena-fin{padding:11px 18px;border-radius:12px;background:rgba(40,34,60,.6);border:1px solid rgba(124,92,255,.14);color:rgba(160,152,195,.7);font-weight:700;font-size:14px;cursor:not-allowed;}
+.tarena-m-head{text-align:center;margin-bottom:18px;}
+.tarena-m-game{font-size:12px;font-weight:700;letter-spacing:.06em;color:rgba(175,167,210,.85);margin-bottom:4px;}
+.tarena-m-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;}
+.tarena-m-stat{text-align:center;padding:14px 8px;border-radius:12px;background:rgba(124,92,255,.08);border:1px solid rgba(124,92,255,.18);}
+.tarena-m-stat-l{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(160,152,195,.75);margin-bottom:6px;}
+.tarena-m-stat-v{font-size:19px;font-weight:800;color:#fff;display:flex;align-items:center;justify-content:center;gap:5px;}
+.tarena-break{border-radius:14px;padding:16px;background:rgba(15,12,30,.6);border:1px solid rgba(124,92,255,.18);margin-bottom:16px;}
+.tarena-break-h{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(160,152,195,.8);margin-bottom:12px;}
+.tarena-break-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;font-size:14px;color:rgba(205,198,235,.92);}
+.tarena-break-row.rake{color:#ff8a9b;}
+.tarena-break-row.win{border-top:1px solid rgba(124,92,255,.2);margin-top:6px;padding-top:13px;font-size:16px;font-weight:800;color:#fff;}
+.tarena-break-row .v{font-weight:700;display:flex;align-items:center;gap:5px;}
+.tarena-break-row.win .v{color:#8be0a0;font-size:18px;}
+.tarena-note{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.5;color:rgba(180,172,215,.78);padding:11px 13px;border-radius:10px;background:rgba(91,140,255,.08);border:1px solid rgba(91,140,255,.2);margin-bottom:18px;}
+.tarena-note .tarena-note-ico{color:#7aa2ff;flex:0 0 auto;margin-top:1px;display:inline-flex;}
+.tarena-bk{display:flex;gap:26px;overflow-x:auto;padding:6px 2px 14px;}
+.tarena-bk-round{display:flex;flex-direction:column;justify-content:space-around;gap:14px;min-width:150px;}
+.tarena-bk-rl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(160,152,195,.7);text-align:center;margin-bottom:4px;}
+.tarena-bk-match{border-radius:10px;background:rgba(20,16,38,.7);border:1px solid rgba(124,92,255,.2);overflow:hidden;}
+.tarena-bk-seed{display:flex;justify-content:space-between;padding:8px 11px;font-size:13px;color:rgba(200,193,232,.9);}
+.tarena-bk-seed+.tarena-bk-seed{border-top:1px solid rgba(124,92,255,.14);}
+.tarena-bk-seed.w{color:#fff;font-weight:700;background:rgba(124,92,255,.12);}
+.tarena-bk-seed .s{color:rgba(150,142,190,.7);font-size:11px;}
+.tarena-bk-champ{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-width:140px;padding:14px;border-radius:12px;background:linear-gradient(150deg,rgba(255,196,77,.16),rgba(255,160,40,.06));border:1px solid rgba(255,196,77,.36);}
+@media(max-width:640px){
+  .tarena-grid{grid-template-columns:1fr;}
+  .tarena-meta{gap:8px;}
+  .tarena-name{font-size:19px;}
+  .tarena-pool-num{font-size:26px;}
+  .tarena-m-stats{gap:8px;}
+  .tarena-m-stat-v{font-size:16px;}
+  .tarena-actions{flex-wrap:wrap;}
+  .tarena-bk{gap:16px;}
+}
