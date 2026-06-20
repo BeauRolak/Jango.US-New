@@ -1,170 +1,270 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Icon } from "../components/Icon";
-import { toast } from "../components/UI";
-import "./tournaments.css";
+import {
+  PageHero, GlowCard, AnimatedButton, StatusPill,
+  ProgressGlow, ActionModal, useFeedback,
+} from "../components/Juice";
+import "./tarena.css";
 
-type Status = "live" | "registering" | "upcoming" | "completed";
+type TStatus = "live" | "registering" | "upcoming" | "completed";
+
 type Tourney = {
-  id: string; name: string; game: string; status: Status;
-  pot: number; buyIn: number; format: string; starts: string;
-  players: number; cap: number; winner?: string;
+  id: string;
+  name: string;
+  game: string;
+  status: TStatus;
+  pot: number;
+  buyIn: number;
+  format: string;
+  starts: string;
+  players: number;
+  cap: number;
+  hue: number;
+  winner?: string;
 };
 
 const TOURNEYS: Tourney[] = [
-  { id: "t1", name: "Sunday Showdown", game: "8-Ball Pool", status: "live", pot: 850, buyIn: 10, format: "Single Elim", starts: "Live now", players: 96, cap: 128 },
-  { id: "t2", name: "Mini Golf Masters", game: "Mini Golf", status: "registering", pot: 420, buyIn: 5, format: "Best of 3", starts: "in 18m", players: 58, cap: 64 },
-  { id: "t3", name: "Grandmaster Gambit", game: "Chess", status: "registering", pot: 1600, buyIn: 25, format: "Swiss", starts: "in 42m", players: 41, cap: 64 },
-  { id: "t4", name: "Friday Night Faceoff", game: "Air Hockey", status: "upcoming", pot: 600, buyIn: 8, format: "Double Elim", starts: "Tomorrow 8PM", players: 12, cap: 96 },
-  { id: "t5", name: "Connect Four Clash", game: "Connect Four", status: "upcoming", pot: 240, buyIn: 3, format: "Single Elim", starts: "Sat 2PM", players: 5, cap: 32 },
-  { id: "t6", name: "High Roller Invitational", game: "8-Ball Pool", status: "upcoming", pot: 5200, buyIn: 85, format: "Single Elim", starts: "Sun 6PM", players: 18, cap: 64 },
-  { id: "t7", name: "Rookie Rumble", game: "Mini Golf", status: "completed", pot: 300, buyIn: 5, format: "Single Elim", starts: "Last week", players: 64, cap: 64, winner: "ShadowAce" },
+  { id: "t1", name: "Sunday Showdown", game: "8-Ball Pool", status: "live", pot: 850, buyIn: 10, format: "Single Elim", starts: "Live now", players: 96, cap: 128, hue: 268 },
+  { id: "t2", name: "Mini Golf Masters", game: "Mini Golf", status: "registering", pot: 420, buyIn: 5, format: "Best of 3", starts: "in 18m", players: 58, cap: 64, hue: 150 },
+  { id: "t3", name: "Grandmaster Gambit", game: "Chess", status: "registering", pot: 1600, buyIn: 25, format: "Swiss", starts: "in 42m", players: 41, cap: 64, hue: 210 },
+  { id: "t4", name: "Friday Night Faceoff", game: "Air Hockey", status: "upcoming", pot: 600, buyIn: 8, format: "Double Elim", starts: "Tomorrow 8PM", players: 12, cap: 96, hue: 22 },
+  { id: "t5", name: "Connect Four Clash", game: "Connect Four", status: "upcoming", pot: 240, buyIn: 3, format: "Single Elim", starts: "Sat 2PM", players: 5, cap: 32, hue: 48 },
+  { id: "t6", name: "High Roller Invitational", game: "8-Ball Pool", status: "upcoming", pot: 5200, buyIn: 85, format: "Single Elim", starts: "Sun 6PM", players: 18, cap: 64, hue: 320 },
+  { id: "t7", name: "Rookie Rumble", game: "Mini Golf", status: "completed", pot: 300, buyIn: 5, format: "Single Elim", starts: "Last week", players: 64, cap: 64, hue: 150, winner: "ShadowAce" },
 ];
 
-const FILTERS = ["All", "Live", "Registering", "Upcoming", "Completed"];
-const STATUS_LABEL: Record<Status, string> = { live: "LIVE", registering: "REGISTERING", upcoming: "UPCOMING", completed: "COMPLETED" };
-const SAMPLE_PLAYERS = ["ShadowAce", "NovaStrike", "ByteKnight", "VortexQ", "PixelPit", "IronClaw", "Zephyr", "MaceWind"];
+const FILTERS: { key: string; label: string }[] = [
+  { key: "all", label: "All" },
+  { key: "live", label: "Live" },
+  { key: "registering", label: "Registering" },
+  { key: "upcoming", label: "Upcoming" },
+  { key: "completed", label: "Completed" },
+];
+
+const STATUS_PILL: Record<TStatus, { label: string; kind: "live" | "soon" | "off" | "accent"; live?: boolean }> = {
+  live: { label: "Live", kind: "live", live: true },
+  registering: { label: "Registering", kind: "accent" },
+  upcoming: { label: "Upcoming", kind: "soon" },
+  completed: { label: "Completed", kind: "off" },
+};
+
+const fmt = (n: number) => n.toLocaleString("en-US");
+
+const SAMPLE_BRACKET = [
+  { round: "Quarterfinals", matches: [["NovaKing", "ZeroByte"], ["AceHigh", "PixelPro"], ["MintRush", "VoltEdge"], ["SkyForge", "RuneWolf"]] },
+  { round: "Semifinals", matches: [["NovaKing", "AceHigh"], ["VoltEdge", "SkyForge"]] },
+  { round: "Final", matches: [["NovaKing", "SkyForge"]] },
+];
 
 export default function Tournaments() {
-  const [filter, setFilter] = useState("All");
-  const [joined, setJoined] = useState<string[]>([]);
-  const [confirm, setConfirm] = useState<Tourney | null>(null);
-  const [bracket, setBracket] = useState<Tourney | null>(null);
+  const { fire } = useFeedback();
+  const [filter, setFilter] = useState("all");
+  const [query, setQuery] = useState("");
+  const [joinT, setJoinT] = useState<Tourney | null>(null);
+  const [bracketT, setBracketT] = useState<Tourney | null>(null);
+  const [joined, setJoined] = useState<Record<string, boolean>>({});
 
-  const totalPot = TOURNEYS.filter((t) => t.status !== "completed").reduce((s, t) => s + t.pot, 0);
-  const visible = TOURNEYS.filter((t) => filter === "All" ? true : t.status === filter.toLowerCase());
+  const totalPool = useMemo(() => TOURNEYS.reduce((s, t) => s + t.pot, 0), []);
+  const liveCount = useMemo(() => TOURNEYS.filter((t) => t.status === "live").length, []);
+  const openCount = useMemo(() => TOURNEYS.filter((t) => t.status === "registering").length, []);
 
-  function join(t: Tourney) {
-    if (joined.includes(t.id)) { toast("You are already registered", "info"); return; }
-    setJoined((j) => [...j, t.id]);
-    setConfirm(null);
-    toast(`Registered for ${t.name} — ${t.buyIn} Scalps entry`, "reward");
-  }
+  const shown = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return TOURNEYS.filter((t) => {
+      const okF = filter === "all" || t.status === filter;
+      const okQ = !q || t.name.toLowerCase().includes(q) || t.game.toLowerCase().includes(q);
+      return okF && okQ;
+    });
+  }, [filter, query]);
+
+  const rakeOf = (pot: number) => Math.round(pot * 0.03);
+  const payoutOf = (pot: number) => pot - rakeOf(pot);
+
+  const openJoin = (t: Tourney) => { fire("tap", "", null); setJoinT(t); };
+  const openBracket = (t: Tourney) => { fire("tap", "", null); setBracketT(t); };
+  const confirmJoin = () => {
+    if (!joinT) return;
+    setJoined((j) => ({ ...j, [joinT.id]: true }));
+    fire("tournament_join", "Entry confirmed — good luck!", null);
+    setJoinT(null);
+  };
 
   return (
-    <div className="trn-page">
-      <div className="trn-head">
-        <div>
-          <h1 className="trn-title">Tournaments</h1>
-          <p className="trn-sub">Compete in bracketed events. Bigger fields, bigger prizes.</p>
+    <div className="tarena-page">
+      <PageHero
+        eyebrow="Competitive Events"
+        title="Enter the"
+        gradWord="Arena"
+        sub="Bracketed skill events with real stakes in Scalps. 3% platform rake — winner payout shown before you enter."
+      />
+
+      <div className="tarena-stats">
+        <div className="tarena-stat">
+          <div className="tarena-stat-v"><span className="tarena-stat-ico"><Icon name="Coins" size={20} /></span>Ⓢ {fmt(totalPool)}</div>
+          <div className="tarena-stat-l">Total Prize Pools</div>
         </div>
-        <div className="trn-pot"><div className="trn-pot-num">Ⓢ {totalPot.toLocaleString()}</div><div className="trn-pot-l">TOTAL PRIZE POOLS</div></div>
+        <div className="tarena-stat">
+          <div className="tarena-stat-v"><span className="tarena-stat-ico"><Icon name="Flame" size={20} /></span>{liveCount}</div>
+          <div className="tarena-stat-l">Live Now</div>
+        </div>
+        <div className="tarena-stat">
+          <div className="tarena-stat-v"><span className="tarena-stat-ico"><Icon name="Users" size={20} /></span>{openCount}</div>
+          <div className="tarena-stat-l">Open To Register</div>
+        </div>
       </div>
 
-      <div className="trn-filters">
-        {FILTERS.map((f) => (<button key={f} className={"trn-filter" + (filter === f ? " on" : "")} onClick={() => setFilter(f)}>{f}</button>))}
+      <div className="tarena-controls">
+        <div className="tarena-search">
+          <span className="tarena-search-ico"><Icon name="Search" size={17} /></span>
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search tournaments or games..."
+            aria-label="Search tournaments"
+          />
+        </div>
+        <div className="tarena-chips">
+          {FILTERS.map((f) => (
+            <button
+              key={f.key}
+              className={"tarena-chip" + (filter === f.key ? " on" : "")}
+              onClick={(e) => { setFilter(f.key); fire("tap", "", e.currentTarget); }}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="trn-grid">
-        {visible.map((t) => {
-          const pct = Math.round((t.players / t.cap) * 100);
-          const isJoined = joined.includes(t.id);
+      <div className="tarena-grid">
+        {shown.map((t) => {
+          const pill = STATUS_PILL[t.status];
+          const isJoined = joined[t.id];
+          const pct = Math.min(100, Math.round((t.players / t.cap) * 100));
           return (
-            <div key={t.id} className={"trn-card status-" + t.status}>
-              <div className="trn-card-top">
-                <span className={"trn-badge " + t.status}>{STATUS_LABEL[t.status]}</span>
-                <span className="trn-game">{t.game}</span>
-              </div>
-              <h3 className="trn-name">{t.name}</h3>
-              <div className="trn-prize"><span className="trn-prize-num">Ⓢ {t.pot.toLocaleString()}</span> <small>prize pool</small></div>
-              <div className="trn-meta">
-                <div><div className="trn-meta-l">ENTRY</div><div className="trn-meta-v">Ⓢ {t.buyIn}</div></div>
-                <div><div className="trn-meta-l">FORMAT</div><div className="trn-meta-v">{t.format}</div></div>
-                <div><div className="trn-meta-l">STARTS</div><div className="trn-meta-v">{t.starts}</div></div>
-              </div>
-              {t.status === "completed" ? (
-                <div className="trn-winner"><Icon name="Trophy" /> Winner: <strong>{t.winner}</strong></div>
-              ) : (
-                <>
-                  <div className="trn-fill"><div className="trn-fill-bar" style={{ width: pct + "%" }} /></div>
-                  <div className="trn-players">{t.players}/{t.cap} players</div>
-                </>
-              )}
-              <div className="trn-actions">
-                <button className="trn-bracket-btn" onClick={() => setBracket(t)}>Bracket</button>
-                {t.status === "live" ? (
-                  <button className="trn-join watch" onClick={() => toast(`Spectating ${t.name}`, "info")}>▶ Watch</button>
-                ) : t.status === "completed" ? (
-                  <button className="trn-join done" disabled>Finished</button>
-                ) : isJoined ? (
-                  <button className="trn-join joined" disabled><Icon name="Check" /> Registered</button>
+            <GlowCard key={t.id} tone="primary" className="tarena-card" style={{ ["--ta-h" as any]: `hsl(${t.hue} 80% 62%)` }}>
+              <div className="tarena-accent" style={{ background: `linear-gradient(90deg, hsl(${t.hue} 80% 62%), transparent)` }} />
+              <div className="tarena-card-in">
+                <div className="tarena-top">
+                  <StatusPill label={pill.label} kind={pill.kind} live={pill.live} />
+                  <span className="tarena-game"><Icon name="Gamepad" size={14} /> {t.game}</span>
+                </div>
+                <div className="tarena-name">{t.name}</div>
+                <div className="tarena-pool">
+                  <span className="tarena-pool-num">Ⓢ {fmt(t.pot)}</span>
+                  <span className="tarena-pool-l">prize pool</span>
+                </div>
+                <div className="tarena-meta">
+                  <div><div className="tarena-meta-l">Entry</div><div className="tarena-meta-v">Ⓢ {t.buyIn}</div></div>
+                  <div><div className="tarena-meta-l">Format</div><div className="tarena-meta-v">{t.format}</div></div>
+                  <div><div className="tarena-meta-l">Starts</div><div className="tarena-meta-v">{t.starts}</div></div>
+                </div>
+                {t.status === "completed" && t.winner ? (
+                  <div className="tarena-champ">
+                    <span className="tarena-champ-ico"><Icon name="Trophy" size={22} /></span>
+                    <div>
+                      <div className="tarena-champ-l">Champion</div>
+                      <div className="tarena-champ-n">{t.winner}</div>
+                    </div>
+                  </div>
                 ) : (
-                  <button className="trn-join" onClick={() => setConfirm(t)}>Register</button>
+                  <>
+                    <div className="tarena-fill"><ProgressGlow value={pct} tone="primary" /></div>
+                    <div className="tarena-players">{t.players}/{t.cap} players</div>
+                  </>
                 )}
+                <div className="tarena-actions">
+                  <AnimatedButton variant="ghost" fbKind="tap" className="tarena-bracket" icon={<Icon name="Chart" size={15} />} onClick={() => openBracket(t)}>
+                    Bracket
+                  </AnimatedButton>
+                  {t.status === "completed" ? (
+                    <button className="tarena-cta tarena-fin" disabled>Finished</button>
+                  ) : isJoined ? (
+                    <AnimatedButton variant="grad" fbKind="success" className="tarena-cta" icon={<Icon name="Check" size={15} />} onClick={() => openBracket(t)}>
+                      Entered
+                    </AnimatedButton>
+                  ) : t.status === "live" ? (
+                    <AnimatedButton variant="grad" fbKind="tap" className="tarena-cta" icon={<Icon name="Play" size={15} />} onClick={() => openJoin(t)}>
+                      Watch &amp; Join
+                    </AnimatedButton>
+                  ) : (
+                    <AnimatedButton variant="grad" fbKind="reward" className="tarena-cta" icon={<Icon name="Swords" size={15} />} onClick={() => openJoin(t)}>
+                      Register
+                    </AnimatedButton>
+                  )}
+                </div>
               </div>
-            </div>
+            </GlowCard>
           );
         })}
       </div>
 
-      {confirm && (
-        <div className="trn-modal-overlay" onClick={() => setConfirm(null)}>
-          <div className="trn-modal j-pop" onClick={(e) => e.stopPropagation()}>
-            <span className={"trn-badge " + confirm.status}>{STATUS_LABEL[confirm.status]}</span>
-            <h3 className="trn-modal-name">{confirm.name}</h3>
-            <p className="trn-modal-sub">{confirm.game} · {confirm.format}</p>
-            <div className="trn-modal-stats">
-              <div><div className="trn-meta-l">ENTRY FEE</div><div className="trn-meta-v big">Ⓢ {confirm.buyIn}</div></div>
-              <div><div className="trn-meta-l">PRIZE POOL</div><div className="trn-meta-v big">Ⓢ {confirm.pot.toLocaleString()}</div></div>
-              <div><div className="trn-meta-l">FIELD</div><div className="trn-meta-v big">{confirm.players}/{confirm.cap}</div></div>
+      <ActionModal
+        open={!!joinT}
+        onClose={() => setJoinT(null)}
+        title={joinT ? joinT.name : ""}
+        footer={
+          joinT ? (
+            <>
+              <AnimatedButton variant="ghost" fbKind="tap" onClick={() => setJoinT(null)}>Cancel</AnimatedButton>
+              <AnimatedButton variant="grad" fbKind="reward" pulse onClick={() => confirmJoin()}>
+                Confirm Entry &middot; Ⓢ {joinT.buyIn}
+              </AnimatedButton>
+            </>
+          ) : null
+        }
+      >
+        {joinT && (
+          <div>
+            <div className="tarena-m-head">
+              <div className="tarena-m-game">{joinT.game} &middot; {joinT.format}</div>
             </div>
-            <div className="trn-rake">
-              <div className="trn-rake-head">Prize breakdown</div>
-              <div className="trn-rake-row"><span>Entry fee</span><b>{confirm.buyIn} Scalps</b></div>
-              <div className="trn-rake-row"><span>Total prize pool</span><b>{confirm.pot.toLocaleString()} Scalps</b></div>
-              <div className="trn-rake-row trn-rake-fee"><span>Jango rake (3%)</span><b>-{Math.round(confirm.pot * 0.03).toLocaleString()} Scalps</b></div>
-              <div className="trn-rake-row trn-rake-win"><span>Winner takes</span><b>{Math.round(confirm.pot * 0.97).toLocaleString()} Scalps</b></div>
+            <div className="tarena-m-stats">
+              <div className="tarena-m-stat"><div className="tarena-m-stat-l">Entry Fee</div><div className="tarena-m-stat-v">Ⓢ {joinT.buyIn}</div></div>
+              <div className="tarena-m-stat"><div className="tarena-m-stat-l">Prize Pool</div><div className="tarena-m-stat-v">Ⓢ {fmt(joinT.pot)}</div></div>
+              <div className="tarena-m-stat"><div className="tarena-m-stat-l">Field</div><div className="tarena-m-stat-v">{joinT.players}/{joinT.cap}</div></div>
             </div>
-            <div className="trn-modal-note">Entry fee is mock Scalps — no real money moves. Prizes are simulated.</div>
-            <div className="trn-modal-actions">
-              <button className="btn btn-ghost" onClick={() => setConfirm(null)}>Cancel</button>
-              <button className="btn btn-primary" onClick={() => join(confirm)}>Confirm · Ⓢ {confirm.buyIn}</button>
+            <div className="tarena-break">
+              <div className="tarena-break-h">Prize Breakdown</div>
+              <div className="tarena-break-row"><span>Total prize pool</span><span className="v">Ⓢ {fmt(joinT.pot)}</span></div>
+              <div className="tarena-break-row rake"><span>Jango rake (3%)</span><span className="v">- Ⓢ {fmt(rakeOf(joinT.pot))}</span></div>
+              <div className="tarena-break-row win"><span>Winner takes</span><span className="v">Ⓢ {fmt(payoutOf(joinT.pot))}</span></div>
+            </div>
+            <div className="tarena-note">
+              <span className="tarena-note-ico"><Icon name="Info" size={16} /></span>
+              <span>Entry is mock Scalps — no real money moves and no Scalps are charged. Payouts are simulated for this preview build.</span>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </ActionModal>
 
-      {bracket && (
-        <div className="trn-modal-overlay" onClick={() => setBracket(null)}>
-          <div className="trn-modal wide j-pop" onClick={(e) => e.stopPropagation()}>
-            <h3 className="trn-modal-name">{bracket.name} — Bracket</h3>
-            <p className="trn-modal-sub">{bracket.format} · {bracket.game}</p>
-            <div className="trn-bracket">
-              <div className="trn-round">
-                <div className="trn-round-l">Quarterfinals</div>
-                {[0, 1, 2, 3].map((i) => (
-                  <div className="trn-match" key={i}>
-                    <span className={i % 2 === 0 ? "trn-seed win" : "trn-seed"}>{SAMPLE_PLAYERS[i * 2 % SAMPLE_PLAYERS.length]}</span>
-                    <span className="trn-seed">{SAMPLE_PLAYERS[(i * 2 + 1) % SAMPLE_PLAYERS.length]}</span>
+      <ActionModal
+        open={!!bracketT}
+        onClose={() => setBracketT(null)}
+        title={bracketT ? bracketT.name + " — Bracket" : ""}
+        footer={<AnimatedButton variant="grad" fbKind="tap" onClick={() => setBracketT(null)}>Close</AnimatedButton>}
+      >
+        {bracketT && (
+          <div className="tarena-bk">
+            {SAMPLE_BRACKET.map((r, ri) => (
+              <div className="tarena-bk-round" key={ri}>
+                <div className="tarena-bk-rl">{r.round}</div>
+                {r.matches.map((m, mi) => (
+                  <div className="tarena-bk-match" key={mi}>
+                    <div className={"tarena-bk-seed" + (mi === 0 ? " w" : "")}><span>{m[0]}</span><span className="s">{ri + 1}</span></div>
+                    <div className="tarena-bk-seed"><span>{m[1]}</span><span className="s">{ri + 5}</span></div>
                   </div>
                 ))}
               </div>
-              <div className="trn-round">
-                <div className="trn-round-l">Semifinals</div>
-                {[0, 1].map((i) => (
-                  <div className="trn-match tall" key={i}>
-                    <span className={i === 0 ? "trn-seed win" : "trn-seed"}>{SAMPLE_PLAYERS[i * 4 % SAMPLE_PLAYERS.length]}</span>
-                    <span className="trn-seed">{SAMPLE_PLAYERS[(i * 4 + 2) % SAMPLE_PLAYERS.length]}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="trn-round">
-                <div className="trn-round-l">Final</div>
-                <div className="trn-match xtall">
-                  <span className="trn-seed win">{bracket.winner || SAMPLE_PLAYERS[0]}</span>
-                  <span className="trn-seed">{SAMPLE_PLAYERS[4]}</span>
-                </div>
-              </div>
-              <div className="trn-round champ">
-                <div className="trn-round-l">Champion</div>
-                <div className="trn-champ"><Icon name="Trophy" /> {bracket.winner || SAMPLE_PLAYERS[0]}</div>
-              </div>
-            </div>
-            <div className="trn-modal-actions">
-              <button className="btn btn-ghost" onClick={() => setBracket(null)}>Close</button>
+            ))}
+            <div className="tarena-bk-champ">
+              <Icon name="Trophy" size={30} />
+              <div className="tarena-bk-rl">Champion</div>
+              <div className="tarena-champ-n">NovaKing</div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </ActionModal>
     </div>
   );
 }
