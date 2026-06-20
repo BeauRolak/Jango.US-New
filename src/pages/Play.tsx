@@ -247,17 +247,17 @@ export default function Play() {
 
               {locked ? (
                 <div className="game-card__cta">
-                  <button className="game-card__btn game-card__btn--locked" onClick={(e) => openGame(g, e)}>
+                  <button className="game-card__btn game-card__btn--locked" onClick={() => openGame(g)}>
                     <Icon name="Lock" /> {g.status === "rebuilding" ? "Rebuilding" : "Coming soon"}
                   </button>
                 </div>
               ) : (
                 <div className="game-card__cta">
-                  <AnimatedButton variant="grad" icon="Play" fbKind="tap" className="game-card__play" onClick={(e) => openGame(g, e)}>
+                  <AnimatedButton variant="grad" icon="Play" fbKind="tap" className="game-card__play" onClick={() => openGame(g)}>
                     Play
                   </AnimatedButton>
                   {g.bot && (
-                    <AnimatedButton variant="ghost" icon="Target" fbKind="tap" className="game-card__bot" onClick={(e) => botMatch(g, e)}>
+                    <AnimatedButton variant="ghost" icon="Target" fbKind="tap" className="game-card__bot" onClick={() => botMatch(g)}>
                       Bot
                     </AnimatedButton>
                   )}
