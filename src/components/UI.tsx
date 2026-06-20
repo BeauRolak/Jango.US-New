@@ -1,5 +1,6 @@
 import { ReactNode, ButtonHTMLAttributes, useEffect, useState } from "react";
 import { Icon, IconName } from "./Icon";
+import { playSound, triggerHaptic } from "./Juice";
 import "./UI.css";
 
 /* ---------- Page header ---------- */
@@ -82,6 +83,16 @@ const TOAST_ICON: Record<ToastType, IconName> = {
 };
 
 export function toast(message: string, type: ToastType = "info") {
+  // Global multisensory feedback: every toast also fires a matching sound + haptic
+  const fbMap: Record<string, { sound: string; haptic: string }> = {
+    success: { sound: "success", haptic: "success" },
+    error: { sound: "error", haptic: "error" },
+    reward: { sound: "reward_claim", haptic: "reward" },
+    info: { sound: "notification", haptic: "light" },
+  };
+  const fb = fbMap[type] || fbMap.info;
+  try { playSound(fb.sound); triggerHaptic(fb.haptic); } catch { /* no-op */ }
+
   window.dispatchEvent(new CustomEvent("jango-toast", { detail: { message, type } }));
 }
 
