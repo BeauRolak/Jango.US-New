@@ -1,0 +1,190 @@
+/* Dynamic Game Art system — namespaced .ga-* */
+
+.ga-theme { position: relative; }
+
+/* ---------- Reusable SVG art ---------- */
+.ga-art-svg { width: 100%; height: 100%; display: block; }
+.ga-bleed { position: absolute; inset: 0; }
+
+/* ---------- Full-bleed reactive backdrop ---------- */
+.ga-backdrop {
+  position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+  z-index: 0; border-radius: inherit;
+  transition: opacity .6s ease;
+}
+.ga-backdrop-grad { position: absolute; inset: 0; background: var(--ga-grad); }
+.ga-backdrop-art { position: absolute; inset: -6% -2%; opacity: .5; filter: saturate(1.05); }
+.ga-backdrop-grain {
+  position: absolute; inset: 0; opacity: .5;
+  background: radial-gradient(circle at 50% 0%, transparent 60%, rgba(0,0,0,.55) 100%);
+}
+
+/* ---------- Compact art panel ---------- */
+.ga-panel {
+  position: relative; overflow: hidden; border-radius: 16px;
+  background: var(--ga-grad); aspect-ratio: 16 / 10;
+  box-shadow: var(--ga-glow); isolation: isolate;
+}
+.ga-panel-grad { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,.55) 100%); z-index: 2; }
+.ga-panel .ga-art-svg { position: absolute; inset: 0; z-index: 1; }
+.ga-panel-shine {
+  position: absolute; top: 0; left: -60%; width: 50%; height: 100%; z-index: 3;
+  background: linear-gradient(105deg, transparent, rgba(255,255,255,.16), transparent);
+  transform: skewX(-18deg);
+}
+.ga-panel:hover .ga-panel-shine { animation: ga-shine 1.1s ease; }
+@keyframes ga-shine { to { left: 120%; } }
+.ga-panel-tag {
+  position: absolute; left: 12px; bottom: 10px; z-index: 4;
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 700; color: #fff;
+  padding: 5px 10px; border-radius: 999px;
+  background: rgba(8,10,18,.6); border: 1px solid var(--ga-p);
+  backdrop-filter: blur(6px);
+}
+.ga-panel-tag svg { color: var(--ga-a); }
+
+/* ---------- Animated preview panel ---------- */
+.ga-preview {
+  position: relative; display: grid; grid-template-columns: 1.05fr 1fr;
+  gap: 0; border-radius: 20px; overflow: hidden;
+  background: linear-gradient(135deg, rgba(14,16,26,.92), rgba(8,9,15,.96));
+  border: 1px solid rgba(255,255,255,.07); box-shadow: var(--ga-glow);
+}
+.ga-preview-art { position: relative; min-height: 260px; background: var(--ga-grad); overflow: hidden; }
+.ga-preview-art .ga-art-svg { position: absolute; inset: 0; }
+.ga-preview-shine { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 55%, rgba(0,0,0,.5)); }
+.ga-preview-cat {
+  position: absolute; top: 12px; left: 12px; z-index: 3;
+  display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: .06em; color: #fff;
+  padding: 5px 10px; border-radius: 999px; background: rgba(8,10,18,.62);
+  border: 1px solid var(--ga-p); backdrop-filter: blur(6px);
+}
+.ga-preview-cat svg { color: var(--ga-a); }
+.ga-preview-body { padding: 22px 24px; display: flex; flex-direction: column; gap: 8px; }
+.ga-preview-title { font-size: 26px; font-weight: 800; margin: 0; color: #fff; letter-spacing: -.01em; }
+.ga-preview-tag { font-size: 16px; font-weight: 700; margin: 0;
+  background: linear-gradient(90deg, var(--ga-p), var(--ga-a)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.ga-preview-sub { font-size: 13.5px; color: rgba(255,255,255,.6); margin: 0 0 6px; }
+.ga-preview-econ { display: flex; gap: 8px; margin: 6px 0 4px; flex-wrap: wrap; }
+.ga-econ-cell { flex: 1 1 0; min-width: 78px; display: flex; flex-direction: column; gap: 2px;
+  padding: 9px 11px; border-radius: 12px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.06); }
+.ga-econ-k { font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; color: rgba(255,255,255,.5); }
+.ga-econ-v { font-size: 16px; font-weight: 800; color: #fff; }
+.ga-econ-win { border-color: var(--ga-p); }
+.ga-econ-win .ga-econ-v { color: var(--ga-a); }
+.ga-preview-actions { display: flex; gap: 9px; margin-top: 12px; flex-wrap: wrap; }
+
+/* ---------- Shared buttons ---------- */
+.ga-btn {
+  display: inline-flex; align-items: center; gap: 7px; cursor: pointer;
+  font-size: 13.5px; font-weight: 700; padding: 10px 16px; border-radius: 12px;
+  border: 1px solid transparent; transition: transform .12s ease, box-shadow .2s ease, background .2s ease; color: #fff;
+}
+.ga-btn:hover { transform: translateY(-2px); }
+.ga-btn:active { transform: translateY(0); }
+.ga-btn-grad { background: linear-gradient(135deg, var(--ga-p), var(--ga-a)); color: #07090f; box-shadow: 0 10px 28px -10px var(--ga-p); }
+.ga-btn-grad:hover { box-shadow: 0 14px 34px -10px var(--ga-p); }
+.ga-btn-ghost { background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.14); }
+.ga-btn-ghost:hover { background: rgba(255,255,255,.1); border-color: var(--ga-p); }
+
+/* ---------- Featured Arena hero ---------- */
+.ga-hero {
+  position: relative; overflow: hidden; border-radius: 24px; isolation: isolate;
+  min-height: 340px; display: flex; align-items: stretch;
+  border: 1px solid rgba(255,255,255,.08); box-shadow: var(--ga-glow);
+}
+.ga-hero-bg { position: absolute; inset: 0; z-index: 0; }
+.ga-hero-grad { position: absolute; inset: 0; background: var(--ga-grad); transition: background .7s ease; }
+.ga-hero-art { position: absolute; inset: -4% 30% -4% 28%; opacity: .85; animation: ga-fadein .7s ease; }
+.ga-hero-grain { position: absolute; inset: 0; background: linear-gradient(100deg, rgba(6,7,12,.2) 30%, rgba(6,7,12,.78) 62%, rgba(6,7,12,.95) 100%); }
+.ga-hero-inner {
+  position: relative; z-index: 2; padding: 34px 38px; max-width: 60%;
+  display: flex; flex-direction: column; justify-content: center; gap: 9px;
+  animation: ga-rise .55s cubic-bezier(.2,.7,.2,1);
+}
+.ga-hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: .08em; color: var(--ga-a); }
+.ga-live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ga-a); box-shadow: 0 0 0 0 var(--ga-a); animation: ga-pulse 1.6s infinite; }
+.ga-hero-title { display: flex; align-items: center; gap: 12px; font-size: 40px; font-weight: 900; margin: 2px 0; color: #fff; letter-spacing: -.02em; }
+.ga-hero-title svg { color: var(--ga-a); }
+.ga-hero-tag { font-size: 20px; font-weight: 800; margin: 0;
+  background: linear-gradient(90deg, var(--ga-p), var(--ga-a)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.ga-hero-sub { font-size: 14.5px; color: rgba(255,255,255,.66); margin: 0 0 6px; max-width: 460px; }
+.ga-hero-econ { display: flex; gap: 8px; flex-wrap: wrap; margin: 2px 0 6px; }
+.ga-chip { font-size: 12.5px; font-weight: 700; color: #fff; padding: 6px 12px; border-radius: 999px;
+  background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); }
+.ga-chip-diff { border-color: var(--ga-p); color: var(--ga-a); }
+.ga-hero-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+.ga-hero-dots { position: absolute; bottom: 18px; right: 24px; z-index: 3; display: flex; gap: 9px; }
+.ga-dot { width: 11px; height: 11px; border-radius: 50%; cursor: pointer; padding: 0;
+  background: rgba(255,255,255,.22); border: none; transition: all .25s ease; }
+.ga-dot:hover { transform: scale(1.2); background: rgba(255,255,255,.5); }
+.ga-dot.on { width: 26px; border-radius: 999px; background: var(--dot); box-shadow: 0 0 12px var(--dot); }
+
+/* ---------- Motif animations ---------- */
+@keyframes ga-fadein { from { opacity: 0; } to { opacity: .85; } }
+@keyframes ga-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes ga-pulse { 0% { box-shadow: 0 0 0 0 currentColor; } 70% { box-shadow: 0 0 0 7px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+.ga-roll { animation: ga-roll-m 3.4s ease-in-out infinite; transform-origin: center; }
+@keyframes ga-roll-m { 0%,100% { transform: translate(0,0); } 50% { transform: translate(14px,-6px); } }
+.ga-aim { animation: ga-dash 2.4s linear infinite; }
+@keyframes ga-dash { to { stroke-dashoffset: -28; } }
+.ga-trail, .ga-trail2 { stroke-dasharray: 240; stroke-dashoffset: 240; animation: ga-draw-line 3s ease-in-out infinite alternate; }
+.ga-trail2 { animation-delay: .8s; }
+@keyframes ga-draw-line { to { stroke-dashoffset: 0; } }
+.ga-puck { animation: ga-puck-m 2.8s ease-in-out infinite; }
+@keyframes ga-puck-m { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-18px,10px); } }
+.ga-king { animation: ga-float 4s ease-in-out infinite; transform-origin: center; }
+@keyframes ga-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+.ga-draw { stroke-dasharray: 180; stroke-dashoffset: 180; animation: ga-draw-line 2.6s ease-in-out infinite alternate; }
+.ga-capture { animation: ga-fade-blink 2.6s ease-in-out infinite; }
+@keyframes ga-fade-blink { 0%,40% { opacity: 0; } 70%,100% { opacity: .22; } }
+.ga-arc { stroke-dasharray: 220; stroke-dashoffset: 220; animation: ga-draw-line 2.8s ease-in-out infinite alternate; }
+.ga-ball { animation: ga-roll-m 3s ease-in-out infinite; }
+.ga-block { animation: ga-slidein .6s cubic-bezier(.2,.8,.2,1) both; animation-delay: calc(var(--bi) * .12s); }
+@keyframes ga-slidein { from { opacity: 0; transform: translateX(-26px); } to { opacity: .82; transform: none; } }
+.ga-blk.on { animation: ga-pop .5s ease both; animation-delay: calc(var(--bi) * .05s); }
+@keyframes ga-pop { 0% { transform: scale(.4); opacity: 0; } 60% { transform: scale(1.12); } 100% { transform: scale(1); opacity: .85; } }
+.ga-disc.on { animation: ga-drop .7s cubic-bezier(.3,1.4,.5,1) both; animation-delay: calc(var(--bi) * .04s); transform-origin: center; }
+@keyframes ga-drop { from { transform: translateY(-40px); opacity: 0; } to { transform: none; opacity: .95; } }
+.ga-cup-s { animation: ga-pop .55s ease both; animation-delay: calc(var(--bi) * .14s); transform-origin: bottom; }
+.ga-streak { animation: ga-streak-m 1.1s linear infinite; animation-delay: calc(var(--bi) * .12s); }
+@keyframes ga-streak-m { 0% { transform: translateX(0); opacity: 0; } 30% { opacity: .55; } 100% { transform: translateX(190px); opacity: 0; } }
+.ga-car { animation: ga-float 2.4s ease-in-out infinite; }
+.ga-vs { animation: ga-vs-pulse 1.8s ease-in-out infinite; transform-origin: center; }
+@keyframes ga-vs-pulse { 0%,100% { opacity: .7; } 50% { opacity: 1; transform: scale(1.06); } }
+.ga-clash path { stroke-dasharray: 160; stroke-dashoffset: 160; animation: ga-draw-line 2s ease-in-out infinite alternate; }
+.ga-grid { animation: ga-grid-pan 8s linear infinite; }
+@keyframes ga-grid-pan { from { transform: translateY(0); } to { transform: translateY(22px); } }
+
+/* ---------- Reduced motion ---------- */
+.ga-still .ga-roll, .ga-still .ga-aim, .ga-still .ga-trail, .ga-still .ga-trail2,
+.ga-still .ga-puck, .ga-still .ga-king, .ga-still .ga-draw, .ga-still .ga-capture,
+.ga-still .ga-arc, .ga-still .ga-ball, .ga-still .ga-block, .ga-still .ga-blk,
+.ga-still .ga-disc, .ga-still .ga-cup-s, .ga-still .ga-streak, .ga-still .ga-car,
+.ga-still .ga-vs, .ga-still .ga-clash path, .ga-still .ga-grid, .ga-still .ga-hero-art,
+.ga-still .ga-hero-inner { animation: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  .ga-art-svg *, .ga-hero-art, .ga-hero-inner, .ga-panel-shine { animation: none !important; }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 860px) {
+  .ga-preview { grid-template-columns: 1fr; }
+  .ga-preview-art { min-height: 180px; }
+  .ga-hero-inner { max-width: 100%; padding: 26px 22px; }
+  .ga-hero-art { inset: -4% 0 40% 0; opacity: .55; }
+  .ga-hero-grain { background: linear-gradient(180deg, rgba(6,7,12,.25) 20%, rgba(6,7,12,.82) 70%, rgba(6,7,12,.96) 100%); }
+  .ga-hero-title { font-size: 30px; }
+  .ga-hero-tag { font-size: 17px; }
+}
+@media (max-width: 520px) {
+  .ga-hero { min-height: 300px; }
+  .ga-hero-title { font-size: 25px; }
+  .ga-hero-actions .ga-btn { flex: 1 1 auto; justify-content: center; }
+  .ga-hero-dots { right: 50%; transform: translateX(50%); }
+  .ga-preview-body { padding: 18px; }
+}
+
