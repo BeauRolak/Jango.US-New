@@ -1,0 +1,70 @@
+/* Wallet — premium Scalps wallet. Namespaced .warena-* to avoid collisions. */
+.warena-page{max-width:1240px;margin:0 auto;padding:0 20px 96px;}
+.warena-top{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin:24px 0 30px;}
+.warena-bal{position:relative;overflow:hidden;padding:0!important;}
+.warena-bal-in{padding:26px 28px;}
+.warena-bal::before{content:"";position:absolute;top:-40%;right:-10%;width:60%;height:180%;background:radial-gradient(circle at 50% 50%,rgba(124,92,255,.28),transparent 65%);pointer-events:none;}
+.warena-bal-l{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:rgba(170,162,205,.8);margin-bottom:10px;}
+.warena-bal-num{font-size:52px;font-weight:800;letter-spacing:-.03em;line-height:1;color:#fff;display:flex;align-items:baseline;gap:10px;transition:transform .3s ease;}
+.warena-bal-num.bump{animation:warena-bump .5s ease;}
+@keyframes warena-bump{0%{transform:scale(1);}40%{transform:scale(1.08);color:#8be0a0;}100%{transform:scale(1);}}
+.warena-bal-mark{font-size:30px;font-weight:800;color:#ffd76a;}
+.warena-bal-unit{font-size:15px;font-weight:600;color:rgba(170,162,205,.75);align-self:flex-end;margin-bottom:8px;}
+.warena-bal-sub{font-size:13px;color:rgba(180,172,215,.72);margin:12px 0 16px;}
+.warena-bal-actions{display:flex;flex-wrap:wrap;gap:10px;}
+.warena-stats{display:flex;flex-direction:column;gap:14px;}
+.warena-stat{padding:16px 20px!important;}
+.warena-stat-l{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(160,152,195,.75);display:flex;align-items:center;gap:7px;margin-bottom:8px;}
+.warena-stat-ico{color:#9d86ff;display:inline-flex;}
+.warena-stat-v{font-size:24px;font-weight:800;letter-spacing:-.02em;color:#fff;display:flex;align-items:baseline;gap:6px;}
+.warena-stat-v.pos{color:#8be0a0;}
+.warena-stat-u{font-size:12px;font-weight:600;color:rgba(165,157,200,.7);}
+.warena-h{font-size:18px;font-weight:800;letter-spacing:-.01em;color:#fff;margin:8px 0 16px;}
+.warena-perf{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:32px;}
+.warena-perf-c{padding:16px 18px!important;}
+.warena-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+.warena-chip{padding:8px 15px;border-radius:999px;font-size:13px;font-weight:700;cursor:pointer;border:1px solid rgba(124,92,255,.22);background:rgba(20,16,38,.5);color:rgba(190,182,224,.92);transition:transform .15s,background .2s,border-color .2s,color .2s;user-select:none;}
+.warena-chip:hover{transform:translateY(-1px);border-color:rgba(124,92,255,.5);color:#fff;}
+.warena-chip.on{background:linear-gradient(120deg,#5b8cff,#8b5cff);border-color:transparent;color:#fff;box-shadow:0 6px 20px rgba(124,92,255,.32);}
+.warena-txns{display:flex;flex-direction:column;gap:10px;}
+.warena-txn{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:14px;background:rgba(20,16,38,.55);border:1px solid rgba(124,92,255,.14);transition:transform .15s,border-color .2s;}
+.warena-txn:hover{transform:translateX(2px);border-color:rgba(124,92,255,.3);}
+.warena-txn-ico{flex:0 0 auto;width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(124,92,255,.12);color:#9d86ff;}
+.warena-txn-ico.in{background:rgba(61,220,132,.12);color:#5ad98a;}
+.warena-txn-ico.out{background:rgba(255,138,155,.12);color:#ff8a9b;}
+.warena-txn-mid{flex:1 1 auto;min-width:0;}
+.warena-txn-type{font-size:14px;font-weight:700;color:#fff;}
+.warena-txn-note{font-size:12.5px;color:rgba(175,167,210,.72);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.warena-txn-right{flex:0 0 auto;text-align:right;}
+.warena-txn-amt{font-size:15px;font-weight:800;display:flex;align-items:center;gap:4px;justify-content:flex-end;}
+.warena-txn-amt.in{color:#7ef0a6;}
+.warena-txn-amt.out{color:#ff9aa9;}
+.warena-txn-time{font-size:11px;color:rgba(160,152,195,.6);margin-top:3px;}
+.warena-empty{text-align:center;padding:36px;color:rgba(170,162,205,.7);font-size:14px;}
+.warena-m-presets{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 16px;}
+.warena-m-preset{flex:1 1 60px;padding:12px 0;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;text-align:center;border:1px solid rgba(124,92,255,.24);background:rgba(20,16,38,.6);color:rgba(200,193,232,.92);transition:transform .15s,border-color .2s,background .2s;}
+.warena-m-preset:hover{transform:translateY(-1px);border-color:rgba(124,92,255,.55);}
+.warena-m-preset.on{background:linear-gradient(120deg,#5b8cff,#8b5cff);border-color:transparent;color:#fff;}
+.warena-m-label{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(160,152,195,.8);margin-bottom:8px;}
+.warena-m-amount{display:flex;align-items:center;gap:10px;padding:14px 16px;border-radius:12px;background:rgba(15,12,30,.6);border:1px solid rgba(124,92,255,.2);margin-bottom:16px;}
+.warena-m-amount .mk{font-size:22px;font-weight:800;color:#ffd76a;}
+.warena-m-amount input{flex:1 1 auto;background:transparent;border:none;outline:none;color:#fff;font-size:24px;font-weight:800;width:100%;}
+.warena-m-methods{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+.warena-m-method{display:flex;align-items:center;gap:12px;padding:13px 15px;border-radius:12px;border:1px solid rgba(124,92,255,.2);background:rgba(20,16,38,.5);cursor:pointer;transition:border-color .2s,background .2s;}
+.warena-m-method:hover{border-color:rgba(124,92,255,.45);}
+.warena-m-method.on{border-color:#8b5cff;background:rgba(124,92,255,.12);}
+.warena-m-method-ico{color:#9d86ff;display:inline-flex;}
+.warena-m-method-name{font-size:14px;font-weight:700;color:#fff;flex:1 1 auto;}
+.warena-m-method-tag{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(160,152,195,.7);}
+.warena-m-note{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.5;color:rgba(180,172,215,.78);padding:11px 13px;border-radius:10px;background:rgba(91,140,255,.08);border:1px solid rgba(91,140,255,.2);}
+.warena-m-note .ico{color:#7aa2ff;flex:0 0 auto;margin-top:1px;display:inline-flex;}
+@media(max-width:860px){
+  .warena-top{grid-template-columns:1fr;}
+  .warena-perf{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:640px){
+  .warena-bal-num{font-size:42px;}
+  .warena-perf{grid-template-columns:1fr 1fr;}
+  .warena-bal-actions{flex-direction:column;}
+  .warena-bal-actions>*{width:100%;}
+}
