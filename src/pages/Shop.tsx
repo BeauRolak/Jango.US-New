@@ -1,15 +1,29 @@
-import { useState } from "react";
-import { toast } from "../components/UI";
+import { useState, useMemo } from "react";
 import { Icon, type IconName } from "../components/Icon";
-import "./shop.css";
+import {
+  PageHero, GlowCard, AnimatedButton, ScalpsBalance,
+  StatusPill, ActionModal, useFeedback,
+} from "../components/Juice";
+import "./sarena.css";
 
 type Rarity = "Common" | "Uncommon" | "Rare" | "Epic" | "Legendary";
-const PRICES: Record<Rarity, number> = { Common: 5, Uncommon: 10, Rare: 15, Epic: 20, Legendary: 25 };
+
+type Item = {
+  id: string;
+  name: string;
+  icon: IconName;
+  rarity: Rarity;
+  category: string;
+  desc: string;
+};
+
+const PRICES: Record<Rarity, number> = {
+  Common: 5, Uncommon: 10, Rare: 15, Epic: 20, Legendary: 25,
+};
+
 const RARITY_COLOR: Record<Rarity, string> = {
   Common: "#9aa4b2", Uncommon: "#3ddc84", Rare: "#4d9bff", Epic: "#b15cff", Legendary: "#f5b942",
 };
-
-type Item = { id: string; name: string; icon: IconName; rarity: Rarity; category: string; desc: string };
 
 const ITEMS: Item[] = [
   { id: "f1", name: "Inferno Avatar Frame", icon: "Flame", rarity: "Legendary", category: "Frames", desc: "Animated flame border that engulfs your avatar in living fire." },
@@ -25,120 +39,173 @@ const ITEMS: Item[] = [
   { id: "e1", name: "Gold Shower Emote", icon: "Coins", rarity: "Rare", category: "Emotes", desc: "Rain Scalps on your opponent after a win." },
   { id: "e2", name: "Mic Drop", icon: "Bell", rarity: "Uncommon", category: "Emotes", desc: "Say nothing. Drop the mic." },
   { id: "d1", name: "Golden Dice", icon: "Dice", rarity: "Legendary", category: "Dice", desc: "Solid gold dice for the high roller." },
-  { id: "v1", name: "Victory Roar", icon: "Crown", rarity: "Epic", category: "Victory", desc: "A lion’s roar announces your triumph." },
+  { id: "v1", name: "Victory Roar", icon: "Crown", rarity: "Epic", category: "Victory", desc: "A lion's roar announces your triumph." },
   { id: "th1", name: "Midnight Theme", icon: "Star", rarity: "Uncommon", category: "Themes", desc: "Deep navy UI theme for night owls." },
   { id: "bn1", name: "Aurora Banner", icon: "Sparkles", rarity: "Rare", category: "Banners", desc: "A shifting aurora behind your profile." },
 ];
 
 const CATEGORIES = ["All", "Frames", "Badges", "Trails", "Emotes", "Victory", "Themes", "Banners", "Dice", "My Items"];
 
+const fmt = (n: number) => n.toLocaleString("en-US");
+
 export default function Shop() {
+  const { fire } = useFeedback();
   const [balance, setBalance] = useState(117);
   const [cat, setCat] = useState("All");
-  const [owned, setOwned] = useState<string[]>(["f4", "b4"]);
-  const [equipped, setEquipped] = useState<string[]>(["f4"]);
-  const [preview, setPreview] = useState<Item | null>(null);
-  const [confirm, setConfirm] = useState<Item | null>(null);
+  const [owned, setOwned] = useState<Record<string, boolean>>({});
+  const [equipped, setEquipped] = useState<string | null>(null);
+  const [active, setActive] = useState<Item | null>(null);
+  const [err, setErr] = useState(false);
 
-  const visible = ITEMS.filter((i) => cat === "All" ? true : cat === "My Items" ? owned.includes(i.id) : i.category === cat);
+  const shown = useMemo(() => {
+    if (cat === "All") return ITEMS;
+    if (cat === "My Items") return ITEMS.filter((i) => owned[i.id]);
+    return ITEMS.filter((i) => i.category === cat);
+  }, [cat, owned]);
 
-  function buy(item: Item) {
-    const price = PRICES[item.rarity];
-    if (owned.includes(item.id)) { toast("You already own this item", "info"); return; }
-    if (balance < price) { toast(`Not enough Scalps — need ${price - balance} more`, "error"); setConfirm(null); return; }
+  const priceOf = (it: Item) => PRICES[it.rarity];
+
+  const openItem = (it: Item) => { setErr(false); fire("tap", "", null); setActive(it); };
+
+  const buy = () => {
+    if (!active) return;
+    const price = priceOf(active);
+    if (balance < price) { setErr(true); fire("error", "Not enough Scalps", null); return; }
     setBalance((b) => b - price);
-    setOwned((o) => [...o, item.id]);
-    setConfirm(null);
-    setPreview(null);
-    toast(`Purchased ${item.name} for ${price} Scalps`, "reward");
-  }
+    setOwned((o) => ({ ...o, [active.id]: true }));
+    fire("purchase", active.name + " unlocked!", null);
+    setActive(null);
+  };
 
-  function equip(item: Item) {
-    if (equipped.includes(item.id)) {
-      setEquipped((e) => e.filter((x) => x !== item.id));
-      toast(`Unequipped ${item.name}`, "info");
-    } else {
-      setEquipped((e) => [...e.filter((x) => ITEMS.find((it) => it.id === x)?.category !== item.category), item.id]);
-      toast(`Equipped ${item.name}`, "success");
-    }
-  }
+  const equip = (it: Item) => {
+    setEquipped(it.id);
+    fire("equip", it.name + " equipped", null);
+    setActive(null);
+  };
 
   return (
-    <div className="shop-page">
-      <div className="shop-head">
-        <div>
-          <h1 className="shop-title">◈ Item Shop</h1>
-          <p className="shop-sub">Spend Scalps on cosmetics — no pay-to-win, ever.</p>
-        </div>
-        <div className="shop-bal"><span className="shop-bal-pill">Ⓢ {balance.toFixed(0)} Scalps</span></div>
+    <div className="sarena-page">
+      <PageHero
+        eyebrow="Cosmetic Store"
+        title="The Jango"
+        gradWord="Shop"
+        sub="Spend Scalps on cosmetics — frames, badges, trails and more. Cosmetics only, never pay-to-win."
+      />
+
+      <div className="sarena-balance-row">
+        <ScalpsBalance amount={balance} size="md" />
       </div>
 
-      <div className="shop-notice">Cosmetics only — nothing here affects gameplay or odds. Scalps are in-platform credits.</div>
+      <div className="sarena-note">
+        <span className="sarena-note-ico"><Icon name="Info" /></span>
+        <span>Cosmetics only — nothing here affects gameplay or odds. Scalps are in-platform credits and no real money moves in this preview.</span>
+      </div>
 
-      <div className="shop-cats">
+      <div className="sarena-chips">
         {CATEGORIES.map((c) => (
-          <button key={c} className={"shop-cat" + (cat === c ? " on" : "")} onClick={() => setCat(c)}>{c}</button>
+          <button
+            key={c}
+            className={"sarena-chip" + (cat === c ? " on" : "")}
+            onClick={(e) => { setCat(c); fire("tap", "", e.currentTarget); }}
+          >
+            {c}
+          </button>
         ))}
       </div>
 
-      {visible.length === 0 && <div className="shop-empty">Nothing here yet. {cat === "My Items" ? "Buy some cosmetics to fill your collection!" : "Check back soon."}</div>}
-
-      <div className="shop-grid">
-        {visible.map((item) => {
-          const price = PRICES[item.rarity];
-          const isOwned = owned.includes(item.id);
-          const isEquipped = equipped.includes(item.id);
-          const color = RARITY_COLOR[item.rarity];
+      <div className="sarena-grid">
+        {shown.map((it) => {
+          const isOwned = owned[it.id];
+          const isEquipped = equipped === it.id;
+          const color = RARITY_COLOR[it.rarity];
           return (
-            <div key={item.id} className={"shop-card rarity-" + item.rarity.toLowerCase()} style={{ ["--rar" as any]: color }}>
-              <div className="shop-rar-tag" style={{ color }}>{item.rarity}</div>
-              <div className="shop-card-icon"><Icon name={item.icon} /></div>
-              <div className="shop-card-name">{item.name}</div>
-              <div className="shop-card-foot">
-                <button className="shop-preview" onClick={() => setPreview(item)}><Icon name="Search" /> Preview</button>
-                {isOwned ? (
-                  <button className={"shop-buy owned" + (isEquipped ? " equipped" : "")} onClick={() => equip(item)}>{isEquipped ? <><Icon name="Check" /> Equipped</> : "Equip"}</button>
-                ) : (
-                  <button className="shop-buy" onClick={() => setConfirm(item)}>Ⓢ {price}</button>
-                )}
+            <GlowCard key={it.id} tone="primary" className="sarena-card" style={{ ["--sr" as any]: color }}>
+              <div className="sarena-card-in">
+                <div className="sarena-rarity">{it.rarity}</div>
+                <div className="sarena-art">
+                  {isOwned && <span className="sarena-owned-tag"><Icon name="Check" /> {isEquipped ? "Equipped" : "Owned"}</span>}
+                  <span className="sarena-art-ico"><Icon name={it.icon} /></span>
+                </div>
+                <div className="sarena-name">{it.name}</div>
+                <div className="sarena-desc">{it.desc}</div>
+                <div className="sarena-foot">
+                  {isOwned ? (
+                    <AnimatedButton
+                      variant={isEquipped ? "ghost" : "grad"}
+                      fbKind="success"
+                      className="sarena-equipbtn"
+                      icon={isEquipped ? "CheckCircle" : "Star"}
+                      onClick={() => equip(it)}
+                    >
+                      {isEquipped ? "Equipped" : "Equip"}
+                    </AnimatedButton>
+                  ) : (
+                    <>
+                      <span className="sarena-price">Ⓢ {priceOf(it)}</span>
+                      <AnimatedButton variant="grad" fbKind="tap" className="sarena-buy" icon="Cart" onClick={() => openItem(it)}>
+                        View
+                      </AnimatedButton>
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
+            </GlowCard>
           );
         })}
       </div>
 
-      {preview && (
-        <div className="shop-modal-overlay" onClick={() => setPreview(null)}>
-          <div className="shop-modal j-pop" onClick={(e) => e.stopPropagation()} style={{ ["--rar" as any]: RARITY_COLOR[preview.rarity] }}>
-            <div className="shop-preview-stage"><div className="shop-preview-icon"><Icon name={preview.icon} /></div></div>
-            <div className="shop-rar-tag big" style={{ color: RARITY_COLOR[preview.rarity] }}>{preview.rarity}</div>
-            <h3 className="shop-modal-name">{preview.name}</h3>
-            <p className="shop-modal-desc">{preview.desc}</p>
-            <div className="shop-modal-actions">
-              <button className="btn btn-ghost" onClick={() => setPreview(null)}>Close</button>
-              {owned.includes(preview.id) ? (
-                <button className="btn btn-primary" onClick={() => equip(preview)}>{equipped.includes(preview.id) ? "Unequip" : "Equip"}</button>
-              ) : (
-                <button className="btn btn-primary" onClick={() => { setConfirm(preview); }}>Ⓢ Buy for {PRICES[preview.rarity]}</button>
-              )}
+      <ActionModal
+        open={!!active}
+        onClose={() => setActive(null)}
+        title={active ? active.name : ""}
+        footer={
+          active ? (
+            owned[active.id] ? (
+              <>
+                <AnimatedButton variant="ghost" fbKind="tap" onClick={() => setActive(null)}>Close</AnimatedButton>
+                <AnimatedButton variant="grad" fbKind="success" icon="Star" onClick={() => equip(active)}>Equip</AnimatedButton>
+              </>
+            ) : (
+              <>
+                <AnimatedButton variant="ghost" fbKind="tap" onClick={() => setActive(null)}>Cancel</AnimatedButton>
+                <AnimatedButton variant="grad" fbKind="reward" pulse icon="Cart" onClick={() => buy()}>
+                  Buy &middot; Ⓢ {priceOf(active)}
+                </AnimatedButton>
+              </>
+            )
+          ) : null
+        }
+      >
+        {active && (
+          <div style={{ ["--sr" as any]: RARITY_COLOR[active.rarity] }}>
+            <div className="sarena-m-art">
+              <span className="sarena-m-art-ico"><Icon name={active.icon} /></span>
             </div>
+            <div className="sarena-m-rarity">{active.rarity} &middot; {active.category}</div>
+            <div className="sarena-m-desc">{active.desc}</div>
+            {!owned[active.id] && (
+              <div className="sarena-m-rows">
+                <div className="sarena-m-row"><span>Price</span><span className="v">Ⓢ {priceOf(active)}</span></div>
+                <div className="sarena-m-row"><span>Your balance</span><span className="v">Ⓢ {fmt(balance)}</span></div>
+                <div className={"sarena-m-row after" + (balance < priceOf(active) ? " short" : "")}>
+                  <span>Balance after</span><span className="v">Ⓢ {fmt(balance - priceOf(active))}</span>
+                </div>
+              </div>
+            )}
+            {err && balance < priceOf(active) && (
+              <div className="sarena-err">
+                <span className="sarena-err-ico"><Icon name="AlertCircle" /></span>
+                <span>Not enough Scalps. Earn more by winning matches or visit your Wallet.</span>
+              </div>
+            )}
+            {owned[active.id] && (
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <StatusPill label="Owned" kind="accent" />
+              </div>
+            )}
           </div>
-        </div>
-      )}
-
-      {confirm && (
-        <div className="shop-modal-overlay" onClick={() => setConfirm(null)}>
-          <div className="shop-modal small j-pop" onClick={(e) => e.stopPropagation()} style={{ ["--rar" as any]: RARITY_COLOR[confirm.rarity] }}>
-            <div className="shop-confirm-icon"><Icon name={confirm.icon} /></div>
-            <h3 className="shop-modal-name">Buy {confirm.name}?</h3>
-            <p className="shop-modal-desc">{confirm.rarity} cosmetic · {PRICES[confirm.rarity]} Scalps. Balance after: {balance - PRICES[confirm.rarity]} Scalps.</p>
-            <div className="shop-modal-actions">
-              <button className="btn btn-ghost" onClick={() => setConfirm(null)}>Cancel</button>
-              <button className="btn btn-primary" onClick={() => buy(confirm)}>Confirm Ⓢ {PRICES[confirm.rarity]}</button>
-            </div>
-          </div>
-        </div>
-      )}
+        )}
+      </ActionModal>
     </div>
   );
 }
