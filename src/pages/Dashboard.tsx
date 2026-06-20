@@ -4,8 +4,6 @@ import "./pages.css";
 import "./dashboard.css";
 import { Icon, type IconName } from "../components/Icon";
 import {
-import { FeaturedGameHero } from '../components/GameArt';
-import { GAMES } from '../games/registry';
   GlowCard,
   AnimatedButton,
   ProgressGlow,
@@ -15,6 +13,8 @@ import { GAMES } from '../games/registry';
   ActionModal,
   useFeedback,
 } from "../components/Juice";
+import { FeaturedGameHero } from '../components/GameArt';
+import { GAMES } from '../games/registry';
 
 type Game = { name: string; slug: string; diff: string; icon: IconName; tone: string };
 
