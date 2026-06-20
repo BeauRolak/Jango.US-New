@@ -241,7 +241,7 @@ export function GameArtPanel({ gameId, label, className = '' }: { gameId: string
       <div className="ga-panel-shine" />
       {label && (
         <div className="ga-panel-tag">
-          <Icon name={art.icon} width={15} height={15} />
+          <Icon name={art.icon as any} width={15} height={15} />
           <span>{art.name}</span>
         </div>
       )}
@@ -277,7 +277,7 @@ export function AnimatedGamePreview({
       <div className="ga-preview-art">
         <GameArtSVG art={art} />
         <div className="ga-preview-shine" />
-        <div className="ga-preview-cat"><Icon name={art.icon} width={14} height={14} /><span>{art.category}</span></div>
+        <div className="ga-preview-cat"><Icon name={art.icon as any} width={14} height={14} /><span>{art.category}</span></div>
       </div>
       <div className="ga-preview-body">
         <h3 className="ga-preview-title">{art.name}</h3>
@@ -299,7 +299,7 @@ export function AnimatedGamePreview({
                 onClick={() => act.onClick && act.onClick()}
                 type="button"
               >
-                {act.icon && <Icon name={act.icon} width={16} height={16} />}
+                {act.icon && <Icon name={act.icon as any} width={16} height={16} />}
                 <span>{act.label}</span>
               </button>
             ))}
@@ -360,7 +360,7 @@ export function FeaturedGameHero({
       </div>
       <div className="ga-hero-inner" key={gameId + "-c"}>
         <div className="ga-hero-eyebrow"><span className="ga-live-dot" />Featured Arena · {art.category}</div>
-        <h2 className="ga-hero-title"><Icon name={art.icon} width={30} height={30} /> {art.name}</h2>
+        <h2 className="ga-hero-title"><Icon name={art.icon as any} width={30} height={30} /> {art.name}</h2>
         <p className="ga-hero-tag">{art.tagline}</p>
         <p className="ga-hero-sub">{art.sub}</p>
         <div className="ga-hero-econ">
