@@ -512,3 +512,29 @@ Files with decorative emoji to convert to Icon (remaining unless marked DONE):
 - DONE this session (all green): O1 Training+Wallet, A5 Settings, Track-P Connect4/AirHockey/8-Ball.
 - NEXT QUEUE (depth order): (1) MIGRATE the .tsx components (Connect4.tsx/AirHockey.tsx/EightBall.tsx) to actually USE their new match.ts as the game loop — currently match.ts is the tested decoupled CORE but each .tsx may still run its own inline loop; migrating makes the TESTED logic what ships (do one game fully, verify live in foreground if possible, before the next). (2) O2: extract REAL game SVGs from the live OLD SITE DOM (tab 1214845897) and replace the placeholder Training pack icons (Dice/Target/Crown/Bolt) + RPS hands — do NOT substitute generic icons. (3) Decouple+test remaining games (basketball, bowling, blockblast, cupking, dotsboxes, football, racing, chess already has bot+engine). (4) Wire Dashboard/Profile stats to USER (mockData) for A6/A10 consistency.
 - OPEN DECISIONS still pinned at top — do not guess; awaiting Beau.
+
+## Session update 2026-06-19 — Priority 1 (feedback system) + Priority 2 (Dashboard arena hub)
+
+### Priority 1: Global feedback system — DONE (live, Vercel green, zero console errors)
+- Unified `useFeedback()` -> `{ fire, feedback, playSound, triggerHaptic, triggerEffect, getSettings, getFeedbackSettings }`. `fire(kind, message?, el?)` triggers effect + toast + sound (if enabled) + haptic (if enabled/supported).
+- Wired Settings toggles (Sound Effects, Haptic Feedback, Haptic on Press) to `getFeedbackSettings()` / `setFeedbackSetting()` with localStorage persistence (`jango_sound`, `jango_haptics`).
+- `toast()` now also fires matching sound + haptic site-wide for consistency.
+- Commits: 0ee3623, 9524cb4, 43a99ca (fix latent `Tone` type), caca54f (Toggle `on?` optional), d076658.
+- Verified live: Shop equip fires toast + sound + haptic, Settings toggles persist, zero console errors.
+
+### Priority 2: Dashboard deep premium pass — DONE (live, Vercel green, zero console errors)
+- Full rebuild of `src/pages/Dashboard.tsx` as the arena hub (no longer a plain landing page). Rebuilt `src/pages/dashboard.css` (was an orphaned duplicate of pages.css landing styles) as the new `.dash-*` neon blue->purple stylesheet.
+- Hero: removed empty gap, headline hits immediately, blue->purple gradient on "Skill", primary (Start Playing) + secondary (Browse Games) CTAs, trust row (3% flat rake / instant payouts / 1 Scalp = $1).
+- Added Scalps preview (mock Ⓢ 1,280 balance, Add Scalps / Cash Out, "money movement is gated" note).
+- Added rank/progression preview (Gold III, ProgressGlow 680/1000 RP, RankBadge gold->plat, next-unlock reward).
+- Added live tournament preview (Friday Night Arena, Chess 64 seats): entry Ⓢ 25, 3% rake shown (Ⓢ 48), prize pool Ⓢ 1,552, payout split 1st/2nd/3rd (776/466/310), seats progress, Join CTA -> ActionModal confirm, mock-economy gating note.
+- Added quick-play featured card (Chess, difficulty chips, Play Ranked + Bot Match).
+- Added reward/progression callouts: daily reward (claimable -> fire reward_claim), weekly challenge progress, item unlock, achievement.
+- Kept + upgraded stat strip and The Arena game grid (hover lift/glow, Play reveal); features band + final CTA rebuilt.
+- All interactions use the global feedback system. No emojis (SVG Icon set only). Scalps naming consistent (Ⓢ U+24C8). Mobile verified (panels stack, stats/rewards/arena reflow).
+- Component-API gotchas fixed during build (caused 1 failed Vercel build): `ScalpsBalance size` is `"sm"|"md"` not a number; `AnimatedButton fbKind` is only `"tap"|"success"|"reward"|"error"`; `AnimatedButton onClick` requires a zero-arg-compatible handler so event params were made optional. ProgressGlow tone is `"primary"|"gold"|"success"`; StatusPill kind is `"live"|"soon"|"off"|"accent"`.
+- Commits: 60db3ad (dashboard.css), 16da9c6 (Dashboard.tsx, build errored), 3b48cc7 (TS fixes — GREEN, production).
+
+### Next (per original priority order)
+- Priority 3: Play / Game Lobby deep premium pass (src/pages/Play.tsx + play.css).
+- Then pause for direction before Priorities 4-6 (Tournaments/Shop/Wallet, Profile/Rankings/Battle Pass, remaining pages) per original instruction.
