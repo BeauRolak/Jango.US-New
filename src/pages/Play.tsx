@@ -10,6 +10,11 @@ import {
   ActionModal,
   useFeedback,
 } from "../components/Juice";
+import {
+  DynamicGameBackdrop,
+  GameArtSVG,
+} from "../components/GameArt";
+import { getGameArt } from "../lib/gameArt";
 
 type GameStatus = "live" | "rebuilding" | "soon";
 type Category = "all" | "board" | "arcade" | "sports" | "classic";
@@ -100,6 +105,10 @@ export default function Play() {
       if (q && !(g.name.toLowerCase().includes(q) || g.desc.toLowerCase().includes(q))) return false;
       return true;
     });
+  const [preview, setPreview] = useState<string>("minigolf");
+  // map Play slug -> gameArt id (only mismatch: eightball -> 8ball)
+  const artId = (slug: string) => (slug === "eightball" ? "8ball" : slug);
+  const previewGame = filtered.find((g) => g.slug === preview) || filtered[0] || GAMES[0];
   }, [query, category, statusFilter, diffFilter]);
 
   function openGame(g: Game, e?: React.MouseEvent<HTMLElement>) {
@@ -132,6 +141,8 @@ export default function Play() {
 
   return (
     <div className="plobby">
+      {/* dynamic theme backdrop reacts to previewed game */}
+      <DynamicGameBackdrop gameId={artId(preview)} intensity={0.7} />
 
       {/* ===== HERO ===== */}
       <section className="plobby-hero">
@@ -204,6 +215,80 @@ export default function Play() {
         <span className="plobby-count">{filtered.length} game{filtered.length === 1 ? "" : "s"}</span>
       </section>
 
+      {/* ===== FEATURED GAME PREVIEW (reacts to hover/select) ===== */}
+      {previewGame ? (() => {
+        const pg = previewGame;
+        const pa = getGameArt(artId(pg.slug));
+        const pot = pg.entry * 2;
+        const rake = Math.round(pot * 0.03);
+        const payout = pot - rake;
+        const locked = pg.status === "soon" || pg.status === "rebuilding";
+        return (
+          <section
+            className="plobby-stage"
+            style={{
+              ["--pg-primary" as any]: pa.primary,
+              ["--pg-secondary" as any]: pa.secondary,
+              ["--pg-accent" as any]: pa.accent,
+              ["--pg-glow" as any]: pa.glow,
+            }}
+          >
+            <div className="plobby-stage__art" aria-hidden="true">
+              <GameArtSVG art={pa} className="plobby-stage__svg" />
+              <div className="plobby-stage__veil" />
+            </div>
+            <div className="plobby-stage__body">
+              <span className="plobby-stage__eyebrow">
+                <Icon name="Sparkles" /> Featured preview
+              </span>
+              <h2 className="plobby-stage__title">{pg.name}</h2>
+              <p className="plobby-stage__tagline">{pa.tagline}</p>
+              <div className="plobby-stage__meta">
+                <span className={`chip chip--${pg.diff.toLowerCase()}`}>{pg.diff}</span>
+                <StatusPill
+                  label={pg.status === "live" ? "Live" : pg.status === "rebuilding" ? "Rebuilding" : pg.status === "soon" ? "Soon" : "Ready"}
+                  kind={pg.status === "live" ? "live" : pg.status === "soon" ? "soon" : pg.status === "rebuilding" ? "off" : "accent"}
+                  live={pg.status === "live"}
+                />
+                <span className="plobby-stage__players"><Icon name="Users" /> {pg.players}</span>
+              </div>
+              <div className="plobby-stage__econ">
+                <div className="plobby-stage__econItem"><span>Entry</span><strong>Ⓢ {pg.entry}</strong></div>
+                <div className="plobby-stage__econItem"><span>Pot</span><strong>Ⓢ {pot}</strong></div>
+                <div className="plobby-stage__econItem plobby-stage__econItem--muted"><span>Rake 3%</span><strong>Ⓢ {rake}</strong></div>
+                <div className="plobby-stage__econItem plobby-stage__econItem--win"><span>Winner</span><strong>Ⓢ {payout}</strong></div>
+              </div>
+              <div className="plobby-stage__cta">
+                {locked ? (
+                  <button
+                    className="plobby-stage__btn plobby-stage__btn--locked"
+                    onClick={(e) => fire("error", `${pg.name} is not open yet`, e.currentTarget)}
+                  >
+                    <Icon name="Lock" /> {pg.status === "rebuilding" ? "Rebuilding" : "Coming soon"}
+                  </button>
+                ) : (
+                  <>
+                    <AnimatedButton variant="grad" icon="Play" fbKind="success" onClick={() => openGame(pg)}>
+                      Play — Ⓢ {pg.entry}
+                    </AnimatedButton>
+                    {pg.bot ? (
+                      <AnimatedButton variant="ghost" icon="Gamepad" fbKind="tap" onClick={() => botMatch(pg)}>
+                        Bot Match
+                      </AnimatedButton>
+                    ) : null}
+                    <AnimatedButton variant="ghost" icon="Trophy" fbKind="tap" onClick={() => { fire("tournament_join"); navigate("/tournaments"); }}>
+                      Tournament
+                    </AnimatedButton>
+                  </>
+                )}
+              </div>
+              <p className="plobby-stage__note"><Icon name="Info" /> Mock economy — no real money moves. 1 Scalp = $1.</p>
+            </div>
+          </section>
+        );
+      })() : null}
+
+
       {/* ===== GAME GRID ===== */}
       <section className="plobby-grid">
         {filtered.map((g) => {
@@ -216,10 +301,13 @@ export default function Play() {
               hoverable={!locked}
               className={"game-card" + (locked ? " is-locked" : "")}
               style={{ "--hue": String(g.hue) } as React.CSSProperties}
+              onMouseEnter={() => { setPreview(g.slug); fire("hover"); }}
+              onFocus={() => setPreview(g.slug)}
             >
               <div className="game-card__art" aria-hidden="true">
                 <span className="game-card__shine" />
-                <Icon name={g.icon} />
+                <GameArtSVG art={getGameArt(artId(g.slug))} className="game-card__poster" />
+                <span className="game-card__badge"><Icon name={g.icon} /></span>
               </div>
 
               <div className="game-card__head">
