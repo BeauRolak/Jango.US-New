@@ -105,11 +105,11 @@ export default function Play() {
       if (q && !(g.name.toLowerCase().includes(q) || g.desc.toLowerCase().includes(q))) return false;
       return true;
     });
+  }, [query, category, statusFilter, diffFilter]);
   const [preview, setPreview] = useState<string>("minigolf");
   // map Play slug -> gameArt id (only mismatch: eightball -> 8ball)
   const artId = (slug: string) => (slug === "eightball" ? "8ball" : slug);
   const previewGame = filtered.find((g) => g.slug === preview) || filtered[0] || GAMES[0];
-  }, [query, category, statusFilter, diffFilter]);
 
   function openGame(g: Game, e?: React.MouseEvent<HTMLElement>) {
     if (g.status !== "live") {
@@ -301,10 +301,14 @@ export default function Play() {
               hoverable={!locked}
               className={"game-card" + (locked ? " is-locked" : "")}
               style={{ "--hue": String(g.hue) } as React.CSSProperties}
-              onMouseEnter={() => { setPreview(g.slug); fire("hover"); }}
-              onFocus={() => setPreview(g.slug)}
+              onClick={() => { setPreview(g.slug); fire("tap"); }}
             >
-              <div className="game-card__art" aria-hidden="true">
+              <div
+                className="game-card__art"
+                aria-hidden="true"
+                onMouseEnter={() => { setPreview(g.slug); fire("hover"); }}
+                onFocus={() => setPreview(g.slug)}
+              >
                 <span className="game-card__shine" />
                 <GameArtSVG art={getGameArt(artId(g.slug))} className="game-card__poster" />
                 <span className="game-card__badge"><Icon name={g.icon} /></span>
