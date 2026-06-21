@@ -608,3 +608,9 @@ Goal: make Jango.US feel like a living dark-neon arcade arena — game-specific 
 
 ### Remaining
 Tournaments, Shop, Rankings/Battle Pass, Profile, Story art passes; mobile art/motion QA.
+
+
+### Realistic Art Upgrade Pass (done)
+- src/components/GameArt.tsx: rewrote GameArtSVG from flat icon-motifs into layered cinematic scenes per game. Shared <defs> with reusable sky/sheen/floor gradients, radial overhead-light glow, and blur/glow/drop-shadow filters — all keyed to each game's primary/secondary/accent colors with per-game unique ids (no SVG id collisions across 15 cards).
+- Each of the 15 motifs is now a depth scene: Mini Golf (3D turf course, glowing rails, cup, ball trail), 8-Ball (felt table w/ rails, balls w/ highlights, cue, overhead light), Air Hockey (rink, glowing goal slots, puck trail, paddle+shadow), Chess (perspective board, move-square glow, king silhouette + spotlight), Connect Four (glossy disc grid, dropping disc), RPS (impact burst + stylized hands), Dots & Boxes (neon dot grid, drawn edges, captured box), Bowling (lane perspective, pins, rolling ball+trail), Basketball (court perspective, hoop, ball arc, stadium lights), Football (field yard lines, ball, impact), Stack Tower (stacked glass blocks), Block Blast (color block grid + clear flash), Tron (cyber grid + light-cycle trails), Cup King (cup pyramid + gold crown), Racing (track perspective, car, speed streaks).
+- Used React.ReactNode for the scene var (not JSX.Element) for transform safety. Commit a621346. Verified live on /play: cards read as premium posters, featured preview cinematic, selected/hover states work, no horizontal overflow on narrow widths, zero console errors, Vercel green.
