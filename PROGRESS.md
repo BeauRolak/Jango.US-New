@@ -587,3 +587,24 @@ Re-audited and upgraded all three economy pages to the new Dashboard/Play qualit
 All three pages verified live: premium render, working modals with Scalps + 3% rake / balance-after math, feedback toasts, owned/equipped/joined states, zero console errors, namespaced CSS (.tarena-*/.sarena-*/.warena-*) to avoid collisions. Mobile: page content has no horizontal overflow (only the pre-existing global navbar overflows below ~300px).
 
 Next: Priority 5 — Profile / Rankings / Battle Pass.
+
+
+---
+
+## Dynamic Art + Dopamine Visual Upgrade (in progress)
+
+Goal: make Jango.US feel like a living dark-neon arcade arena — game-specific art direction, reactive backgrounds, dynamic visuals, dopamine motion. Cleaner/more premium than old Jango.US.
+
+### Foundation — game art system
+- src/lib/gameArt.ts — GameArt visual identity map for all 15 games. Each entry: id, name, icon, category, tagline, sub, primary/secondary/accent colors, motif, motion, entry, difficulty, gradient, glow. Plus GAME_ART_ORDER, FEATURED_ROTATION, getGameArt(id). Commit 3b3d780.
+- src/components/gameart.css — namespaced .ga-* styles for the art system (backdrop, hero, panel, preview, SVG motifs). Commit 3835325.
+- src/components/GameArt.tsx — reusable components: GameArtSVG (per-game CSS/SVG motif), DynamicGameBackdrop, GameThemeLayer, GameArtPanel, AnimatedGamePreview, FeaturedGameHero, gameVars, usePrefersReducedMotion. Respects prefers-reduced-motion. Commits ffe7b76 + aae5402 (fix: cast Icon name to IconName, TS2322).
+
+### Dashboard — Featured Arena (done)
+- Rotating FeaturedGameHero carousel below the hero: cycles featured games, background + art + tagline + CTA change per game, manual dots/controls, economy chips. onPlay/onBot navigate to game, onTournament to /tournaments. Commits 3edea2d (errored TS1003) + 6d3194d (fix: imports after Juice block).
+
+### Play Lobby — dynamic art (done)
+- src/pages/Play.tsx: DynamicGameBackdrop themes the whole lobby to the previewed game; a Featured Game Preview stage (GameArtSVG art, tagline, Entry/Pot/Rake 3%/Winner breakdown, themed Play/Bot/Tournament CTAs, mock-economy notice). Cards now poster-style: GameArtSVG art area + icon badge + color-coded glow + hover zoom. Hovering/clicking a card updates the preview + backdrop. Slug->artId map (eightball->8ball). Commits a339c6f (playlobby.css), b73ac56 (errored TS2304/TS2322), 28c6668 (fix: preview state moved out of useMemo scope; hover handlers off GlowCard onto art div). Verified live, zero console errors, Vercel green.
+
+### Remaining
+Tournaments, Shop, Rankings/Battle Pass, Profile, Story art passes; mobile art/motion QA.
