@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { getGameArt, GameArt, GAME_ART, FEATURED_ROTATION } from '../lib/gameArt';
+import { getGameArt, GameArt, GAME_ART, FEATURED_ROTATION, getPosterUrl } from '../lib/gameArt';
 import { Icon } from './Icon';
 import './gameart.css';
 
@@ -22,391 +22,528 @@ export function GameArtSVG({ art, className = "" }: { art: GameArt; className?: 
   const s = art.secondary;
   const a = art.accent;
   const uid = art.id;
-  // unique gradient/filter ids per game so multiple cards do not collide
-  const g1 = `g1-${uid}`;
-  const g2 = `g2-${uid}`;
-  const gFloor = `gf-${uid}`;
-  const gGlow = `gg-${uid}`;
-  const gSky = `gs-${uid}`;
-  const fSoft = `fs-${uid}`;
-  const fGlow = `fl-${uid}`;
-  const fShadow = `fh-${uid}`;
+  const gid = (n: string) => `${uid}-${n}`;
+  const [imgFailed, setImgFailed] = React.useState(false);
+  const posterSrc = art.poster ?? getPosterUrl(art.id);
+  const hasPoster = !!posterSrc && !imgFailed;
+
+  const scene = renderGameScene(art, gid);
+
+  return (
+    <div className={`ga-poster ${className}`} data-game={uid} style={{ ["--ga-p" as any]: p, ["--ga-s" as any]: s, ["--ga-a" as any]: a }}>
+      <svg className="ga-poster__svg" viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice" role="img" aria-label={art.name}>
+        {scene}
+      </svg>
+      {posterSrc ? (
+        <img
+          className="ga-poster__img"
+          src={posterSrc}
+          alt={art.name}
+          loading="lazy"
+          draggable={false}
+          data-loaded={hasPoster ? "1" : "0"}
+          onError={() => setImgFailed(true)}
+          style={{ opacity: hasPoster ? 1 : 0 }}
+        />
+      ) : null}
+      <span className="ga-poster__grain" aria-hidden="true" />
+      <span className="ga-poster__vignette" aria-hidden="true" />
+    </div>
+  );
+}
+
+// ---- Cinematic per-game poster scenes ----
+function renderGameScene(art: GameArt, gid: (n: string) => string): React.ReactNode {
+  const p = art.primary;
+  const s = art.secondary;
+  const a = art.accent;
 
   const defs = (
     <defs>
-      {/* sky / arena backdrop gradient */}
-      <linearGradient id={gSky} x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor={s} stopOpacity="0.42" />
-        <stop offset="45%" stopColor="#0a0c14" stopOpacity="0.9" />
-        <stop offset="100%" stopColor="#05060a" stopOpacity="1" />
+      <linearGradient id={gid("sky")} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor={s} stopOpacity="0.55" />
+        <stop offset="45%" stopColor="#0b0e18" stopOpacity="0.9" />
+        <stop offset="100%" stopColor="#05060c" />
       </linearGradient>
-      {/* primary->accent sheen */}
-      <linearGradient id={g1} x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stopColor={a} />
-        <stop offset="55%" stopColor={p} />
-        <stop offset="100%" stopColor={s} />
-      </linearGradient>
-      <linearGradient id={g2} x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9" />
-        <stop offset="40%" stopColor={a} stopOpacity="0.7" />
-        <stop offset="100%" stopColor={p} stopOpacity="0.15" />
-      </linearGradient>
-      {/* floor / surface with depth */}
-      <linearGradient id={gFloor} x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor={p} stopOpacity="0.55" />
-        <stop offset="60%" stopColor={p} stopOpacity="0.16" />
-        <stop offset="100%" stopColor="#04050a" stopOpacity="0.05" />
-      </linearGradient>
-      {/* radial overhead light */}
-      <radialGradient id={gGlow} cx="50%" cy="35%" r="70%">
-        <stop offset="0%" stopColor={a} stopOpacity="0.85" />
-        <stop offset="35%" stopColor={p} stopOpacity="0.32" />
+      <radialGradient id={gid("glow")} cx="50%" cy="30%" r="75%">
+        <stop offset="0%" stopColor={a} stopOpacity="0.7" />
+        <stop offset="40%" stopColor={p} stopOpacity="0.25" />
         <stop offset="100%" stopColor={p} stopOpacity="0" />
       </radialGradient>
-      <filter id={fSoft} x="-20%" y="-20%" width="140%" height="140%">
+      <linearGradient id={gid("floor")} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor={p} stopOpacity="0.45" />
+        <stop offset="100%" stopColor="#04060c" stopOpacity="0.95" />
+      </linearGradient>
+      <filter id={gid("blur")} x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur stdDeviation="6" />
+      </filter>
+      <filter id={gid("soft")} x="-20%" y="-20%" width="140%" height="140%">
         <feGaussianBlur stdDeviation="2.2" />
-      </filter>
-      <filter id={fGlow} x="-60%" y="-60%" width="220%" height="220%">
-        <feGaussianBlur stdDeviation="6" result="b" />
-        <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
-      </filter>
-      <filter id={fShadow} x="-40%" y="-40%" width="180%" height="180%">
-        <feDropShadow dx="0" dy="5" stdDeviation="5" floodColor="#000000" floodOpacity="0.55" />
       </filter>
     </defs>
   );
 
+  const atmosphere = (
+    <g>
+      <rect x="0" y="0" width="400" height="240" fill={`url(#${gid("sky")})`} />
+      <rect x="0" y="0" width="400" height="240" fill={`url(#${gid("glow")})`} />
+    </g>
+  );
+
   let body: React.ReactNode;
   switch (art.motif) {
-    // ===== MINI GOLF — neon course with cup, rails, ball trail, 3D perspective =====
     case "turf":
-      body = (<>
-        <rect width="400" height="240" fill={`url(#${gSky})`} />
-        <ellipse cx="200" cy="70" rx="240" ry="120" fill={`url(#${gGlow})`} opacity="0.6" />
-        {/* turf with perspective */}
-        <path d="M40 240 L150 120 L300 120 L400 240 Z" fill={`url(#${gFloor})`} />
-        <path d="M150 120 L300 120 L400 240 L40 240 Z" fill={p} opacity="0.10" />
-        {/* turf stripes (perspective lines) */}
-        {[0,1,2,3,4].map((i) => (
-          <line key={i} x1={150 + i*30} y1="120" x2={70 + i*65} y2="240" stroke={a} strokeOpacity="0.18" strokeWidth="1.5" />
-        ))}
-        <line x1="120" y1="160" x2="360" y2="160" stroke={a} strokeOpacity="0.14" strokeWidth="1.5" />
-        <line x1="80" y1="205" x2="400" y2="205" stroke={a} strokeOpacity="0.12" strokeWidth="1.5" />
-        {/* glowing rails */}
-        <path d="M40 240 L150 120" stroke={a} strokeWidth="3" filter={`url(#${fGlow})`} opacity="0.9" />
-        <path d="M400 240 L300 120" stroke={a} strokeWidth="3" filter={`url(#${fGlow})`} opacity="0.9" />
-        {/* cup */}
-        <ellipse cx="245" cy="150" rx="16" ry="6" fill="#04060a" stroke={a} strokeWidth="1.5" />
-        <ellipse cx="245" cy="148" rx="16" ry="6" fill={a} opacity="0.2" filter={`url(#${fGlow})`} />
-        <rect x="244" y="118" width="2" height="32" fill={s} />
-        <path d="M246 118 L266 124 L246 132 Z" fill={a} filter={`url(#${fGlow})`} />
-        {/* ball trail */}
-        <path d="M120 222 Q180 188 230 158" stroke={a} strokeWidth="2.5" strokeDasharray="2 7" strokeLinecap="round" opacity="0.7" />
-        <circle cx="120" cy="222" r="9" fill={`url(#${g2})`} filter={`url(#${fShadow})`} />
-        <circle cx="117" cy="219" r="3" fill="#ffffff" opacity="0.9" />
-      </>);
+      body = (
+        <g>
+          <polygon points="60,240 340,240 300,120 100,120" fill={`url(#${gid("floor")})`} />
+          <polygon points="60,240 340,240 300,120 100,120" fill={p} opacity="0.28" />
+          {[0,1,2,3,4].map((i) => (
+            <polygon key={i} points={`${100 + i * 8},120 ${108 + i * 8},120 ${68 + i * 16},240 ${52 + i * 16},240`} fill="#0c1d12" opacity={0.25 + i * 0.05} />
+          ))}
+          <line x1="100" y1="120" x2="60" y2="240" stroke={a} strokeWidth="3" opacity="0.9" filter={`url(#${gid("soft")})`} />
+          <line x1="300" y1="120" x2="340" y2="240" stroke={a} strokeWidth="3" opacity="0.9" filter={`url(#${gid("soft")})`} />
+          <rect x="180" y="150" width="44" height="14" rx="3" fill="#03130b" opacity="0.85" />
+          <ellipse cx="202" cy="166" rx="30" ry="6" fill="#000" opacity="0.4" filter={`url(#${gid("soft")})`} />
+          <ellipse cx="200" cy="150" rx="14" ry="6" fill="#02100a" />
+          <ellipse cx="200" cy="149" rx="9" ry="4" fill="#000" />
+          <line x1="200" y1="150" x2="200" y2="104" stroke={s} strokeWidth="2" />
+          <polygon points="200,104 224,110 200,118" fill={a} />
+          <g>
+            <ellipse cx="250" cy="206" rx="22" ry="4" fill={p} opacity="0.2" />
+            <line x1="300" y1="218" x2="252" y2="206" stroke="#fff" strokeWidth="6" strokeLinecap="round" opacity="0.18" filter={`url(#${gid("blur")})`} />
+            <circle cx="250" cy="204" r="9" fill="#f4f7ff" />
+            <circle cx="247" cy="201" r="3" fill="#fff" />
+            <ellipse cx="250" cy="214" rx="9" ry="2.5" fill="#000" opacity="0.4" />
+          </g>
+          <ellipse cx="200" cy="90" rx="150" ry="50" fill={a} opacity="0.12" filter={`url(#${gid("blur")})`} />
+        </g>
+      );
       break;
-
-    // ===== CONNECT 4 — glossy grid wall, dropping disc, win line =====
-    case "grid":
-      body = (<>
-        <rect width="400" height="240" fill={`url(#${gSky})`} />
-        <ellipse cx="200" cy="60" rx="220" ry="100" fill={`url(#${gGlow})`} opacity="0.45" />
-        <rect x="120" y="48" width="160" height="150" rx="12" fill={p} opacity="0.22" filter={`url(#${fShadow})`} />
-        <rect x="120" y="48" width="160" height="150" rx="12" fill="none" stroke={a} strokeWidth="2" opacity="0.7" />
-        {[0,1,2,3].map((c) => [0,1,2,3].map((r) => {
-          const cx = 142 + c*39, cy = 70 + r*38;
-          const filled = (c+r) % 3 === 0;
-          const col = (c+r) % 2 === 0 ? a : s;
-          return (<g key={`${c}-${r}`}>
-            <circle cx={cx} cy={cy} r="14" fill="#06080e" />
-            {filled && <circle cx={cx} cy={cy} r="12" fill={col} filter={`url(#${fGlow})`} />}
-            {filled && <circle cx={cx-4} cy={cy-4} r="4" fill="#ffffff" opacity="0.6" />}
-          </g>);
-        }))}
-        {/* dropping disc + trail */}
-        <line x1="220" y1="20" x2="220" y2="56" stroke={a} strokeWidth="3" strokeDasharray="2 6" opacity="0.6" />
-        <circle cx="220" cy="22" r="13" fill={a} filter={`url(#${fGlow})`} />
-      </>);
-      break;
-
-    // ===== 8-BALL — felt table, rails, balls w/ highlights, cue, overhead light =====
     case "felt":
-      body = (<>
-        <rect width="400" height="240" fill="#05080a" />
-        <ellipse cx="200" cy="40" rx="120" ry="60" fill={`url(#${gGlow})`} opacity="0.7" />
-        {/* table felt with perspective */}
-        <path d="M55 70 L345 70 L385 215 L15 215 Z" fill={p} opacity="0.5" />
-        <path d="M55 70 L345 70 L385 215 L15 215 Z" fill={`url(#${gFloor})`} />
-        {/* rails */}
-        <path d="M55 70 L345 70 L385 215 L15 215 Z" fill="none" stroke="#5b3a1a" strokeWidth="9" strokeLinejoin="round" opacity="0.85" />
-        <path d="M55 70 L345 70 L385 215 L15 215 Z" fill="none" stroke={a} strokeWidth="1.5" strokeLinejoin="round" opacity="0.4" />
-        {/* corner pockets */}
-        {[[55,70],[345,70],[385,215],[15,215]].map(([x,y],i) => (<circle key={i} cx={x} cy={y} r="9" fill="#02030a" stroke={a} strokeOpacity="0.3" />))}
-        {/* balls */}
-        <g filter={`url(#${fShadow})`}>
-          <circle cx="150" cy="150" r="15" fill="#0a0a0a" />
-          <circle cx="144" cy="144" r="5" fill="#ffffff" opacity="0.85" />
-          <circle cx="150" cy="150" r="6" fill="#ffffff" /><text x="150" y="154" fontSize="8" fill="#000" textAnchor="middle" fontWeight="700">8</text>
+      body = (
+        <g>
+          <ellipse cx="200" cy="40" rx="120" ry="40" fill={a} opacity="0.22" filter={`url(#${gid("blur")})`} />
+          <polygon points="40,90 360,90 392,222 8,222" fill={`url(#${gid("floor")})`} />
+          <polygon points="40,90 360,90 392,222 8,222" fill={p} opacity="0.45" />
+          <polygon points="32,84 368,84 360,90 40,90" fill="#3a2412" />
+          <polygon points="8,222 40,90 32,84 -2,224" fill="#2a1a0d" />
+          <polygon points="392,222 360,90 368,84 402,224" fill="#2a1a0d" />
+          <circle cx="40" cy="92" r="9" fill="#060606" />
+          <circle cx="360" cy="92" r="9" fill="#060606" />
+          <circle cx="10" cy="218" r="11" fill="#060606" />
+          <circle cx="390" cy="218" r="11" fill="#060606" />
+          <ellipse cx="200" cy="150" rx="120" ry="36" fill="#fff" opacity="0.05" />
+          {[[170,170,p],[200,168,a],[230,170,s],[185,150,s],[215,150,a],[200,134,"#f4f7ff"]].map((b,i)=>(
+            <g key={i}>
+              <ellipse cx={b[0] as number} cy={(b[1] as number)+9} rx="10" ry="3" fill="#000" opacity="0.45" />
+              <circle cx={b[0] as number} cy={b[1] as number} r="9" fill={b[2] as string} />
+              <circle cx={(b[0] as number)-3} cy={(b[1] as number)-3} r="3" fill="#fff" opacity="0.8" />
+            </g>
+          ))}
+          <ellipse cx="120" cy="190" rx="10" ry="3" fill="#000" opacity="0.45" />
+          <circle cx="120" cy="184" r="9" fill="#f8fbff" />
+          <circle cx="117" cy="181" r="3" fill="#fff" />
+          <line x1="60" y1="232" x2="116" y2="186" stroke="#caa46a" strokeWidth="4" strokeLinecap="round" />
+          <circle cx="116" cy="186" r="2.5" fill="#1a4ed8" />
         </g>
-        <g filter={`url(#${fShadow})`}>
-          <circle cx="232" cy="128" r="14" fill={a} />
-          <circle cx="227" cy="123" r="4.5" fill="#ffffff" opacity="0.9" />
-        </g>
-        <g filter={`url(#${fShadow})`}>
-          <circle cx="270" cy="170" r="14" fill="#f4f4f4" />
-          <circle cx="265" cy="165" r="4.5" fill="#ffffff" />
-        </g>
-        {/* cue stick at angle */}
-        <line x1="60" y1="100" x2="262" y2="160" stroke="#caa472" strokeWidth="4" strokeLinecap="round" filter={`url(#${fSoft})`} />
-        <line x1="252" y1="157" x2="262" y2="160" stroke="#e8e8e8" strokeWidth="4" strokeLinecap="round" />
-      </>);
+      );
       break;
-
-    // ===== AIR HOCKEY — arcade table, glowing goals, puck trail, paddle =====
     case "rink":
-      body = (<>
-        <rect width="400" height="240" fill={`url(#${gSky})`} />
-        <ellipse cx="200" cy="120" rx="180" ry="110" fill={`url(#${gGlow})`} opacity="0.4" />
-        <rect x="60" y="34" width="280" height="172" rx="16" fill={p} opacity="0.16" />
-        <rect x="60" y="34" width="280" height="172" rx="16" fill="none" stroke={a} strokeWidth="3" filter={`url(#${fGlow})`} />
-        {/* center line + circle */}
-        <line x1="200" y1="34" x2="200" y2="206" stroke={a} strokeWidth="2" opacity="0.55" />
-        <circle cx="200" cy="120" r="34" fill="none" stroke={a} strokeWidth="2" opacity="0.5" />
-        <circle cx="200" cy="120" r="3" fill={a} />
-        {/* goal slots glowing */}
-        <rect x="56" y="92" width="8" height="56" rx="3" fill={s} filter={`url(#${fGlow})`} />
-        <rect x="336" y="92" width="8" height="56" rx="3" fill={s} filter={`url(#${fGlow})`} />
-        {/* puck trail */}
-        <path d="M120 150 Q180 120 250 96" stroke={a} strokeWidth="3" strokeDasharray="2 7" opacity="0.7" strokeLinecap="round" />
-        <circle cx="252" cy="95" r="10" fill="#0c0e16" stroke={a} strokeWidth="2" filter={`url(#${fGlow})`} />
-        {/* paddle + shadow */}
-        <ellipse cx="118" cy="158" rx="20" ry="9" fill="#000" opacity="0.4" />
-        <circle cx="116" cy="150" r="17" fill={`url(#${g1})`} filter={`url(#${fShadow})`} />
-        <circle cx="116" cy="150" r="7" fill="#06080e" />
-      </>);
+      body = (
+        <g>
+          <polygon points="70,70 330,70 392,224 8,224" fill={`url(#${gid("floor")})`} />
+          <polygon points="70,70 330,70 392,224 8,224" fill={p} opacity="0.3" />
+          <line x1="70" y1="70" x2="8" y2="224" stroke={a} strokeWidth="4" filter={`url(#${gid("soft")})`} />
+          <line x1="330" y1="70" x2="392" y2="224" stroke={a} strokeWidth="4" filter={`url(#${gid("soft")})`} />
+          <line x1="70" y1="70" x2="330" y2="70" stroke={s} strokeWidth="3" opacity="0.8" />
+          <line x1="49" y1="147" x2="351" y2="147" stroke="#9fd8ff" strokeWidth="2" opacity="0.5" />
+          <ellipse cx="200" cy="147" rx="34" ry="14" fill="none" stroke="#9fd8ff" strokeWidth="2" opacity="0.5" />
+          <rect x="160" y="64" width="80" height="8" rx="4" fill={a} opacity="0.9" filter={`url(#${gid("soft")})`} />
+          <rect x="150" y="220" width="100" height="10" rx="5" fill={a} opacity="0.9" filter={`url(#${gid("soft")})`} />
+          <line x1="120" y1="110" x2="232" y2="180" stroke="#fff" strokeWidth="7" strokeLinecap="round" opacity="0.2" filter={`url(#${gid("blur")})`} />
+          <ellipse cx="232" cy="190" rx="14" ry="4" fill="#000" opacity="0.4" />
+          <ellipse cx="232" cy="180" rx="13" ry="6" fill="#10131c" />
+          <ellipse cx="232" cy="178" rx="13" ry="5" fill="#2a3550" />
+          <ellipse cx="150" cy="118" rx="20" ry="8" fill="#000" opacity="0.35" />
+          <ellipse cx="150" cy="110" rx="20" ry="9" fill={s} />
+          <ellipse cx="150" cy="107" rx="11" ry="5" fill={a} />
+          <ellipse cx="255" cy="206" rx="24" ry="9" fill="#000" opacity="0.35" />
+          <ellipse cx="255" cy="198" rx="24" ry="10" fill={p} />
+          <ellipse cx="255" cy="195" rx="13" ry="5" fill="#fff" opacity="0.5" />
+        </g>
+      );
       break;
-    // ===== CHESS — 3D board in perspective, spotlight, king silhouette =====
     case "board":
-      body = (<>
-        <rect width="400" height="240" fill={`url(#${gSky})`} />
-        <ellipse cx="210" cy="40" rx="150" ry="80" fill={`url(#${gGlow})`} opacity="0.7" />
-        {/* perspective board */}
-        <path d="M110 130 L290 130 L370 220 L30 220 Z" fill={`url(#${gFloor})`} />
-        {[0,1,2,3,4,5,6,7].map((i) => {
-          const t = i/8, t2=(i+1)/8;
-          const xL = 110 + (30-110)*t,  xL2 = 110 + (30-110)*t2;
-          const yT = 130 + (220-130)*t, yT2 = 130 + (220-130)*t2;
-          const xR = 290 + (370-290)*t, xR2 = 290 + (370-290)*t2;
-          return i%2===0 ? (<path key={i} d={`M${xL} ${yT} L${xR} ${yT} L${xR2} ${yT2} L${xL2} ${yT2} Z`} fill={a} opacity="0.10" />) : null;
-        })}
-        <path d="M110 130 L290 130 L370 220 L30 220 Z" fill="none" stroke={a} strokeWidth="1.5" opacity="0.5" />
-        {/* glowing move squares */}
-        <path d="M170 150 L215 150 L222 168 L170 168 Z" fill={a} opacity="0.5" filter={`url(#${fGlow})`} />
-        {/* king silhouette */}
-        <g filter={`url(#${fShadow})`}>
-          <ellipse cx="200" cy="160" rx="20" ry="7" fill="#000" opacity="0.5" />
-          <path d="M192 158 L208 158 L205 110 L195 110 Z" fill={`url(#${g2})`} />
-          <circle cx="200" cy="104" r="9" fill={`url(#${g2})`} />
-          <path d="M197 96 L203 96 L200 88 Z M200 96 L200 88" stroke="#fff" strokeWidth="2" fill="#fff" />
+      body = (
+        <g>
+          <ellipse cx="200" cy="20" rx="150" ry="70" fill={a} opacity="0.18" filter={`url(#${gid("blur")})`} />
+          <polygon points="90,110 310,110 392,228 8,228" fill="#0a0c14" />
+          {[0,1,2,3,4,5,6,7].map((r)=>(
+            <g key={r}>
+              {[0,1,2,3,4,5,6,7].map((cc)=>{
+                const spread = 110 + r * 39;
+                const spreadN = 110 + (r+1) * 39;
+                const top = 110 + r * 14.75;
+                const bot = 110 + (r+1) * 14.75;
+                const x0 = 200 - spread / 2 + cc * (spread / 8);
+                const x0n = 200 - spread / 2 + (cc+1) * (spread / 8);
+                const x1 = 200 - spreadN / 2 + cc * (spreadN / 8);
+                const x1n = 200 - spreadN / 2 + (cc+1) * (spreadN / 8);
+                return (cc + r) % 2 === 0 ? (
+                  <polygon key={cc} points={`${x0},${top} ${x0n},${top} ${x1n},${bot} ${x1},${bot}`} fill={p} opacity={0.18 + r * 0.04} />
+                ) : null;
+              })}
+            </g>
+          ))}
+          <polygon points="178,154 222,154 230,176 170,176" fill={a} opacity="0.35" filter={`url(#${gid("soft")})`} />
+          <ellipse cx="205" cy="176" rx="26" ry="7" fill="#000" opacity="0.5" />
+          <g fill={s}>
+            <rect x="194" y="120" width="22" height="50" rx="6" />
+            <ellipse cx="205" cy="120" rx="14" ry="6" />
+            <rect x="201" y="96" width="8" height="22" rx="2" />
+            <rect x="195" y="100" width="20" height="6" rx="3" />
+          </g>
+          <rect x="197" y="124" width="5" height="42" fill="#fff" opacity="0.25" />
+          <g fill={p} opacity="0.85">
+            <rect x="150" y="138" width="16" height="34" rx="5" />
+            <polygon points="150,138 158,120 166,138" fill={p} />
+            <circle cx="158" cy="118" r="4" fill={a} />
+          </g>
+          <ellipse cx="158" cy="174" rx="18" ry="5" fill="#000" opacity="0.45" />
         </g>
-      </>);
+      );
       break;
-
-    // ===== RPS — dramatic clash, two stylized hands, impact flash =====
-    case "versus":
-      body = (<>
-        <rect width="400" height="240" fill={`url(#${gSky})`} />
-        <ellipse cx="200" cy="120" rx="120" ry="120" fill={`url(#${gGlow})`} opacity="0.7" />
-        {/* impact burst */}
-        {[0,1,2,3,4,5,6,7].map((i)=>{const ang=i*45*Math.PI/180;return (<line key={i} x1={200+24*Math.cos(ang)} y1={120+24*Math.sin(ang)} x2={200+60*Math.cos(ang)} y2={120+60*Math.sin(ang)} stroke={a} strokeWidth="3" strokeLinecap="round" opacity="0.65" filter={`url(#${fGlow})`} />);})}
-        <circle cx="200" cy="120" r="16" fill="#fff" opacity="0.85" filter={`url(#${fGlow})`} />
-        {/* left fist (rock) */}
-        <g filter={`url(#${fShadow})`}>
-          <path d="M70 96 q34 -12 64 4 q14 8 12 28 q-2 26 -34 30 q-40 4 -50 -22 q-8 -28 8 -40 Z" fill={`url(#${g1})`} />
-          <path d="M118 104 q8 14 4 30" stroke="#000" strokeOpacity="0.25" strokeWidth="3" fill="none" />
-        </g>
-        {/* right hand (scissors) */}
-        <g filter={`url(#${fShadow})`}>
-          <path d="M330 96 q-30 -14 -58 0 l-30 18 q-12 8 -2 18 q10 8 22 0 l24 -14" fill={`url(#${g2})`} />
-          <path d="M312 86 l30 -22 M312 100 l34 -8" stroke={s} strokeWidth="9" strokeLinecap="round" />
-        </g>
-      </>);
-      break;
-
-    // ===== DOTS & BOXES — neon grid, drawn lines, captured box =====
-    case "dots":
-      body = (<>
-        <rect width="400" height="240" fill={`url(#${gSky})`} />
-        <ellipse cx="200" cy="70" rx="200" ry="90" fill={`url(#${gGlow})`} opacity="0.4" />
-        {[0,1,2,3,4].map((c)=>[0,1,2,3].map((r)=>(<circle key={`${c}-${r}`} cx={90+c*55} cy={56+r*44} r="4" fill={a} filter={`url(#${fGlow})`} />)))}
-        {/* drawn edges */}
-        <line x1="90" y1="56" x2="145" y2="56" stroke={a} strokeWidth="4" strokeLinecap="round" filter={`url(#${fGlow})`} />
-        <line x1="145" y1="56" x2="200" y2="56" stroke={s} strokeWidth="4" strokeLinecap="round" filter={`url(#${fGlow})`} />
-        <line x1="90" y1="56" x2="90" y2="100" stroke={s} strokeWidth="4" strokeLinecap="round" filter={`url(#${fGlow})`} />
-        <line x1="145" y1="56" x2="145" y2="100" stroke={a} strokeWidth="4" strokeLinecap="round" filter={`url(#${fGlow})`} />
-        <line x1="90" y1="100" x2="145" y2="100" stroke={a} strokeWidth="4" strokeLinecap="round" filter={`url(#${fGlow})`} />
-        {/* captured box */}
-        <rect x="92" y="58" width="51" height="40" rx="3" fill={a} opacity="0.22" />
-        <text x="117" y="84" fontSize="20" fill={a} textAnchor="middle" fontWeight="800" opacity="0.8">J</text>
-        {/* drawing line in progress */}
-        <line x1="200" y1="100" x2="200" y2="144" stroke="#fff" strokeWidth="3" strokeDasharray="3 5" opacity="0.7" />
-      </>);
-      break;
-
-    // ===== BOWLING — lane perspective, rolling ball + trail, pin burst =====
-    case "lane":
-      body = (<>
-        <rect width="400" height="240" fill={`url(#${gSky})`} />
-        <ellipse cx="200" cy="30" rx="120" ry="60" fill={`url(#${gGlow})`} opacity="0.6" />
-        {/* lane */}
-        <path d="M150 36 L250 36 L360 230 L40 230 Z" fill={`url(#${gFloor})`} />
-        <path d="M150 36 L250 36 L360 230 L40 230 Z" fill="none" stroke={a} strokeWidth="1.5" opacity="0.4" />
-        {/* gutters */}
-        <path d="M150 36 L40 230" stroke={s} strokeWidth="3" opacity="0.6" filter={`url(#${fGlow})`} />
-        <path d="M250 36 L360 230" stroke={s} strokeWidth="3" opacity="0.6" filter={`url(#${fGlow})`} />
-        {/* boards */}
-        {[0,1,2,3].map((i)=>(<line key={i} x1={170+i*20} y1="36" x2={120+i*45} y2="230" stroke={a} strokeOpacity="0.12" strokeWidth="1" />))}
-        {/* pins */}
-        {[[185,58],[200,58],[215,58],[192,46],[208,46],[200,36]].map(([x,y],i)=>(<g key={i}><ellipse cx={x} cy={y+8} rx="4" ry="2" fill="#000" opacity="0.4"/><path d={`M${x-3} ${y+8} Q${x} ${y-7} ${x+3} ${y+8} Z`} fill="#fff" /><rect x={x-2.5} y={y-3} width="5" height="2" fill={s} /></g>))}
-        {/* ball + trail */}
-        <path d="M120 215 Q170 150 200 86" stroke={a} strokeWidth="3" strokeDasharray="2 6" opacity="0.6" strokeLinecap="round" />
-        <circle cx="120" cy="215" r="18" fill={`url(#${g1})`} filter={`url(#${fShadow})`} />
-        <circle cx="113" cy="208" r="5" fill="#fff" opacity="0.7" />
-        <circle cx="124" cy="214" r="2" fill="#06080e" /><circle cx="118" cy="218" r="2" fill="#06080e" />
-      </>);
-      break;
-    // ===== BASKETBALL — court perspective, hoop, ball arc, stadium lights =====
-    case "court":
-      body = (<>
-        <rect width="400" height="240" fill={`url(#${gSky})`} />
-        {[80,200,320].map((x,i)=>(<ellipse key={i} cx={x} cy="20" rx="40" ry="22" fill={a} opacity="0.18" filter={`url(#${fGlow})`} />))}
-        <path d="M70 120 L330 120 L390 230 L10 230 Z" fill={`url(#${gFloor})`} />
-        <path d="M70 120 L330 120 L390 230 L10 230 Z" fill="none" stroke={a} strokeWidth="1.5" opacity="0.4" />
-        {/* key + arc */}
-        <path d="M160 120 L240 120 L270 200 L130 200 Z" fill="none" stroke={a} strokeWidth="1.5" opacity="0.4" />
-        <path d="M150 160 Q200 130 250 160" fill="none" stroke={a} strokeWidth="1.5" opacity="0.4" />
-        {/* backboard + hoop */}
-        <rect x="178" y="40" width="44" height="30" rx="2" fill="none" stroke="#fff" strokeWidth="2" opacity="0.8" />
-        <ellipse cx="200" cy="74" rx="16" ry="5" fill="none" stroke={s} strokeWidth="3" filter={`url(#${fGlow})`} />
-        {/* ball arc */}
-        <path d="M90 200 Q150 70 200 78" stroke={a} strokeWidth="2.5" strokeDasharray="2 7" opacity="0.65" fill="none" />
-        <g filter={`url(#${fShadow})`}>
-          <circle cx="90" cy="200" r="15" fill={`url(#${g1})`} />
-          <path d="M75 200 h30 M90 185 v30 M79 190 Q90 200 79 210 M101 190 Q90 200 101 210" stroke="#1a0e06" strokeWidth="1.4" fill="none" opacity="0.7" />
-        </g>
-      </>);
-      break;
-
-    // ===== FOOTBALL — field perspective, yard lines, ball, impact, lights =====
-    case "field":
-      body = (<>
-        <rect width="400" height="240" fill={`url(#${gSky})`} />
-        {[60,200,340].map((x,i)=>(<ellipse key={i} cx={x} cy="18" rx="36" ry="20" fill={a} opacity="0.16" filter={`url(#${fGlow})`} />))}
-        <path d="M80 110 L320 110 L400 234 L0 234 Z" fill={`url(#${gFloor})`} />
-        {[0,1,2,3,4].map((i)=>{const t=i/4;const xl=80+(0-80)*t,xr=320+(400-320)*t,y=110+(234-110)*t;return(<line key={i} x1={xl} y1={y} x2={xr} y2={y} stroke="#fff" strokeOpacity="0.22" strokeWidth="1.5" />);})}
-        <line x1="200" y1="110" x2="200" y2="234" stroke="#fff" strokeOpacity="0.18" strokeWidth="1.5" />
-        {/* impact burst */}
-        {[0,1,2,3,4].map((i)=>{const ang=(i*72-90)*Math.PI/180;return(<line key={i} x1={250+10*Math.cos(ang)} y1={150+10*Math.sin(ang)} x2={250+30*Math.cos(ang)} y2={150+30*Math.sin(ang)} stroke={s} strokeWidth="3" opacity="0.6" strokeLinecap="round" />);})}
-        {/* ball */}
-        <g filter={`url(#${fShadow})`}>
-          <ellipse cx="150" cy="160" rx="24" ry="13" fill={`url(#${g1})`} transform="rotate(-22 150 160)" />
-          <line x1="138" y1="156" x2="162" y2="164" stroke="#fff" strokeWidth="2" opacity="0.85" />
-          {[0,1,2].map(i=>(<line key={i} x1={144+i*6} y1={154+i*3} x2={148+i*6} y2={160+i*3} stroke="#fff" strokeWidth="1.5" opacity="0.85" />))}
-        </g>
-      </>);
-      break;
-
-    // ===== STACK TOWER — stacked glass blocks, depth, height pulse =====
-    case "tower":
-      body = (<>
-        <rect width="400" height="240" fill={`url(#${gSky})`} />
-        <ellipse cx="200" cy="40" rx="160" ry="70" fill={`url(#${gGlow})`} opacity="0.45" />
-        {[0,1,2,3,4,5].map((i)=>{const w=120-i*9;const x=200-w/2;const y=206-i*30;const off=i%2===0?-6:6;return(<g key={i} filter={`url(#${fShadow})`}><rect x={x+off} y={y} width={w} height="26" rx="4" fill={i===5?a:`url(#${g1})`} opacity={0.55+i*0.07} /><rect x={x+off} y={y} width={w} height="8" rx="4" fill="#fff" opacity="0.18" /></g>);})}
-        {/* incoming block */}
-        <rect x="150" y="22" width="70" height="22" rx="4" fill={a} opacity="0.7" filter={`url(#${fGlow})`} />
-        <line x1="185" y1="44" x2="185" y2="60" stroke={a} strokeWidth="2" strokeDasharray="2 5" opacity="0.6" />
-      </>);
-      break;
-
-    // ===== BLOCK BLAST — colorful grid, clearing flash =====
-    case "blocks":
-      body = (<>
-        <rect width="400" height="240" fill={`url(#${gSky})`} />
-        <ellipse cx="200" cy="60" rx="200" ry="90" fill={`url(#${gGlow})`} opacity="0.4" />
-        {[0,1,2,3,4].map((c)=>[0,1,2,3].map((r)=>{const cols=[p,s,a,"#3aa0ff"];const col=cols[(c+r)%4];const on=(c*r)%3!==0;const x=128+c*32,y=56+r*32;return on?(<g key={`${c}-${r}`} filter={`url(#${fShadow})`}><rect x={x} y={y} width="28" height="28" rx="5" fill={col} /><rect x={x} y={y} width="28" height="9" rx="5" fill="#fff" opacity="0.22" /></g>):null;}))}
-        {/* clear flash row */}
-        <rect x="124" y="148" width="156" height="30" rx="6" fill="#fff" opacity="0.55" filter={`url(#${fGlow})`} />
-      </>);
-      break;
-
-    // ===== TRON — cyber grid, light trails, depth, glow walls =====
     case "cyber":
-      body = (<>
-        <rect width="400" height="240" fill="#03040c" />
-        <ellipse cx="200" cy="120" rx="220" ry="120" fill={`url(#${gGlow})`} opacity="0.35" />
-        {[0,1,2,3,4,5,6].map((i)=>{const t=i/6;const y=120+(240-120)*t*t;return(<line key={`h${i}`} x1="0" y1={y} x2="400" y2={y} stroke={a} strokeOpacity={0.4-t*0.25} strokeWidth="1.2" />);})}
-        {[0,1,2,3,4,5,6,7,8].map((i)=>{const x=i*50;return(<line key={`v${i}`} x1={x} y1="120" x2={200+(x-200)*2.4} y2="240" stroke={a} strokeOpacity="0.22" strokeWidth="1.2" />);})}
-        {/* light cycle trails */}
-        <path d="M120 230 L120 170 L210 170" stroke={a} strokeWidth="4" fill="none" filter={`url(#${fGlow})`} strokeLinecap="round" />
-        <path d="M300 230 L300 150 L190 150" stroke={s} strokeWidth="4" fill="none" filter={`url(#${fGlow})`} strokeLinecap="round" />
-        <rect x="206" y="166" width="10" height="8" rx="2" fill="#fff" filter={`url(#${fGlow})`} />
-        <rect x="184" y="146" width="10" height="8" rx="2" fill="#fff" filter={`url(#${fGlow})`} />
-      </>);
-      break;
-
-    // ===== CUP KING — stacked cups, crown, gold pulse, depth =====
-    case "cups":
-      body = (<>
-        <rect width="400" height="240" fill={`url(#${gSky})`} />
-        <ellipse cx="200" cy="50" rx="150" ry="80" fill={`url(#${gGlow})`} opacity="0.6" />
-        {/* pyramid of cups */}
-        {[[160,170],[210,170],[185,128]].map(([x,y],i)=>(<g key={i} filter={`url(#${fShadow})`}><path d={`M${x-18} ${y} L${x+18} ${y} L${x+13} ${y+40} L${x-13} ${y+40} Z`} fill={`url(#${g1})`} /><ellipse cx={x} cy={y} rx="18" ry="6" fill={a} opacity="0.6" /><rect x={x-18} y={y} width="36" height="6" fill="#fff" opacity="0.15" /></g>))}
-        {/* crown */}
-        <g filter={`url(#${fGlow})`}>
-          <path d="M168 96 L178 110 L185 92 L192 110 L202 96 L198 116 L172 116 Z" fill={a} />
-          <circle cx="185" cy="86" r="4" fill="#fff" />
+      body = (
+        <g>
+          {[0,1,2,3,4,5,6,7].map((i)=>{
+            const y = 130 + i * i * 1.7;
+            return <line key={`h${i}`} x1="0" y1={y} x2="400" y2={y} stroke={a} strokeWidth={0.6 + i * 0.25} opacity={0.25 + i * 0.07} />;
+          })}
+          {[-6,-4,-2,0,2,4,6].map((i)=>(
+            <line key={`v${i}`} x1={200 + i * 8} y1="130" x2={200 + i * 60} y2="240" stroke={a} strokeWidth="1" opacity="0.4" />
+          ))}
+          <polygon points="0,130 0,40 60,70 60,130" fill={p} opacity="0.2" />
+          <polygon points="400,130 400,40 340,70 340,130" fill={s} opacity="0.2" />
+          <line x1="0" y1="130" x2="0" y2="40" stroke={a} strokeWidth="3" filter={`url(#${gid("soft")})`} />
+          <line x1="400" y1="130" x2="400" y2="40" stroke={a} strokeWidth="3" filter={`url(#${gid("soft")})`} />
+          <path d="M40,232 L40,170 L210,170" fill="none" stroke={a} strokeWidth="5" strokeLinecap="round" filter={`url(#${gid("soft")})`} />
+          <path d="M40,232 L40,170 L210,170" fill="none" stroke="#fff" strokeWidth="1.5" />
+          <path d="M360,232 L360,190 L150,190" fill="none" stroke={s} strokeWidth="5" strokeLinecap="round" filter={`url(#${gid("soft")})`} />
+          <path d="M360,232 L360,190 L150,190" fill="none" stroke="#fff" strokeWidth="1.5" />
+          <g>
+            <rect x="200" y="162" width="22" height="9" rx="3" fill="#fff" />
+            <polygon points="222,162 232,166 222,171" fill={a} />
+            <ellipse cx="244" cy="170" rx="22" ry="4" fill={a} opacity="0.25" filter={`url(#${gid("blur")})`} />
+          </g>
+          <g>
+            <rect x="128" y="182" width="22" height="9" rx="3" fill="#fff" />
+            <polygon points="128,182 118,186 128,191" fill={s} />
+          </g>
+          <ellipse cx="200" cy="130" rx="200" ry="20" fill={a} opacity="0.2" filter={`url(#${gid("blur")})`} />
         </g>
-      </>);
+      );
       break;
-
-    // ===== RACING — track perspective, car, speed streaks, tire trail =====
+    case "court":
+      body = (
+        <g>
+          {[60,140,260,340].map((x,i)=>(
+            <g key={i}>
+              <ellipse cx={x} cy="26" rx="26" ry="9" fill={a} opacity="0.25" filter={`url(#${gid("blur")})`} />
+              <rect x={x-9} y="18" width="18" height="7" rx="2" fill="#dfe7ff" opacity="0.8" />
+            </g>
+          ))}
+          <polygon points="80,96 320,96 392,228 8,228" fill={`url(#${gid("floor")})`} />
+          <polygon points="80,96 320,96 392,228 8,228" fill="#7a3d12" opacity="0.4" />
+          <polygon points="168,96 232,96 250,150 150,150" fill="none" stroke="#ffd9a8" strokeWidth="2" opacity="0.6" />
+          <path d="M120,180 Q200,210 280,180" fill="none" stroke="#ffd9a8" strokeWidth="2" opacity="0.6" />
+          <line x1="40" y1="228" x2="360" y2="228" stroke="#ffd9a8" strokeWidth="2" opacity="0.4" />
+          <rect x="178" y="58" width="44" height="28" rx="2" fill="#0b0e18" stroke="#cfd8ff" strokeWidth="1.5" opacity="0.9" />
+          <ellipse cx="200" cy="92" rx="16" ry="5" fill="none" stroke={a} strokeWidth="3" filter={`url(#${gid("soft")})`} />
+          <path d="M186,93 L190,108 M200,93 L200,110 M214,93 L210,108" stroke="#fff" strokeWidth="1" opacity="0.5" />
+          <path d="M120,180 Q170,120 198,98" fill="none" stroke={a} strokeWidth="3" opacity="0.3" strokeDasharray="2 6" />
+          <line x1="150" y1="150" x2="120" y2="182" stroke="#fff" strokeWidth="6" strokeLinecap="round" opacity="0.18" filter={`url(#${gid("blur")})`} />
+          <circle cx="120" cy="182" r="13" fill={p} />
+          <path d="M107,182 H133 M120,169 V195 M111,173 Q120,182 111,191 M129,173 Q120,182 129,191" stroke="#3a1c08" strokeWidth="1.4" fill="none" />
+          <circle cx="116" cy="178" r="3.5" fill="#fff" opacity="0.5" />
+          <g fill="#04060c" opacity="0.85">
+            <circle cx="270" cy="150" r="11" />
+            <path d="M270,160 Q256,178 250,210 L262,210 Q270,184 278,210 L290,210 Q284,178 270,160 Z" />
+            <path d="M262,168 L240,150 M278,168 L300,144" stroke="#04060c" strokeWidth="7" strokeLinecap="round" />
+          </g>
+        </g>
+      );
+      break;
+    case "field":
+      body = (
+        <g>
+          {[50,150,250,350].map((x,i)=>(
+            <g key={i}>
+              <ellipse cx={x} cy="22" rx="30" ry="10" fill={a} opacity="0.22" filter={`url(#${gid("blur")})`} />
+              <rect x={x-10} y="14" width="20" height="7" rx="2" fill="#eaf0ff" opacity="0.75" />
+            </g>
+          ))}
+          <polygon points="40,88 360,88 400,232 0,232" fill={`url(#${gid("floor")})`} />
+          <polygon points="40,88 360,88 400,232 0,232" fill={p} opacity="0.45" />
+          {[0,1,2,3,4].map((i)=>{
+            const t = i / 4;
+            const y = 88 + 144 * t;
+            const half = 160 + 40 * t;
+            return <line key={i} x1={200 - half} y1={y} x2={200 + half} y2={y} stroke="#dff5e4" strokeWidth={1 + i * 0.6} opacity={0.3 + i * 0.08} />;
+          })}
+          <g stroke={a} strokeWidth="3" fill="none" filter={`url(#${gid("soft")})`}>
+            <line x1="200" y1="88" x2="200" y2="66" />
+            <line x1="184" y1="66" x2="216" y2="66" />
+            <line x1="184" y1="66" x2="184" y2="50" />
+            <line x1="216" y1="66" x2="216" y2="50" />
+          </g>
+          <line x1="150" y1="150" x2="118" y2="172" stroke="#fff" strokeWidth="6" strokeLinecap="round" opacity="0.18" filter={`url(#${gid("blur")})`} />
+          <ellipse cx="118" cy="172" rx="14" ry="9" fill="#7a3a16" transform="rotate(-25 118 172)" />
+          <line x1="112" y1="170" x2="124" y2="174" stroke="#fff" strokeWidth="1.4" />
+          {[[250,160,0.9],[290,150,0.7],[180,176,0.6]].map((q,i)=>(
+            <g key={i} fill="#04060c" opacity={q[2] as number}>
+              <circle cx={q[0] as number} cy={q[1] as number} r="9" />
+              <path d={`M${q[0]},${(q[1] as number)+8} Q${(q[0] as number)-12},${(q[1] as number)+22} ${(q[0] as number)-8},${(q[1] as number)+44} L${(q[0] as number)+8},${(q[1] as number)+44} Q${(q[0] as number)+12},${(q[1] as number)+22} ${q[0]},${(q[1] as number)+8} Z`} />
+            </g>
+          ))}
+        </g>
+      );
+      break;
     case "speed":
-      body = (<>
-        <rect width="400" height="240" fill={`url(#${gSky})`} />
-        <path d="M120 50 L280 50 L390 234 L10 234 Z" fill={`url(#${gFloor})`} />
-        {/* center dashes */}
-        {[0,1,2,3,4].map((i)=>{const t=i/5;const y=60+(220-60)*t;const w=3+t*10;return(<rect key={i} x={200-w/2} y={y} width={w} height={6+t*8} rx="2" fill="#fff" opacity="0.55" />);})}
-        <path d="M120 50 L10 234" stroke={a} strokeWidth="2" opacity="0.5" filter={`url(#${fGlow})`} />
-        <path d="M280 50 L390 234" stroke={a} strokeWidth="2" opacity="0.5" filter={`url(#${fGlow})`} />
-        {/* speed streaks */}
-        {[0,1,2,3].map((i)=>(<line key={i} x1={60+i*30} y1={90+i*30} x2={120+i*30} y2={90+i*30} stroke={s} strokeWidth="3" opacity="0.5" strokeLinecap="round" />))}
-        {/* car */}
-        <g filter={`url(#${fShadow})`}>
-          <ellipse cx="200" cy="200" rx="40" ry="10" fill="#000" opacity="0.45" />
-          <path d="M172 196 L228 196 L218 168 Q200 158 182 168 Z" fill={`url(#${g1})`} />
-          <path d="M186 172 L214 172 L210 184 L190 184 Z" fill="#0a0e18" opacity="0.85" />
-          <rect x="170" y="190" width="60" height="8" rx="3" fill={a} filter={`url(#${fGlow})`} />
+      body = (
+        <g>
+          <ellipse cx="200" cy="70" rx="170" ry="40" fill={s} opacity="0.25" filter={`url(#${gid("blur")})`} />
+          <polygon points="150,90 250,90 392,232 8,232" fill="#0a0c14" />
+          <polygon points="160,96 240,96 360,232 40,232" fill={`url(#${gid("floor")})`} />
+          {[0,1,2,3,4,5].map((i)=>{
+            const t = i / 5;
+            const y = 100 + 132 * t;
+            const w = 2 + t * 10;
+            return <rect key={i} x={200 - w / 2} y={y} width={w} height={6 + t * 14} rx="2" fill="#ffd54a" opacity={0.5 + t * 0.4} />;
+          })}
+          <line x1="160" y1="96" x2="40" y2="232" stroke={a} strokeWidth="3" filter={`url(#${gid("soft")})`} />
+          <line x1="240" y1="96" x2="360" y2="232" stroke={a} strokeWidth="3" filter={`url(#${gid("soft")})`} />
+          {[0,1,2,3].map((i)=>(
+            <line key={i} x1={70 + i * 90} y1={60 + i * 6} x2={120 + i * 90} y2={60 + i * 6} stroke="#fff" strokeWidth="2" opacity="0.15" />
+          ))}
+          <ellipse cx="200" cy="206" rx="42" ry="9" fill="#000" opacity="0.5" />
+          <rect x="150" y="208" width="100" height="22" rx="6" fill="#fff" opacity="0.12" filter={`url(#${gid("blur")})`} />
+          <g>
+            <polygon points="170,196 230,196 244,214 156,214" fill={p} />
+            <polygon points="180,180 220,180 230,196 170,196" fill={s} />
+            <rect x="186" y="182" width="28" height="12" rx="3" fill="#0a0c14" />
+            <rect x="188" y="184" width="24" height="6" rx="2" fill={a} opacity="0.7" />
+            <rect x="152" y="210" width="14" height="10" rx="3" fill="#111" />
+            <rect x="234" y="210" width="14" height="10" rx="3" fill="#111" />
+            <ellipse cx="200" cy="214" rx="44" ry="6" fill={a} opacity="0.18" filter={`url(#${gid("blur")})`} />
+            <polygon points="170,212 156,232 176,232" fill={a} opacity="0.25" />
+            <polygon points="230,212 244,232 224,232" fill={a} opacity="0.25" />
+          </g>
         </g>
-      </>);
+      );
       break;
-
-    // ===== fallback =====
+    case "grid":
+      body = (
+        <g>
+          <ellipse cx="200" cy="40" rx="130" ry="40" fill={a} opacity="0.18" filter={`url(#${gid("blur")})`} />
+          <rect x="118" y="70" width="164" height="150" rx="14" fill={p} opacity="0.5" />
+          <rect x="118" y="70" width="164" height="150" rx="14" fill="none" stroke={a} strokeWidth="2" opacity="0.6" />
+          <rect x="124" y="74" width="60" height="142" rx="10" fill="#fff" opacity="0.06" />
+          {[0,1,2,3].map((r)=>[0,1,2,3,4].map((cc)=>{
+            const cx = 138 + cc * 31, cy = 92 + r * 33;
+            const filled = (r >= 2 && cc < 3) || (r === 1 && cc === 1);
+            const col = filled ? ((r + cc) % 2 === 0 ? a : s) : "#070a12";
+            return (
+              <g key={`${r}-${cc}`}>
+                <circle cx={cx} cy={cy} r="12" fill={col} />
+                {filled ? <circle cx={cx - 3} cy={cy - 3} r="3.5" fill="#fff" opacity="0.5" /> : <circle cx={cx} cy={cy} r="12" fill="#000" opacity="0.4" />}
+              </g>
+            );
+          }))}
+          <line x1="231" y1="40" x2="231" y2="78" stroke={a} strokeWidth="20" strokeLinecap="round" opacity="0.12" filter={`url(#${gid("blur")})`} />
+          <circle cx="231" cy="56" r="12" fill={a} />
+          <circle cx="228" cy="53" r="3.5" fill="#fff" opacity="0.7" />
+        </g>
+      );
+      break;
+    case "versus":
+      body = (
+        <g>
+          <ellipse cx="200" cy="120" rx="140" ry="80" fill={a} opacity="0.16" filter={`url(#${gid("blur")})`} />
+          <polygon points="200,40 214,108 200,200 186,108" fill={a} opacity="0.3" filter={`url(#${gid("soft")})`} />
+          <polygon points="60,120 132,106 340,120 132,134" fill={a} opacity="0.2" />
+          <ellipse cx="120" cy="170" rx="42" ry="10" fill="#000" opacity="0.4" />
+          <g fill={p}>
+            <rect x="78" y="118" width="74" height="48" rx="20" />
+            <circle cx="92" cy="120" r="11" />
+            <circle cx="112" cy="116" r="12" />
+            <circle cx="132" cy="120" r="11" />
+          </g>
+          <rect x="84" y="124" width="20" height="28" rx="8" fill="#fff" opacity="0.18" />
+          <ellipse cx="288" cy="170" rx="40" ry="10" fill="#000" opacity="0.4" />
+          <g fill={s}>
+            <rect x="250" y="128" width="60" height="40" rx="16" />
+            <rect x="246" y="96" width="16" height="44" rx="8" transform="rotate(-18 254 118)" />
+            <rect x="270" y="96" width="16" height="44" rx="8" transform="rotate(8 278 118)" />
+          </g>
+          <rect x="294" y="132" width="14" height="24" rx="6" fill="#fff" opacity="0.18" />
+        </g>
+      );
+      break;
+    case "dots":
+      body = (
+        <g>
+          <ellipse cx="200" cy="50" rx="120" ry="36" fill={a} opacity="0.16" filter={`url(#${gid("blur")})`} />
+          <rect x="150" y="120" width="60" height="60" rx="6" fill={a} opacity="0.25" filter={`url(#${gid("soft")})`} />
+          {[0,1,2,3].map((r)=>[0,1,2,3].map((cc)=>{
+            const x = 100 + cc * 60, y = 60 + r * 60;
+            const drawn = (r < 2 && cc < 2) || (r === 2 && cc === 1);
+            return (
+              <g key={`${r}-${cc}`}>
+                {cc < 3 ? <line x1={x} y1={y} x2={x + 60} y2={y} stroke={drawn ? a : "#1a2235"} strokeWidth={drawn ? 3 : 2} opacity={drawn ? 0.95 : 0.6} filter={drawn ? `url(#${gid("soft")})` : undefined} /> : null}
+                {r < 3 ? <line x1={x} y1={y} x2={x} y2={y + 60} stroke={drawn ? s : "#1a2235"} strokeWidth={drawn ? 3 : 2} opacity={drawn ? 0.95 : 0.6} /> : null}
+              </g>
+            );
+          }))}
+          {[0,1,2,3].map((r)=>[0,1,2,3].map((cc)=>(
+            <g key={`d${r}-${cc}`}>
+              <circle cx={100 + cc * 60} cy={60 + r * 60} r="6" fill={p} />
+              <circle cx={100 + cc * 60} cy={60 + r * 60} r="2.5" fill="#fff" opacity="0.8" />
+            </g>
+          )))}
+        </g>
+      );
+      break;
+    case "lane":
+      body = (
+        <g>
+          <ellipse cx="200" cy="36" rx="120" ry="34" fill={a} opacity="0.18" filter={`url(#${gid("blur")})`} />
+          <polygon points="150,60 250,60 360,232 40,232" fill={`url(#${gid("floor")})`} />
+          <polygon points="150,60 250,60 360,232 40,232" fill="#caa46a" opacity="0.35" />
+          {[-3,-2,-1,0,1,2,3].map((i)=>(
+            <line key={i} x1={200 + i * 14} y1="60" x2={200 + i * 44} y2="232" stroke="#3a2a12" strokeWidth="1" opacity="0.5" />
+          ))}
+          <line x1="150" y1="60" x2="40" y2="232" stroke={a} strokeWidth="3" filter={`url(#${gid("soft")})`} />
+          <line x1="250" y1="60" x2="360" y2="232" stroke={a} strokeWidth="3" filter={`url(#${gid("soft")})`} />
+          {[[200,70],[190,80],[210,80],[180,90],[200,90],[220,90]].map((q,i)=>(
+            <g key={i}>
+              <ellipse cx={q[0]} cy={q[1]+6} rx="5" ry="1.6" fill="#000" opacity="0.4" />
+              <path d={`M${q[0]-3},${q[1]+4} Q${q[0]-4},${q[1]-6} ${q[0]},${q[1]-10} Q${q[0]+4},${q[1]-6} ${q[0]+3},${q[1]+4} Z`} fill="#f4f7ff" />
+              <rect x={q[0]-3} y={q[1]-4} width="6" height="2" fill={s} opacity="0.8" />
+            </g>
+          ))}
+          <line x1="200" y1="226" x2="200" y2="150" stroke={p} strokeWidth="22" strokeLinecap="round" opacity="0.12" filter={`url(#${gid("blur")})`} />
+          <ellipse cx="200" cy="214" rx="20" ry="6" fill="#000" opacity="0.4" />
+          <circle cx="200" cy="200" r="20" fill={p} />
+          <circle cx="192" cy="194" r="4" fill="#0a0c14" />
+          <circle cx="202" cy="192" r="4" fill="#0a0c14" />
+          <circle cx="197" cy="200" r="4" fill="#0a0c14" />
+          <circle cx="192" cy="192" r="5" fill="#fff" opacity="0.3" />
+        </g>
+      );
+      break;
+    case "tower":
+      body = (
+        <g>
+          <ellipse cx="200" cy="50" rx="120" ry="40" fill={a} opacity="0.16" filter={`url(#${gid("blur")})`} />
+          {[0,1,2,3,4,5].map((i)=>{
+            const w = 120 - i * 6;
+            const x = 200 - w / 2 + Math.sin(i) * 10;
+            const y = 210 - i * 26;
+            const col = i % 2 === 0 ? p : s;
+            return (
+              <g key={i}>
+                <rect x={x} y={y} width={w} height="22" rx="3" fill={col} />
+                <polygon points={`${x},${y} ${x+10},${y-8} ${x+w+10},${y-8} ${x+w},${y}`} fill={col} opacity="0.7" />
+                <polygon points={`${x+w},${y} ${x+w+10},${y-8} ${x+w+10},${y+14} ${x+w},${y+22}`} fill="#000" opacity="0.35" />
+                <rect x={x+4} y={y+4} width={w-8} height="4" rx="2" fill="#fff" opacity="0.18" />
+              </g>
+            );
+          })}
+          <line x1="140" y1="44" x2="260" y2="44" stroke={a} strokeWidth="22" strokeLinecap="round" opacity="0.1" filter={`url(#${gid("blur")})`} />
+          <rect x="234" y="34" width="90" height="22" rx="3" fill={a} />
+          <rect x="238" y="38" width="82" height="4" rx="2" fill="#fff" opacity="0.3" />
+        </g>
+      );
+      break;
+    case "blocks":
+      body = (
+        <g>
+          <ellipse cx="200" cy="50" rx="130" ry="40" fill={a} opacity="0.16" filter={`url(#${gid("blur")})`} />
+          <rect x="120" y="60" width="160" height="160" rx="10" fill={p} opacity="0.18" stroke={a} strokeWidth="1.5" />
+          {[[0,0,a],[1,0,s],[2,0,a],[0,1,p],[2,1,s],[0,2,s],[1,2,a],[3,2,p],[1,3,s],[2,3,a]].map((b,i)=>{
+            const x = 130 + (b[0] as number) * 38, y = 70 + (b[1] as number) * 38;
+            return (
+              <g key={i}>
+                <rect x={x} y={y} width="32" height="32" rx="6" fill={b[2] as string} />
+                <polygon points={`${x},${y} ${x+32},${y} ${x+26},${y+6} ${x+6},${y+6}`} fill="#fff" opacity="0.3" />
+                <polygon points={`${x},${y} ${x},${y+32} ${x+6},${y+26} ${x+6},${y+6}`} fill="#fff" opacity="0.15" />
+                <rect x={x+22} y={y+22} width="6" height="6" rx="1" fill="#000" opacity="0.25" />
+              </g>
+            );
+          })}
+          <g opacity="0.9">
+            {[0,45,90,135,180,225,270,315].map((ang,i)=>{
+              const rad = (ang * Math.PI) / 180;
+              const cx = 244, cy = 184;
+              return <line key={i} x1={cx + Math.cos(rad) * 12} y1={cy + Math.sin(rad) * 12} x2={cx + Math.cos(rad) * 30} y2={cy + Math.sin(rad) * 30} stroke={a} strokeWidth="3" strokeLinecap="round" filter={`url(#${gid("soft")})`} />;
+            })}
+            <circle cx="244" cy="184" r="9" fill="#fff" />
+          </g>
+        </g>
+      );
+      break;
+    case "cups":
+      body = (
+        <g>
+          <ellipse cx="200" cy="44" rx="120" ry="36" fill={a} opacity="0.18" filter={`url(#${gid("blur")})`} />
+          <polygon points="40,150 360,150 392,232 8,232" fill={`url(#${gid("floor")})`} />
+          <line x1="40" y1="150" x2="360" y2="150" stroke={a} strokeWidth="2" opacity="0.5" />
+          {[[200,150],[180,150],[220,150],[160,150],[240,150],[190,128],[210,128],[170,128],[230,128],[200,106]].map((q,i)=>(
+            <g key={i}>
+              <ellipse cx={q[0]} cy={q[1]+14} rx="13" ry="3.5" fill="#000" opacity="0.35" />
+              <path d={`M${q[0]-13},${q[1]} L${q[0]-10},${q[1]+16} L${q[0]+10},${q[1]+16} L${q[0]+13},${q[1]} Z`} fill={i % 2 === 0 ? p : s} />
+              <ellipse cx={q[0]} cy={q[1]} rx="13" ry="4" fill={i % 2 === 0 ? a : "#fff"} opacity="0.5" />
+              <rect x={q[0]-11} y={q[1]+2} width="4" height="12" fill="#fff" opacity="0.2" />
+            </g>
+          ))}
+          <path d="M70,200 Q150,90 200,100" fill="none" stroke={a} strokeWidth="2" strokeDasharray="2 6" opacity="0.5" />
+          <circle cx="200" cy="100" r="9" fill="#f4f7ff" />
+          <circle cx="197" cy="97" r="3" fill="#fff" />
+          <g fill={a}>
+            <polygon points="186,84 192,72 200,82 208,72 214,84" />
+            <rect x="186" y="84" width="28" height="5" rx="2" />
+          </g>
+        </g>
+      );
+      break;
     default:
-      body = (<>
-        <rect width="400" height="240" fill={`url(#${gSky})`} />
-        <ellipse cx="200" cy="120" rx="160" ry="100" fill={`url(#${gGlow})`} opacity="0.6" />
-        <circle cx="200" cy="120" r="40" fill={`url(#${g1})`} filter={`url(#${fGlow})`} />
-      </>);
+      body = (
+        <g>
+          <ellipse cx="200" cy="110" rx="150" ry="80" fill={a} opacity="0.18" filter={`url(#${gid("blur")})`} />
+          <polygon points="100,100 300,100 380,228 20,228" fill={`url(#${gid("floor")})`} />
+          {[0,1,2,3].map((i)=>(
+            <line key={i} x1={200 - 70 - i * 40} y1={120 + i * 30} x2={200 + 70 + i * 40} y2={120 + i * 30} stroke={a} strokeWidth="1.5" opacity={0.4 - i * 0.07} />
+          ))}
+          <circle cx="200" cy="150" r="34" fill={p} />
+          <circle cx="200" cy="150" r="34" fill="none" stroke={a} strokeWidth="3" filter={`url(#${gid("soft")})`} />
+          <circle cx="190" cy="140" r="9" fill="#fff" opacity="0.4" />
+        </g>
+      );
+      break;
   }
 
   return (
-    <svg viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice" className={`ga-art-svg ${className}`} role="img" aria-hidden="true">
+    <g>
       {defs}
-      {body}
-    </svg>
+      {atmosphere}
+      <g>{body}</g>
+      <rect x="0" y="0" width="400" height="240" fill={`url(#${gid("glow")})`} opacity="0.35" />
+      <rect x="0" y="170" width="400" height="70" fill="#04060c" opacity="0.45" />
+    </g>
   );
 }
+
 
 // ---- CSS variable bundle for a game's theme ----
 export function gameVars(art: GameArt): React.CSSProperties {
