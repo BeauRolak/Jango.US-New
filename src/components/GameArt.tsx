@@ -596,19 +596,45 @@ export function gameVars(art: GameArt): React.CSSProperties {
 }
 
 // ---- Full-bleed reactive backdrop that shifts with the active game ----
-export function DynamicGameBackdrop({ gameId, intensity = 1 }: { gameId: string; intensity?: number }) {
-  const art = getGameArt(gameId);
+// Cross-fades between game "worlds" so the whole page takes on the selected
+// game's atmosphere (pool hall, cyber grid, neon course...). Set fixed to pin
+// it to the viewport for an immersive scroll.
+export function DynamicGameBackdrop({ gameId, intensity = 1, fixed = false }: { gameId: string; intensity?: number; fixed?: boolean }) {
   const reduced = usePrefersReducedMotion();
+  const [stack, setStack] = useState<{ id: string; k: number }[]>([{ id: gameId, k: 0 }]);
+  const kRef = useRef(0);
+  useEffect(() => {
+    setStack((prev) => {
+      if (prev[prev.length - 1].id === gameId) return prev;
+      kRef.current += 1;
+      return [...prev, { id: gameId, k: kRef.current }].slice(-2);
+    });
+  }, [gameId]);
+  // drop the older layer once the cross-fade finishes
+  useEffect(() => {
+    if (stack.length < 2) return;
+    const t = window.setTimeout(() => setStack((prev) => prev.slice(-1)), 950);
+    return () => window.clearTimeout(t);
+  }, [stack]);
   return (
     <div
-      className={`ga-backdrop ${reduced ? "ga-still" : ""}`}
-      style={{ ...gameVars(art), opacity: intensity }}
+      className={`ga-backdrop ${fixed ? "ga-fixed" : ""} ${reduced ? "ga-still" : ""}`}
+      style={{ opacity: intensity }}
       aria-hidden="true"
       data-game={gameId}
     >
-      <div className="ga-backdrop-grad" />
-      <div className="ga-backdrop-art"><GameArtSVG art={art} className="ga-bleed" /></div>
+      {stack.map((l, i) => {
+        const art = getGameArt(l.id);
+        return (
+          <div key={l.k} className={`ga-bd-layer ${i === stack.length - 1 ? "ga-bd-in" : "ga-bd-out"}`} style={gameVars(art)}>
+            <div className="ga-backdrop-grad" />
+            <div className="ga-backdrop-art"><GameArtSVG art={art} className="ga-bleed" /></div>
+          </div>
+        );
+      })}
+      <div className="ga-backdrop-sweep" aria-hidden="true" />
       <div className="ga-backdrop-grain" />
+      <div className="ga-backdrop-vig" aria-hidden="true" />
     </div>
   );
 }

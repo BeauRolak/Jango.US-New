@@ -141,8 +141,8 @@ export default function Play() {
 
   return (
     <div className="plobby">
-      {/* dynamic theme backdrop reacts to previewed game */}
-      <DynamicGameBackdrop gameId={artId(preview)} intensity={0.7} />
+      {/* dynamic theme backdrop — the selected game's world takes over the page */}
+      <DynamicGameBackdrop gameId={artId(preview)} intensity={0.92} fixed />
 
       {/* ===== HERO ===== */}
       <section className="plobby-hero">

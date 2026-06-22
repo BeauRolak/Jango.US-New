@@ -636,3 +636,30 @@ Drop premium poster art into public/game-posters/<file>.webp (recommended 1600x9
 
 ### Next
 Continue into Tournaments, Shop, Rankings/Battle Pass, Profile, Story, then mobile art/motion QA — applying the same cinematic poster/backdrop language.
+
+
+## Update 2026-06-22 — Life Overhaul Phase 1: dynamic background takeover (Play Lobby)
+
+Kicking off the "Massive Life/Art/UI-UX/Gameplay Overhaul" brief. Implementation order item #1/#8: the dynamic, game-specific background that takes over the page (the old-site "pool/air-hockey takes over the background" feel), executed at higher quality.
+
+### Done (built + verified via headless screenshots, zero console errors)
+- src/components/GameArt.tsx — rewrote `DynamicGameBackdrop` into a cinematic, CROSS-FADING world layer:
+  - keeps a 2-layer stack; when the selected game changes, the new game's world fades in over the old (gaBdIn/gaBdOut, ~0.95s), then the old layer is dropped.
+  - new `fixed` prop pins it full-viewport for an immersive scroll.
+  - layers: per-game gradient + large GameArtSVG scene (opacity .68, saturated) with slow drift, a roaming light-sweep, grain, and a readability vignette.
+- src/components/gameart.css — new `.ga-backdrop.ga-fixed`, `.ga-bd-layer/.ga-bd-in/.ga-bd-out` crossfade, `gaBdDrift` (slow pan/zoom), `gaBdSweep` (light sweep), grain + vignette; full prefers-reduced-motion guard.
+- src/pages/Play.tsx — backdrop now `fixed` at intensity 0.92 so the hovered/selected game's world fills the whole page.
+- src/pages/playlobby.css — `.plobby > *:not(.ga-backdrop) { position: relative; z-index: 1 }` so all lobby content stays above the immersive backdrop and readable.
+
+### Verified
+- Hover Mini Golf -> page becomes a green neon course world; hover Tron -> page becomes a cyber blue-grid world; 8-Ball -> pool-hall green. Whole-page mood shift with smooth crossfade + drift, content cards remain readable. 0 page errors, build green.
+
+### Next (per overhaul order)
+2. Carry the immersive backdrop into Dashboard + Games page.
+3. Mini Golf V2: 12-hole library + 3/6/9/12 selector + random locked order + bot, then physics/scoring/turn-flow + win/scoreboard animations.
+4. Tournaments game-specific event art + rake/prize breakdown.
+5. Shop/Wallet/Rankings/Profile/Training/Story/Social life pass.
+6. Per-game gameplay passes (shared MATCH_SETUP->...->RESULTS framework).
+7. Full motion/sound/haptics pass, then mobile QA, then final visual QA.
+
+NOTE (env): push to origin is currently blocked (HTTP 403) and the commit-signing server is intermittently 503 — work is committed locally and verified via headless-Chromium screenshots; not yet deployed to Vercel this session.

@@ -6,18 +6,37 @@
 .ga-art-svg { width: 100%; height: 100%; display: block; }
 .ga-bleed { position: absolute; inset: 0; }
 
-/* ---------- Full-bleed reactive backdrop ---------- */
+/* ---------- Full-bleed reactive backdrop (cinematic, cross-fading) ---------- */
 .ga-backdrop {
   position: absolute; inset: 0; overflow: hidden; pointer-events: none;
   z-index: 0; border-radius: inherit;
   transition: opacity .6s ease;
 }
+.ga-backdrop.ga-fixed { position: fixed; inset: 0; z-index: 0; border-radius: 0; }
+.ga-bd-layer { position: absolute; inset: 0; opacity: 1; }
+.ga-bd-in { animation: gaBdIn .95s cubic-bezier(.4,0,.2,1) both; }
+.ga-bd-out { animation: gaBdOut .95s cubic-bezier(.4,0,.2,1) both; }
+@keyframes gaBdIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes gaBdOut { from { opacity: 1; } to { opacity: 0; } }
 .ga-backdrop-grad { position: absolute; inset: 0; background: var(--ga-grad); }
-.ga-backdrop-art { position: absolute; inset: -6% -2%; opacity: .5; filter: saturate(1.05); }
-.ga-backdrop-grain {
-  position: absolute; inset: 0; opacity: .5;
-  background: radial-gradient(circle at 50% 0%, transparent 60%, rgba(0,0,0,.55) 100%);
+.ga-backdrop-art { position: absolute; inset: -8% -4%; opacity: .68; filter: saturate(1.14) contrast(1.05);
+  animation: gaBdDrift 26s ease-in-out infinite alternate; }
+@keyframes gaBdDrift {
+  from { transform: scale(1.06) translate3d(-1.2%, -1%, 0); }
+  to   { transform: scale(1.13) translate3d(1.6%, 1.2%, 0); }
 }
+.ga-backdrop-sweep { position: absolute; top: -10%; left: -45%; width: 45%; height: 130%; z-index: 2;
+  background: linear-gradient(105deg, transparent, rgba(255,255,255,.05), transparent);
+  transform: skewX(-14deg); animation: gaBdSweep 11s ease-in-out infinite; }
+@keyframes gaBdSweep { 0% { left: -50%; } 58%, 100% { left: 150%; } }
+.ga-backdrop-grain {
+  position: absolute; inset: 0; z-index: 1;
+  background: radial-gradient(circle at 50% 0%, transparent 58%, rgba(0,0,0,.5) 100%);
+}
+.ga-backdrop-vig { position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(180deg, rgba(5,6,12,.34) 0%, rgba(5,6,12,.06) 26%, rgba(5,6,12,.5) 100%); }
+.ga-still .ga-backdrop-art, .ga-still .ga-backdrop-sweep,
+.ga-still .ga-bd-in, .ga-still .ga-bd-out { animation: none !important; }
 
 /* ---------- Compact art panel ---------- */
 .ga-panel {
