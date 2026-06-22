@@ -636,3 +636,34 @@ Drop premium poster art into public/game-posters/<file>.webp (recommended 1600x9
 
 ### Next
 Continue into Tournaments, Shop, Rankings/Battle Pass, Profile, Story, then mobile art/motion QA — applying the same cinematic poster/backdrop language.
+
+## Update 2026-06-22 — Cinematic Poster Art Pass v4 (Play Lobby)
+
+Fourth art-quality escalation. Goal: make game art feel like real premium poster/cover art with depth and atmosphere, and structure the system around real .webp poster assets with the SVG scenes as fallbacks.
+
+### Art asset pipeline (ready for real art)
+- Added an `artDirection?: string` field to the `GameArt` interface and wrote a per-game art-direction note for all 15 games (exact look the final poster should have: lighting, perspective, depth, palette, motion).
+- `POSTER_FILES` now uses premium filenames (`mini-golf.webp`, `eight-ball.webp`, `air-hockey.webp`, `chess.webp`, `connect-four.webp`, `rps.webp`, `dots-boxes.webp`, `bowling.webp`, `cup-king.webp`, `stack-tower.webp`, `block-blast.webp`, `tron.webp`, `basketball.webp`, `football.webp`, `racing.webp`).
+- To drop in real art: place the file in `public/game-posters/<name>.webp` (recommended 1600x960 / 5:3, <250kb, dark-neon) and uncomment the matching id in `POSTER_FILES`. The `<img>` poster layer fades in over the SVG scene automatically; SVG stays as the loading + onError fallback. Entries stay commented today => zero image requests / zero 404s.
+
+### Realism upgrades (every scene)
+- New shared SVG defs: top-light radial, atmospheric haze gradient, reflection sheen, drop-shadow filter, specular-lighting filter, fractal-noise film-grain filter, and a motion-blur filter.
+- Cinematic overlays layered over every one of the 15 scenes: top-light beam (screen blend), haze, floor reflection, and SVG film grain (overlay blend).
+- CSS color grading (saturate/contrast/brightness), vignette, grain, slow living poster drift/pan, and a hover light-sweep.
+
+### Selected preview / hero
+- Hero is now a full-bleed cinematic poster: glass frame, layered dark gradient, large title + tagline, animated economy strip (Entry / Pot / 3% Rake / Winner in Scalps), difficulty/status chips, Play / Bot / Tournament actions, moving light sweep, hover art pan, mock-economy notice.
+
+### Cards (collectible posters)
+- `.game-card__art` is now a cinematic 16:10 poster crop (was a 92px strip).
+- Base-of-poster darkening for legibility, integrated title, glassy footer stack, status + difficulty pills, entry/economy mini-line.
+- Hover: lift + poster zoom + color-glow ring + shine sweep + Play/Bot CTA reveal. Persistent glow-ring selected state. Locked/REBUILDING games dimmed but still poster-like.
+
+### QA
+- Vercel: Ready / Production (all v4 commits green).
+- Live /play: 15 distinct cinematic poster cards; hero economy with 3% rake; hover reveals CTA + glow on all cards; zero console errors; zero game-poster network requests (no 404s); no horizontal overflow; prefers-reduced-motion rules active; mobile media query at 760px.
+- Currency consistent: Scalps with the Ⓢ brand mark; mock-economy notice intact; no real money movement.
+
+Files: `src/lib/gameArt.ts`, `src/components/GameArt.tsx`, `src/components/gameart.css`, `src/pages/playlobby.css`.
+
+Next: Tournaments art pass, then Shop, Rankings/Battle Pass, Profile, Story, mobile art/motion QA.
