@@ -64,6 +64,7 @@
 
 * { box-sizing: border-box; }
 html, body, #root { height: 100%; }
+html { background: #06070d; }
 body {
   margin: 0;
   font-family: var(--font-sans);
