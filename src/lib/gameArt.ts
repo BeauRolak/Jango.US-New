@@ -9,6 +9,8 @@ export interface GameArt {
   id: string;
   name: string;
   icon: string;
+  /** Optional real poster art asset (e.g. /game-posters/pool.webp). When set, it layers over the cinematic SVG fallback. */
+  poster?: string;
   category: string;
   tagline: string;
   sub: string;
@@ -291,4 +293,33 @@ export const FEATURED_ROTATION: string[] = [
 
 export function getGameArt(id: string): GameArt {
   return GAME_ART[id] || GAME_ART['minigolf'];
+}
+
+
+/* ============================================================
+   Poster art pipeline (ready for real assets)
+   ------------------------------------------------------------
+   Drop premium poster art into: public/game-posters/<file>.webp
+   Then map an id below to enable it. The <img> layers over the
+   cinematic SVG scene (which stays as the loading + fallback art).
+   Recommended export: 1600x960 (5:3), <250kb webp, dark/neon look.
+   ============================================================ */
+export const POSTER_BASE = "/game-posters";
+
+/** Map game id -> poster filename (without extension). Add entries as art lands. */
+export const POSTER_FILES: Record<string, string> = {
+  // minigolf: "minigolf",
+  // "8ball": "pool",
+  // airhockey: "airhockey",
+  // chess: "chess",
+  // tron: "tron",
+  // basketball: "basketball",
+  // football: "football",
+  // racing: "racing",
+};
+
+/** Resolve a poster URL for a game id, or undefined if no real asset yet. */
+export function getPosterUrl(id: string): string | undefined {
+  const f = POSTER_FILES[id];
+  return f ? `${POSTER_BASE}/${f}.webp` : undefined;
 }
