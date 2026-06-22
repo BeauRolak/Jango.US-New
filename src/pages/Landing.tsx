@@ -1,6 +1,9 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import PublicShell from "../components/PublicShell";
 import { Icon, type IconName } from "../components/Icon";
+import { GameArtSVG, usePrefersReducedMotion } from "../components/GameArt";
+import { getGameArt } from "../lib/gameArt";
 import { GAMES } from "../games/registry";
 import "./landing.css";
 
@@ -10,6 +13,16 @@ const GAME_ICON: Record<string, IconName> = {
   basketball: "Target", football: "Trophy", stacktower: "Building",
   blockblast: "Sparkles", tron: "Bolt", cupking: "Crown", racing: "Bolt",
 };
+
+// Games that "phase" through the hero stage, each with a live matchup.
+const PHASE = [
+  { id: "minigolf", a: "Mercury", b: "Daydream" },
+  { id: "8ball", a: "Vortex", b: "PixelKing" },
+  { id: "blockblast", a: "Echo", b: "Saint" },
+  { id: "chess", a: "ShadowAce", b: "NovaStrike" },
+  { id: "airhockey", a: "GhostByte", b: "Riptide" },
+  { id: "tron", a: "Cobalt", b: "Wildcard" },
+];
 
 const TICKER = [
   { a: "ShadowAce", b: "NovaStrike", game: "Chess", pot: "1,600" },
@@ -29,12 +42,67 @@ const WHY: { title: string; desc: string; icon: IconName; tone: string }[] = [
 
 const STEPS = [
   { n: "01", title: "Create your account", desc: "Free in seconds. Look around the arena before you ever deposit.", icon: "Users" as IconName },
-  { n: "02", title: "Pick a game, set the stakes", desc: "Match into ranked, casual, or tournaments across 14 games of skill.", icon: "Gamepad" as IconName },
+  { n: "02", title: "Pick a game, set the stakes", desc: "Match into ranked, casual, or tournaments across 15 games of skill.", icon: "Gamepad" as IconName },
   { n: "03", title: "Outplay & cash out", desc: "Win the match, win the pot. 1 Scalp = $1, paid instantly.", icon: "Coins" as IconName },
 ];
 
+const initials = (n: string) => n.slice(0, 2).toUpperCase();
+
+/** Hero stage that phases through real game scenes with a morphing live-duel overlay. */
+function PhasingStage() {
+  const reduced = usePrefersReducedMotion();
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    if (reduced) return;
+    const t = window.setInterval(() => setI((v) => (v + 1) % PHASE.length), 3800);
+    return () => window.clearInterval(t);
+  }, [reduced]);
+
+  const m = PHASE[i];
+  const art = getGameArt(m.id);
+  const pot = art.entry * 2;
+  const winner = pot - Math.round(pot * 0.03);
+
+  return (
+    <div className="lp-stage">
+      <div className="lp-stage__scene" key={m.id}>
+        <GameArtSVG art={art} />
+      </div>
+      <div className="lp-stage__top">
+        <span className="lp-stage__live"><span className="lp-stage__dot" /> LIVE MATCH</span>
+        <span className="lp-stage__cat">{art.category}</span>
+      </div>
+      <div className="lp-stage__info" key={m.id + "-i"}>
+        <div className="lp-stage__duel">
+          <div className="lp-stage__player">
+            <span className="lp-stage__ava lp-stage__ava--a">{initials(m.a)}</span>
+            <span className="lp-stage__name">{m.a}</span>
+          </div>
+          <span className="lp-stage__vs grad">VS</span>
+          <div className="lp-stage__player">
+            <span className="lp-stage__ava lp-stage__ava--b">{initials(m.b)}</span>
+            <span className="lp-stage__name">{m.b}</span>
+          </div>
+        </div>
+        <div className="lp-stage__game">
+          <Icon name={GAME_ICON[m.id] || "Gamepad"} /> {art.name}
+        </div>
+        <div className="lp-stage__econ">
+          <div><span className="lp-k">Entry</span><span className="lp-v">Ⓢ {art.entry}</span></div>
+          <div><span className="lp-k">Pot</span><span className="lp-v lp-v--gold">Ⓢ {pot}</span></div>
+          <div><span className="lp-k">Winner</span><span className="lp-v">Ⓢ {winner}</span></div>
+        </div>
+      </div>
+      <div className="lp-stage__dots">
+        {PHASE.map((p, idx) => (
+          <span key={p.id} className={"lp-stage__pip" + (idx === i ? " on" : "")} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function Landing() {
-  const featured = GAMES.filter((g) => ["chess", "8ball", "airhockey"].includes(g.id));
   return (
     <PublicShell>
       {/* ===================== HERO ===================== */}
@@ -73,39 +141,8 @@ export default function Landing() {
             </ul>
           </div>
 
-          {/* Featured live duel */}
           <div className="lp-hero__stage">
-            <div className="lp-duel">
-              <div className="lp-duel__top">
-                <span className="lp-duel__live"><span className="lp-duel__livedot" /> LIVE MATCH</span>
-                <span className="lp-duel__game"><Icon name="Crown" /> Chess · Ranked</span>
-              </div>
-              <div className="lp-duel__body">
-                <div className="lp-duel__player">
-                  <span className="lp-duel__ava lp-duel__ava--a">SA</span>
-                  <span className="lp-duel__name">ShadowAce</span>
-                  <span className="lp-duel__elo">Master · 2410</span>
-                </div>
-                <div className="lp-duel__vs"><span className="grad">VS</span></div>
-                <div className="lp-duel__player">
-                  <span className="lp-duel__ava lp-duel__ava--b">NS</span>
-                  <span className="lp-duel__name">NovaStrike</span>
-                  <span className="lp-duel__elo">Master · 2388</span>
-                </div>
-              </div>
-              <div className="lp-duel__pot">
-                <div><span className="lp-k">Entry</span><span className="lp-v">Ⓢ 25</span></div>
-                <div className="lp-duel__potmain"><span className="lp-k">Pot</span><span className="lp-v lp-v--gold">Ⓢ 1,600</span></div>
-                <div><span className="lp-k">Winner takes</span><span className="lp-v">Ⓢ 1,552</span></div>
-              </div>
-            </div>
-            <div className="lp-chips" aria-hidden="true">
-              {featured.map((g) => (
-                <span key={g.id} className="lp-chip" style={{ background: g.art }}>
-                  <Icon name={GAME_ICON[g.id] || "Gamepad"} />
-                </span>
-              ))}
-            </div>
+            <PhasingStage />
           </div>
         </div>
       </section>
@@ -147,7 +184,7 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ===================== GAMES ===================== */}
+        {/* ===================== GAMES (live art) ===================== */}
         <section className="lp-section">
           <div className="lp-section__head lp-section__head--row">
             <div>
@@ -159,8 +196,8 @@ export default function Landing() {
           <div className="lp-games">
             {GAMES.map((g) => (
               <div key={g.id} className="lp-game">
-                <div className="lp-game__art" style={{ background: g.art }}>
-                  <span className="lp-game__glyph"><Icon name={GAME_ICON[g.id] || "Gamepad"} /></span>
+                <div className="lp-game__art">
+                  <GameArtSVG art={getGameArt(g.id)} />
                   <span className="lp-game__mode">{g.mode}</span>
                 </div>
                 <div className="lp-game__body">
