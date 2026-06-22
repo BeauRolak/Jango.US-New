@@ -1,9 +1,13 @@
 // build-bump: deposit route v2 1781737701811
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { Toaster } from "./components/UI";
 import { RewardLayer } from "./components/Juice";
 import type { ReactNode } from "react";
 import Layout from "./components/Layout";
+import PublicShell from "./components/PublicShell";
+import { useAuth } from "./lib/auth";
+import Landing from "./pages/Landing";
+import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Play from "./pages/Play";
 import Games from "./pages/Games";
@@ -41,52 +45,81 @@ function P({ children }: { children: ReactNode }) {
   return <div className={"page-fade"}>{children}</div>;
 }
 
+/** App page behind auth: redirect guests to login, otherwise render in the app shell. */
+function Protected({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
+  const loc = useLocation();
+  if (!user) return <Navigate to="/login" replace state={{ from: loc.pathname }} />;
+  return <Layout><P>{children}</P></Layout>;
+}
+
+/** Home: marketing landing for guests, the app Dashboard for members. */
+function Home() {
+  const { user } = useAuth();
+  return user ? <Layout><P><Dashboard /></P></Layout> : <Landing />;
+}
+
+/** Public content (legal pages): app shell when signed in, slim public shell otherwise. */
+function Public({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
+  return user ? <Layout><P>{children}</P></Layout> : <PublicShell><P>{children}</P></PublicShell>;
+}
+
+/** Auth screens: bounce already-signed-in users back to the app. */
+function GuestOnly({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
+  if (user) return <Navigate to="/" replace />;
+  return <>{children}</>;
+}
+
 export default function App() {
   return (
-    <Layout>
+    <>
       <Routes>
-        <Route path="/" element={<P><Dashboard /></P>} />
-        <Route path="/play" element={<P><Play /></P>} />
-        <Route path="/games" element={<P><Games /></P>} />
-        <Route path="/games/minigolf" element={<P><MiniGolf /></P>} />
-        <Route path="/games/connect4" element={<P><Connect4 /></P>} />
-        <Route path="/games/rps" element={<P><RPS /></P>} />
-        <Route path="/games/dotsboxes" element={<P><DotsBoxes /></P>} />
-        <Route path="/games/chess" element={<P><Chess /></P>} />
-        <Route path="/games/eightball" element={<P><EightBall /></P>} />
-        <Route path="/games/airhockey" element={<P><AirHockey /></P>} />
-        <Route path="/games/bowling" element={<P><Bowling /></P>} />
-        <Route path="/games/basketball" element={<P><Basketball /></P>} />
-        <Route path="/games/football" element={<P><Football /></P>} />
-        <Route path="/games/stacktower" element={<P><StackTower /></P>} />
-        <Route path="/games/blockblast" element={<P><BlockBlast /></P>} />
-        <Route path="/games/tron" element={<P><Tron /></P>} />
-        <Route path="/games/cupking" element={<P><CupKing /></P>} />
-        <Route path="/games/racing" element={<P><Racing /></P>} />
-        <Route path="/profile" element={<P><Profile /></P>} />
-        <Route path="/wallet" element={<P><Wallet /></P>} />
-        <Route path="/deposit" element={<P><Deposit /></P>} />
-        <Route path="/tournaments" element={<P><Tournaments /></P>} />
-        <Route path="/rankings" element={<P><Rankings /></P>} />
-        <Route path="/leaderboard" element={<P><Rankings /></P>} />
-        <Route path="/clans" element={<P><Clans /></P>} />
-        <Route path="/battle-pass" element={<P><BattlePass /></P>} />
-        <Route path="/rank-progression" element={<P><RankTrack /></P>} />
-        <Route path="/shop" element={<P><Shop /></P>} />
-        <Route path="/training" element={<P><Training /></P>} />
-        <Route path="/tutorial" element={<P><Training /></P>} />
-        <Route path="/social" element={<P><Social /></P>} />
-        <Route path="/story" element={<P><Story /></P>} />
-        <Route path="/settings" element={<P><Settings /></P>} />
-        <Route path="/terms" element={<P><Terms /></P>} />
-        <Route path="/privacy" element={<P><Privacy /></P>} />
-        <Route path="/fair-play" element={<P><FairPlay /></P>} />
-        <Route path="/responsible-gaming" element={<P><ResponsibleGaming /></P>} />
-        <Route path="/contact" element={<P><Contact /></P>} />
-        <Route path="*" element={<P><Dashboard /></P>} />
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<GuestOnly><Auth mode="login" /></GuestOnly>} />
+        <Route path="/signup" element={<GuestOnly><Auth mode="signup" /></GuestOnly>} />
+        <Route path="/play" element={<Protected><Play /></Protected>} />
+        <Route path="/games" element={<Protected><Games /></Protected>} />
+        <Route path="/games/minigolf" element={<Protected><MiniGolf /></Protected>} />
+        <Route path="/games/connect4" element={<Protected><Connect4 /></Protected>} />
+        <Route path="/games/rps" element={<Protected><RPS /></Protected>} />
+        <Route path="/games/dotsboxes" element={<Protected><DotsBoxes /></Protected>} />
+        <Route path="/games/chess" element={<Protected><Chess /></Protected>} />
+        <Route path="/games/eightball" element={<Protected><EightBall /></Protected>} />
+        <Route path="/games/airhockey" element={<Protected><AirHockey /></Protected>} />
+        <Route path="/games/bowling" element={<Protected><Bowling /></Protected>} />
+        <Route path="/games/basketball" element={<Protected><Basketball /></Protected>} />
+        <Route path="/games/football" element={<Protected><Football /></Protected>} />
+        <Route path="/games/stacktower" element={<Protected><StackTower /></Protected>} />
+        <Route path="/games/blockblast" element={<Protected><BlockBlast /></Protected>} />
+        <Route path="/games/tron" element={<Protected><Tron /></Protected>} />
+        <Route path="/games/cupking" element={<Protected><CupKing /></Protected>} />
+        <Route path="/games/racing" element={<Protected><Racing /></Protected>} />
+        <Route path="/profile" element={<Protected><Profile /></Protected>} />
+        <Route path="/wallet" element={<Protected><Wallet /></Protected>} />
+        <Route path="/deposit" element={<Protected><Deposit /></Protected>} />
+        <Route path="/tournaments" element={<Protected><Tournaments /></Protected>} />
+        <Route path="/rankings" element={<Protected><Rankings /></Protected>} />
+        <Route path="/leaderboard" element={<Protected><Rankings /></Protected>} />
+        <Route path="/clans" element={<Protected><Clans /></Protected>} />
+        <Route path="/battle-pass" element={<Protected><BattlePass /></Protected>} />
+        <Route path="/rank-progression" element={<Protected><RankTrack /></Protected>} />
+        <Route path="/shop" element={<Protected><Shop /></Protected>} />
+        <Route path="/training" element={<Protected><Training /></Protected>} />
+        <Route path="/tutorial" element={<Protected><Training /></Protected>} />
+        <Route path="/social" element={<Protected><Social /></Protected>} />
+        <Route path="/story" element={<Protected><Story /></Protected>} />
+        <Route path="/settings" element={<Protected><Settings /></Protected>} />
+        <Route path="/terms" element={<Public><Terms /></Public>} />
+        <Route path="/privacy" element={<Public><Privacy /></Public>} />
+        <Route path="/fair-play" element={<Public><FairPlay /></Public>} />
+        <Route path="/responsible-gaming" element={<Public><ResponsibleGaming /></Public>} />
+        <Route path="/contact" element={<Public><Contact /></Public>} />
+        <Route path="*" element={<Home />} />
       </Routes>
       <Toaster />
       <RewardLayer />
-    </Layout>
+    </>
   );
 }

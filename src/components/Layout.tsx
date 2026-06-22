@@ -1,8 +1,9 @@
-import { NavLink, useLocation, Link } from 'react-router-dom';
+import { NavLink, useLocation, Link, useNavigate } from 'react-router-dom';
 import { ReactNode, useState } from 'react';
 import './Layout.css';
 import { Icon } from "./Icon";
 import { useScalps, NOTIFICATIONS } from "../lib/mockData";
+import { useAuth } from "../lib/auth";
 
 const COMPETE = [
   { to: '/leaderboard', label: 'Leaderboard' },
@@ -27,10 +28,15 @@ export default function Layout({ children }: { children: ReactNode }) {
   const [menu, setMenu] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const loc = useLocation();
+  const navigate = useNavigate();
   const { formatted } = useScalps();
+  const { user, logout } = useAuth();
   const unread = NOTIFICATIONS.filter((n) => n.unread).length;
   const close = () => { setMenu(null); setMobileOpen(false); };
   const toggle = (k: string) => setMenu(menu === k ? null : k);
+  const displayName = user?.username || "Player";
+  const avatarInitial = displayName.charAt(0).toUpperCase();
+  const signOut = () => { close(); logout(); navigate("/", { replace: true }); };
   return (
     <div className="app-shell">
       <div className="j-arena" aria-hidden="true" />
@@ -92,12 +98,12 @@ export default function Layout({ children }: { children: ReactNode }) {
             </div>
             <Link to="/wallet" className="balance-pill"><span className="coin">S</span><span className="balance-num">{formatted}</span><span className="bal-plus">+</span></Link>
             <div className="tnl-drop">
-              <button className="avatar-btn" onClick={()=>toggle('avatar')}>P<span className="rank-dot" /></button>
+              <button className="avatar-btn" onClick={()=>toggle('avatar')} aria-label="Account menu">{avatarInitial}<span className="rank-dot" /></button>
               {menu==='avatar' && (
                 <div className="dropdown dropdown-right">
-                  <div className="dd-head"><div className="dd-name">Player 1</div><div className="dd-email">player@jango.us</div></div>
+                  <div className="dd-head"><div className="dd-name">{displayName}</div><div className="dd-email">{user?.email || "player@jango.us"}</div></div>
                   {AVATAR_MENU.map((c,i) => <Link key={i} to={c.to} className="dd-item" onClick={close}>{c.label}</Link>)}
-                  <button className="dd-item dd-signout" onClick={close}>Sign Out</button>
+                  <button className="dd-item dd-signout" onClick={signOut}>Sign Out</button>
                 </div>
               )}
             </div>

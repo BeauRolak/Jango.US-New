@@ -11,6 +11,15 @@ dist
 dist-ssr
 *.local
 
+# TS / Vite build artifacts
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
+
+# Python caches (skill scripts)
+__pycache__/
+*.pyc
+
 # Editor
 .vscode/*
 !.vscode/extensions.json

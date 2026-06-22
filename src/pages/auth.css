@@ -1,0 +1,70 @@
+/* ==========================================================================
+   AUTH (login / signup) — reuses global tokens from index.css
+   ========================================================================== */
+.auth { display: flex; align-items: center; justify-content: center; padding: 56px 20px 72px; min-height: 70vh; }
+
+.auth__card { width: 100%; max-width: 440px; padding: 34px 30px 28px; border-radius: 1.25rem;
+  background: linear-gradient(180deg, hsl(222 15% 11%), hsl(222 16% 9%));
+  border: 1px solid hsl(var(--card-border));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 30px 60px -24px rgba(0,0,0,.8), 0 0 60px -30px rgba(99,102,241,.5);
+  animation: authIn .45s cubic-bezier(.22,.61,.36,1) both; }
+@keyframes authIn { from { opacity: 0; transform: translateY(14px) scale(.985); } to { opacity: 1; transform: none; } }
+
+.auth__head { text-align: center; margin-bottom: 22px; }
+.auth__head h1 { font-family: var(--font-head); font-size: 1.7rem; letter-spacing: -.02em; margin: 0 0 8px; }
+.auth__head p { color: hsl(0 0% 70%); font-size: .95rem; line-height: 1.5; margin: 0; }
+
+.auth__formerr { display: flex; align-items: center; gap: .55rem; margin-bottom: 16px;
+  padding: .7rem .9rem; border-radius: .7rem; font-size: .9rem; font-weight: 600;
+  color: #FFC7CE; background: hsl(var(--destructive) / .14); border: 1px solid hsl(var(--destructive) / .4); }
+.auth__formerr svg { font-size: 1.15em; flex: 0 0 auto; }
+
+.auth__form { display: flex; flex-direction: column; gap: 16px; }
+.auth__field { display: flex; flex-direction: column; gap: 7px; }
+.auth__field label { font-size: .86rem; font-weight: 700; color: hsl(0 0% 82%); }
+
+.auth__inputwrap { display: flex; align-items: center; border-radius: .7rem;
+  background: hsl(222 18% 7%); border: 1px solid hsl(var(--card-border));
+  transition: border-color .16s, box-shadow .16s; }
+.auth__inputwrap:focus-within { border-color: hsl(var(--ring)); box-shadow: 0 0 0 3px hsl(var(--ring) / .25); }
+.auth__inputwrap.has-error { border-color: hsl(var(--destructive)); }
+.auth__inputwrap.has-error:focus-within { box-shadow: 0 0 0 3px hsl(var(--destructive) / .25); }
+.auth__inputwrap input { flex: 1; min-width: 0; background: transparent; border: none; outline: none;
+  color: #fff; font-size: 1rem; font-family: inherit; padding: .8rem .9rem; }
+.auth__inputwrap input::placeholder { color: hsl(0 0% 42%); }
+
+.auth__pwtoggle { display: inline-flex; align-items: center; gap: .3rem; background: transparent; border: none;
+  color: hsl(0 0% 64%); font-weight: 700; font-size: .82rem; cursor: pointer; padding: 0 .9rem; white-space: nowrap;
+  transition: color .16s; }
+.auth__pwtoggle:hover { color: #fff; }
+
+.auth__err { color: #FF9CA8; font-size: .82rem; font-weight: 600; }
+
+.auth__submit { display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  margin-top: 4px; padding: .9rem 1.2rem; border: none; border-radius: .7rem; cursor: pointer;
+  color: #fff; font-weight: 800; font-size: 1rem; font-family: inherit;
+  background: var(--grad-hero); box-shadow: var(--glow-hero);
+  transition: transform .14s, filter .16s, box-shadow .16s; }
+.auth__submit:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(1.06); box-shadow: 0 14px 34px -10px rgba(255,61,61,.7); }
+.auth__submit:active:not(:disabled) { transform: scale(.98); }
+.auth__submit:disabled { cursor: not-allowed; opacity: .8; }
+.auth__submit svg { font-size: 1.15em; }
+
+.auth__spinner { width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.35); border-top-color: #fff; animation: authSpin .7s linear infinite; }
+@keyframes authSpin { to { transform: rotate(360deg); } }
+
+.auth__switch { text-align: center; margin-top: 20px; color: hsl(0 0% 70%); font-size: .94rem; }
+.auth__switch a { color: hsl(var(--primary)); font-weight: 700; }
+.auth__switch a:hover { text-decoration: underline; }
+
+.auth__fine { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; justify-content: center;
+  margin: 18px 0 0; color: hsl(var(--muted-foreground)); font-size: .8rem; line-height: 1.5; text-align: center; }
+.auth__fine a { color: hsl(0 0% 72%); text-decoration: underline; }
+.auth__fine a:hover { color: #fff; }
+
+@media (prefers-reduced-motion: reduce) {
+  .auth__card { animation: none; }
+  .auth__spinner { animation-duration: 1.4s; }
+  .auth__submit:hover:not(:disabled) { transform: none; }
+}
