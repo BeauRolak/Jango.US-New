@@ -80,6 +80,40 @@ function renderGameScene(art: GameArt, gid: (n: string) => string): React.ReactN
       <filter id={gid("soft")} x="-20%" y="-20%" width="140%" height="140%">
         <feGaussianBlur stdDeviation="2.2" />
       </filter>
+        {/* cinematic depth + lighting defs */}
+        <radialGradient id={gid("toplight")} cx="50%" cy="0%" r="90%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.30" />
+          <stop offset="38%" stopColor="#ffffff" stopOpacity="0.06" />
+          <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+        </radialGradient>
+        <linearGradient id={gid("haze")} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={p} stopOpacity="0" />
+          <stop offset="62%" stopColor={p} stopOpacity="0.05" />
+          <stop offset="100%" stopColor={s} stopOpacity="0.22" />
+        </linearGradient>
+        <linearGradient id={gid("reflect")} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.16" />
+          <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+        </linearGradient>
+        <filter id={gid("cshadow")} x="-30%" y="-30%" width="160%" height="180%">
+          <feDropShadow dx="0" dy="5" stdDeviation="5" floodColor="#000000" floodOpacity="0.55" />
+        </filter>
+        <filter id={gid("spec")} x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="2.4" result="sb" />
+          <feSpecularLighting in="sb" surfaceScale="3" specularConstant="0.9" specularExponent="18" lightingColor="#ffffff" result="sl">
+            <fePointLight x="120" y="-40" z="180" />
+          </feSpecularLighting>
+          <feComposite in="sl" in2="SourceAlpha" operator="in" result="slc" />
+          <feComposite in="SourceGraphic" in2="slc" operator="arithmetic" k1="0" k2="1" k3="0.85" k4="0" />
+        </filter>
+        <filter id={gid("filmgrain")}>
+          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" result="n" />
+          <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.5 0" result="ng" />
+          <feComponentTransfer in="ng" result="ngc"><feFuncA type="linear" slope="0.5" /></feComponentTransfer>
+        </filter>
+        <filter id={gid("mblur")} x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="3.2 0.2" />
+        </filter>
     </defs>
   );
 
@@ -538,6 +572,11 @@ function renderGameScene(art: GameArt, gid: (n: string) => string): React.ReactN
       {defs}
       {atmosphere}
       <g>{body}</g>
+        {/* cinematic depth + atmosphere overlays (apply to every scene) */}
+        <rect x="0" y="118" width="400" height="122" fill={`url(#${gid("haze")})`} opacity="0.9" />
+        <rect x="0" y="0" width="400" height="240" fill={`url(#${gid("toplight")})`} opacity="0.85" style={{ mixBlendMode: "screen" }} />
+        <rect x="0" y="150" width="400" height="90" fill={`url(#${gid("reflect")})`} opacity="0.35" style={{ mixBlendMode: "screen" }} />
+        <rect x="0" y="0" width="400" height="240" fill={`url(#${gid("filmgrain")})`} opacity="0.05" style={{ mixBlendMode: "overlay" }} />
       <rect x="0" y="0" width="400" height="240" fill={`url(#${gid("glow")})`} opacity="0.35" />
       <rect x="0" y="170" width="400" height="70" fill="#04060c" opacity="0.45" />
     </g>
