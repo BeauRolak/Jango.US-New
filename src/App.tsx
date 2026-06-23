@@ -24,6 +24,7 @@ import Training from "./pages/Training";
 import Social from "./pages/Social";
 import Story from "./pages/Story";
 import Settings from "./pages/Settings";
+import Rewards from "./pages/Rewards";
 import MiniGolf from "./games/minigolf/MiniGolf";
 import Connect4 from "./games/connect4/Connect4";
 import RPS from "./games/rps/RPS";
@@ -111,6 +112,7 @@ export default function App() {
         <Route path="/social" element={<Protected><Social /></Protected>} />
         <Route path="/story" element={<Protected><Story /></Protected>} />
         <Route path="/settings" element={<Protected><Settings /></Protected>} />
+        <Route path="/rewards" element={<Protected><Rewards /></Protected>} />
         <Route path="/terms" element={<Public><Terms /></Public>} />
         <Route path="/privacy" element={<Public><Privacy /></Public>} />
         <Route path="/fair-play" element={<Public><FairPlay /></Public>} />

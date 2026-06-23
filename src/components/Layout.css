@@ -50,6 +50,27 @@
   .content { padding: 20px 14px 48px; }
 }
 
+/* ---------- mobile bottom nav ---------- */
+.mobile-bottomnav { display: none; }
+@media (max-width: 860px) {
+  .mobile-bottomnav {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 90;
+    display: flex; justify-content: space-around; align-items: stretch;
+    padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px));
+    background: rgba(10, 11, 20, 0.92); backdrop-filter: blur(14px);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .mbn-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 6px 2px; border-radius: 12px; text-decoration: none;
+    color: #8b93b8; font-size: 10.5px; font-weight: 700; transition: color .15s ease, background .15s ease;
+  }
+  .mbn-item svg { width: 21px; height: 21px; }
+  .mbn-item.active { color: hsl(217 91% 72%); background: rgba(91, 140, 255, 0.12); }
+  .content { padding-bottom: 86px; }
+  .site-footer { margin-bottom: 64px; }
+}
+
 
 /* NAV JUICE PASS */
 .tnl{position:relative;transition:color .18s ease,background .18s ease,transform .18s ease}

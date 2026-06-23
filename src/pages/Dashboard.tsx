@@ -14,6 +14,7 @@ import {
   useFeedback,
 } from "../components/Juice";
 import { FeaturedGameHero } from '../components/GameArt';
+import { DailyClaimCard } from '../components/DailyRewards';
 import { GAMES } from '../games/registry';
 
 type Game = { name: string; slug: string; diff: string; icon: IconName; tone: string };
@@ -56,7 +57,6 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const gamePath = (id: string) => (GAMES.find((g) => g.id === id)?.path) || '/play';
   const [joinOpen, setJoinOpen] = useState(false);
-  const [claimed, setClaimed] = useState(false);
 
   const grossPot = TOURNEY_ENTRY * TOURNEY_FIELD;
   const rakeCut = Math.round(grossPot * RAKE);
@@ -64,12 +64,6 @@ export default function Dashboard() {
   const firstPlace = Math.round(prizePool * 0.5);
   const secondPlace = Math.round(prizePool * 0.3);
   const thirdPlace = prizePool - firstPlace - secondPlace;
-
-  function claimReward(e?: React.MouseEvent<HTMLButtonElement>) {
-    if (claimed) return;
-    setClaimed(true);
-    fire("reward_claim", "Daily reward claimed: Ⓢ 50", e?.currentTarget ?? null);
-  }
 
   function confirmJoin(e?: React.MouseEvent<HTMLButtonElement>) {
     setJoinOpen(false);
@@ -251,17 +245,12 @@ export default function Dashboard() {
       <section className="dash-rewards">
         <div className="dash-section__head">
           <h2>Rewards &amp; Challenges</h2>
-          <Link to="/battle-pass" className="dash-panel__link">Battle Pass <Icon name="ArrowRight" /></Link>
+          <Link to="/rewards" className="dash-panel__link">All rewards <Icon name="ArrowRight" /></Link>
         </div>
         <div className="dash-rewards__grid">
 
           <GlowCard tone="success" className="dash-reward">
-            <span className="dash-reward__icon"><Icon name="Calendar" /></span>
-            <span className="dash-reward__title">Daily reward</span>
-            <span className="dash-reward__desc">Claim Ⓢ 50 just for showing up.</span>
-            <AnimatedButton variant={claimed ? "ghost" : "grad"} icon={claimed ? "CheckCircle" : "Sparkles"} fbKind="reward" onClick={claimReward}>
-              {claimed ? "Claimed" : "Claim Ⓢ 50"}
-            </AnimatedButton>
+            <DailyClaimCard />
           </GlowCard>
 
           <GlowCard tone="warning" className="dash-reward">

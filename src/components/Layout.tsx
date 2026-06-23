@@ -1,15 +1,26 @@
 import { NavLink, useLocation, Link, useNavigate } from 'react-router-dom';
-import { ReactNode, useState } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import './Layout.css';
-import { Icon } from "./Icon";
+import { Icon, type IconName } from "./Icon";
 import { useScalps, NOTIFICATIONS } from "../lib/mockData";
 import { useAuth } from "../lib/auth";
+import { OnboardingFlow } from "./Onboarding";
+import { useOnboarding } from "../lib/platform";
+
+const MOBILE_NAV: { to: string; label: string; icon: IconName }[] = [
+  { to: '/', label: 'Home', icon: 'Home' },
+  { to: '/play', label: 'Play', icon: 'Gamepad' },
+  { to: '/rewards', label: 'Rewards', icon: 'Calendar' },
+  { to: '/social', label: 'Social', icon: 'Users' },
+  { to: '/profile', label: 'Profile', icon: 'Trophy' },
+];
 
 const COMPETE = [
   { to: '/leaderboard', label: 'Leaderboard' },
   { to: '/tournaments', label: 'Tournaments' },
   { to: '/clans', label: 'Clans' },
   { to: '/battle-pass', label: 'Battle Pass' },
+  { to: '/rewards', label: 'Daily Rewards' },
   { to: '/story', label: 'Arena Origins' },
   { to: '/rank-progression', label: 'Rank Track' },
   { to: '/tutorial', label: 'Training' },
@@ -20,7 +31,8 @@ const AVATAR_MENU = [
   { to: '/', label: 'Dashboard' }, { to: '/leaderboard', label: 'Global Stats' },
   { to: '/clans', label: 'Clans' }, { to: '/wallet', label: 'Wallet' },
   { to: '/wallet', label: 'Transaction History' }, { to: '/battle-pass', label: 'Battle Pass' },
-  { to: '/profile', label: 'Profile' }, { to: '/rank-progression', label: 'Rank Track' },
+  { to: '/profile', label: 'Profile' }, { to: '/rewards', label: 'Daily Rewards' },
+  { to: '/rank-progression', label: 'Rank Track' },
   { to: '/tutorial', label: 'Training Arena' }, { to: '/settings', label: 'Settings' },
 ];
 
@@ -31,6 +43,15 @@ export default function Layout({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const { formatted } = useScalps();
   const { user, logout } = useAuth();
+  const { done: onboarded } = useOnboarding();
+  const [obOpen, setObOpen] = useState(false);
+  // Auto-open onboarding on first authenticated visit; allow re-opening via event.
+  useEffect(() => { if (user && !onboarded) setObOpen(true); }, [user, onboarded]);
+  useEffect(() => {
+    const open = () => setObOpen(true);
+    window.addEventListener("jango:open-onboarding", open);
+    return () => window.removeEventListener("jango:open-onboarding", open);
+  }, []);
   const unread = NOTIFICATIONS.filter((n) => n.unread).length;
   const close = () => { setMenu(null); setMobileOpen(false); };
   const toggle = (k: string) => setMenu(menu === k ? null : k);
@@ -116,6 +137,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             <Link to="/leaderboard" className="mm-item" onClick={close}>Leaderboard</Link>
             <Link to="/tournaments" className="mm-item" onClick={close}>Tournaments</Link>
             <Link to="/social" className="mm-item" onClick={close}>Social</Link>
+            <Link to="/rewards" className="mm-item" onClick={close}>Daily Rewards</Link>
             <Link to="/shop" className="mm-item" onClick={close}>Shop</Link>
             <Link to="/wallet" className="mm-item" onClick={close}>Wallet</Link>
             <Link to="/profile" className="mm-item" onClick={close}>Profile</Link>
@@ -136,6 +158,14 @@ export default function Layout({ children }: { children: ReactNode }) {
           <div className="footer-legal">{'\u00A9'} 2026 Jango.us. All rights reserved. <span className="footer-18">Players must be 18+. Play responsibly.</span></div>
         </div>
       </footer>
+      <nav className="mobile-bottomnav" aria-label="Primary">
+        {MOBILE_NAV.map((m) => (
+          <NavLink key={m.to} to={m.to} end={m.to === '/'} className={({ isActive }) => 'mbn-item' + (isActive ? ' active' : '')}>
+            <Icon name={m.icon} /><span>{m.label}</span>
+          </NavLink>
+        ))}
+      </nav>
+      <OnboardingFlow open={obOpen} onClose={() => setObOpen(false)} />
     </div>
   );
 }

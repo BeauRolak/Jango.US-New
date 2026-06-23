@@ -800,3 +800,28 @@ Closed the remaining gaps from Jango_US_Bowling_Graphics_Massive_Overhaul_File.t
 - Feedback uses the global system (reward on strike, success on spare, error on gutter, tap otherwise) — respects Settings toggles.
 Art-direction / asset pipeline (for future commissioned art): lane art is currently hand-coded SVG/canvas. Optional image slots reserved for later — public/game-posters/bowling.webp (setup/lobby poster) and public/game-scenes/bowling-lane.webp (background lane plate); intended usage is image-first with the current canvas as the guaranteed fallback, keeping interactive elements (pins/ball/aim) on the canvas layer above any static plate. Default art direction = Neon Night: dark blue/purple arena, cyan(left)/magenta(right) neon rails, polished tinted-wood lane with board lines + center gloss, glowing gutters, amber arrows, glossy blue ball, white pins w/ red neck band.
 Verified: build green, 0 console errors (only an environmental ERR_CERT_AUTHORITY_INVALID for a blocked external asset fetch, not app code), screenshots desktop+mobile (setup w/ length+theme selectors, aim lane w/ gutters+spin, mid-roll).
+
+## Update 2026-06-23 — Platform experience pass 1: onboarding + daily rewards + mobile nav
+
+Started the Platform Experience Giant Overhaul (Jango_US_Platform_Experience_Giant_Overhaul_Master_File.docx). Game rebuilds paused. This batch lands the highest-impact net-new "alive before the games" features on top of the existing foundation (feedback engine, GlowCard/AnimatedButton/ActionModal/rewardPop already in src/components/Juice.tsx).
+
+NEW — Onboarding flow:
+- src/components/Onboarding.tsx + onboarding.css: full-screen premium 7-step walkthrough (Welcome → Scalps → Skill matches/3% rake → Tournaments → Rank & rewards → Profile & social → Start playing). Step progress dots (clickable), Back/Next/Skip/Finish, keyboard arrows + Escape, per-step inline neon SVG art (no emojis), mobile full-screen. Finish fires rewardPop "Welcome to the arena / Starter reward unlocked".
+- src/lib/platform.ts: useOnboarding() (localStorage key jango_onboarded) — first authenticated visit auto-opens the flow (gated in Layout); completion persists. Re-openable anywhere via window event "jango:open-onboarding".
+- Layout.tsx wires auto-open + event listener; Settings → Gameplay → "Replay Walkthrough" dispatches the event.
+
+NEW — Daily rewards / streaks:
+- src/lib/platform.ts: useDailyRewards() — 7-day reward cycle (DAILY_TRACK), streak + best-streak tracking, claimed/claimable/locked per-day states, local-midnight reset, claim() that advances the streak. localStorage key jango_daily.
+- src/components/DailyRewards.tsx + dailyrewards.css: DailyClaimCard (compact, dashboard) and DailyRewardTrack (full 7-day track w/ streak header, milestone, progress, claim). Claims add mock Scalps via useScalps for scalps/ticket rewards and fire reward feedback + rewardPop. Today's card pulses gold.
+- src/pages/Rewards.tsx + rewards.css (route /rewards): daily track + weekly challenges grid. Linked from Dashboard rewards section, Compete menu, avatar menu, mobile menu + bottom nav.
+- Dashboard.tsx: replaced the old non-persistent "Claim Ⓢ50" card with the persistent DailyClaimCard.
+
+NEW — Mobile bottom nav:
+- Layout.tsx + Layout.css: fixed bottom nav (Home / Play / Rewards / Social / Profile) shown ≤860px with active state, safe-area inset, content/footer bottom padding so nothing is covered.
+
+Fix: src/components/Juice.tsx ActionModal close key was "Escalpe" (a botched global Scalps find/replace) → corrected to "Escape" so Esc now closes modals.
+
+Economy/safety: Scalps naming consistent; 3% rake shown only in match/tournament economy UI; reward Scalps move only the mock balance, no real money movement; mock notices present.
+Verified: build green (148 modules), 0 console errors desktop+mobile, screenshots (onboarding step 1, /rewards desktop, /rewards + bottom nav mobile, dashboard).
+
+REMAINING (next platform batches): Notifications Center upgrade (stateful mark-read, filters All/Invites/Rewards/Tournaments/Messages/System, mobile drawer) — currently a static dropdown in Layout; Profile identity upgrade (hero, achievements grid by rarity, cosmetics equip, match history, edit modal); Social/Friends/Invites/Messages + mobile chat (inbox→full chat); Settings deep-wire for reduced-motion + UI intensity controls (sound/haptics already wired); broader mobile QA across Profile/Social/Tournaments; per-page premium passes (Wallet/Rank/Battle Pass/Training language alignment with daily/weekly rewards).
