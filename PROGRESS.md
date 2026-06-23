@@ -838,3 +838,14 @@ Mini Golf (MiniGolf.tsx): active ball now radial-shaded with rolling dimples + a
 
 Reusable for the other ball games next (Bowling already has spin lines; Basketball/Football/Cup King backspin/arc-spin and Air Hockey puck spin can adopt createRollTracker).
 Verified: build green, rolling math unit test ALL PASS, 8-Ball rack + break render with 0 console errors.
+
+## Update 2026-06-23 — Spin rule across all ball games + 8-Ball english
+
+Continued the games art/physics reference. Two batches:
+
+(a) Finished the global spin rule on the remaining ball/puck games via a shared in-plane spin accumulator src/games/shared/rollingBall.ts → createSpin2D(R) (angle += distance/radius, signed by travel direction; ignores teleports). Basketball seams rotate with backspin, Football tumbles end-over-end, Cup King's tossed ball seam spins, Air Hockey puck shows an off-centre notch so its slide-spin reads. Every rolling/spinning object in the app now visibly rotates (8-Ball + Mini Golf in 3D; these four + Bowling in-plane).
+
+(b) 8-Ball flagship — cue-ball english. engine.ts: optional Ball.eng = {f,s,dir} applied once in the ball-ball collision resolver (follow = forward along shot dir, draw = back, side = perpendicular throw); strictly no-op when absent, so all bot simulations and the headless match tests stay deterministic (still 5/5). match.shoot(s, angle, power, english?) attaches english only when the human dials in non-zero spin. UI: a draggable cue-ball "Spin" widget (dashed cross + pink contact dot) with Follow/Draw/Left/Right/Centre feedback, resets to centre after each shot.
+Verified: build green, 8-Ball match tests 5/5, screenshots, 0 console errors.
+
+REMAINING from the games reference (next turn): Mini Golf deepening (richer themed-hole dioramas pirate/ice/lava/space + slope/ramp feel — themes already render distinctly, this is an art/juice deepening), and the new Ping Pong / Table Tennis game (spin shots, rally, first-to-11 — net-new: engine + match + physics + UI + route + registry + tests). Optional later: apply the spin/curve depth to Racing wheels.
