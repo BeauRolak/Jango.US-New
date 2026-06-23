@@ -1,207 +1,285 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useRef, useState, useReducer, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { TABLE, PUCK_R, PADDLE_R, GOAL_W, type Paddle } from './engine';
 import {
-  TABLE, PUCK_R, PADDLE_R, GOAL_W,
-  makePuck, makePaddle, serve, step, botMove, constrainPaddle,
-} from './engine';
-import type { Puck, Paddle, Difficulty } from './engine';
+  createMatch, tick, moveHuman, isMatchOver, rematch, type MatchState,
+} from './match';
+import type { Difficulty } from './engine';
+import { Icon } from '../../components/Icon';
+import { useFeedback } from '../../components/Juice';
 import './airhockey.css';
 
-const WIN_SCORE = 7;
+type Phase = 'setup' | 'playing' | 'results';
+const ENTRIES = [0, 5, 10, 25, 50] as const;
+const TARGETS = [3, 5, 7] as const;
+const DIFFS: { id: Difficulty; label: string; sub: string }[] = [
+  { id: 'easy', label: 'Easy', sub: 'Slow defender' },
+  { id: 'medium', label: 'Medium', sub: 'Tracks & counters' },
+  { id: 'hard', label: 'Hard', sub: 'Fast, aggressive' },
+];
+const RAKE = 0.03;
 
 export default function AirHockey() {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const puckRef = useRef<Puck>(makePuck());
-  const topRef = useRef<Paddle>(makePaddle('top'));
-  const botRef = useRef<Paddle>(makePaddle('bottom'));
-  const draggingRef = useRef(false);
-  const rafRef = useRef<number>(0);
-  const diffRef = useRef<Difficulty>('medium');
-
+  const navigate = useNavigate();
+  const { fire } = useFeedback();
+  const [phase, setPhase] = useState<Phase>('setup');
   const [difficulty, setDifficulty] = useState<Difficulty>('medium');
-  const [score, setScore] = useState({ you: 0, cpu: 0 });
-  const scoreRef = useRef(score);
-  const [winner, setWinner] = useState<null | 'you' | 'cpu'>(null);
-  const [running, setRunning] = useState(true);
-  const runningRef = useRef(true);
+  const [target, setTarget] = useState<number>(7);
+  const [entry, setEntry] = useState<number>(10);
 
-  useEffect(() => { scoreRef.current = score; }, [score]);
-  useEffect(() => { diffRef.current = difficulty; }, [difficulty]);
-  useEffect(() => { runningRef.current = running; }, [running]);
+  const matchRef = useRef<MatchState | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const draggingRef = useRef(false);
+  const trailRef = useRef<{ x: number; y: number }[]>([]);
+  const goalFlashRef = useRef<{ side: 'top' | 'bottom'; t: number } | null>(null);
+  const prevScoreRef = useRef('0,0');
+  const [, force] = useReducer((n) => n + 1, 0);
+  const sigRef = useRef('');
 
-  const reset = useCallback((full: boolean) => {
-    puckRef.current = makePuck();
-    topRef.current = makePaddle('top');
-    botRef.current = makePaddle('bottom');
-    if (full) {
-      setScore({ you: 0, cpu: 0 });
-      setWinner(null);
-      setRunning(true);
-      runningRef.current = true;
-    }
-    serve(puckRef.current, Math.random() < 0.5 ? 'top' : 'bottom');
-  }, []);
+  const pot = entry * 2, rake = Math.round(pot * RAKE), payout = pot - rake;
 
-  // pointer handling: drag the bottom (player) paddle
-  const pointerPos = useCallback((e: PointerEvent | React.PointerEvent) => {
-    const c = canvasRef.current;
-    if (!c) return { x: 0, y: 0 };
-    const r = c.getBoundingClientRect();
-    const sx = TABLE.w / r.width;
-    const sy = TABLE.h / r.height;
-    return { x: ((e as PointerEvent).clientX - r.left) * sx, y: ((e as PointerEvent).clientY - r.top) * sy };
-  }, []);
+  const start = () => {
+    matchRef.current = createMatch(difficulty, target);
+    trailRef.current = []; goalFlashRef.current = null; prevScoreRef.current = '0,0'; sigRef.current = '';
+    setPhase('playing');
+    fire('match_start', 'First to ' + target + ' — go!', null);
+  };
 
-  const onDown = useCallback((e: React.PointerEvent) => {
-    draggingRef.current = true;
-    const p = pointerPos(e);
-    botRef.current.x = p.x; botRef.current.y = p.y;
-    constrainPaddle(botRef.current, 'bottom');
-    (e.target as Element).setPointerCapture?.(e.pointerId);
-  }, [pointerPos]);
-
-  const onMove = useCallback((e: React.PointerEvent) => {
-    if (!draggingRef.current) return;
-    const p = pointerPos(e);
-    botRef.current.x = p.x; botRef.current.y = p.y;
-    constrainPaddle(botRef.current, 'bottom');
-  }, [pointerPos]);
-
-  const onUp = useCallback(() => { draggingRef.current = false; }, []);
-
-  // main loop
+  // ---------- loop ----------
   useEffect(() => {
-    serve(puckRef.current, Math.random() < 0.5 ? 'top' : 'bottom');
-    const c = canvasRef.current;
-    if (!c) return;
-    const ctx = c.getContext('2d');
-    if (!ctx) return;
-
+    if (phase !== 'playing') return;
+    let raf = 0; let running = true;
     const loop = () => {
-      const puck = puckRef.current;
-      const top = topRef.current;
-      const bot = botRef.current;
-      if (runningRef.current) {
-        botMove(top, puck, diffRef.current);
-        const res = step(puck, top, bot);
-        if (res.goal === 'top') {
-          // puck went into top goal -> player scores
-          const next = { ...scoreRef.current, you: scoreRef.current.you + 1 };
-          setScore(next);
-          if (next.you >= WIN_SCORE) { setWinner('you'); setRunning(false); }
-          else { puckRef.current = makePuck(); serve(puckRef.current, 'top'); }
-        } else if (res.goal === 'bottom') {
-          const next = { ...scoreRef.current, cpu: scoreRef.current.cpu + 1 };
-          setScore(next);
-          if (next.cpu >= WIN_SCORE) { setWinner('cpu'); setRunning(false); }
-          else { puckRef.current = makePuck(); serve(puckRef.current, 'bottom'); }
+      if (!running) return;
+      const s = matchRef.current;
+      if (s) {
+        const next = tick(s);
+        matchRef.current = next;
+        // puck trail
+        if (next.phase === 'playing') {
+          const t = trailRef.current; t.push({ x: next.puck.x, y: next.puck.y });
+          if (t.length > 14) t.shift();
+        } else { trailRef.current = []; }
+        // goal flash + feedback
+        const sc = next.scoreHuman + ',' + next.scoreBot;
+        if (sc !== prevScoreRef.current) {
+          const humanScored = next.scoreHuman > Number(prevScoreRef.current.split(',')[0]);
+          goalFlashRef.current = { side: humanScored ? 'top' : 'bottom', t: 22 };
+          fire(humanScored ? 'success' : 'tap', undefined, null);
+          prevScoreRef.current = sc;
+        }
+        if (goalFlashRef.current) { goalFlashRef.current.t -= 1; if (goalFlashRef.current.t <= 0) goalFlashRef.current = null; }
+        draw(next);
+        const sig = next.phase + '|' + sc + '|' + next.banner + '|' + next.winner;
+        if (sig !== sigRef.current) { sigRef.current = sig; force(); }
+        if (isMatchOver(next) && next.timer <= 1) {
+          running = false;
+          fire(next.winner === 'human' ? 'match_win' : 'match_loss', undefined, null);
+          setPhase('results');
+          return;
         }
       }
-      draw(ctx);
-      rafRef.current = requestAnimationFrame(loop);
+      raf = requestAnimationFrame(loop);
     };
+    raf = requestAnimationFrame(loop);
+    return () => { running = false; cancelAnimationFrame(raf); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
 
-    const draw = (ctx: CanvasRenderingContext2D) => {
-      const { w, h, wall } = TABLE;
-      ctx.clearRect(0, 0, w, h);
-      // table surface
-      const g = ctx.createLinearGradient(0, 0, 0, h);
-      g.addColorStop(0, '#0a1530');
-      g.addColorStop(0.5, '#0e1d44');
-      g.addColorStop(1, '#0a1530');
-      ctx.fillStyle = g;
-      ctx.fillRect(0, 0, w, h);
-      // center line + circle
-      ctx.strokeStyle = 'rgba(80,200,255,0.35)';
-      ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.moveTo(wall, h / 2); ctx.lineTo(w - wall, h / 2); ctx.stroke();
-      ctx.beginPath(); ctx.arc(w / 2, h / 2, 70, 0, Math.PI * 2); ctx.stroke();
-      // goals
-      const gMin = (w - GOAL_W) / 2;
-      ctx.fillStyle = 'rgba(255,60,120,0.5)';
-      ctx.fillRect(gMin, 0, GOAL_W, wall);
-      ctx.fillStyle = 'rgba(60,255,180,0.5)';
-      ctx.fillRect(gMin, h - wall, GOAL_W, wall);
-      // walls
-      ctx.strokeStyle = 'rgba(120,220,255,0.6)';
-      ctx.lineWidth = wall;
-      ctx.strokeRect(wall / 2, wall / 2, w - wall, h - wall);
-      // puck
-      const puck = puckRef.current;
-      ctx.beginPath();
-      ctx.arc(puck.x, puck.y, PUCK_R, 0, Math.PI * 2);
-      ctx.fillStyle = '#ffd34d';
-      ctx.shadowColor = '#ffd34d'; ctx.shadowBlur = 16;
-      ctx.fill();
-      ctx.shadowBlur = 0;
-      // paddles
-      drawPaddle(ctx, topRef.current, '#ff3c78');
-      drawPaddle(ctx, botRef.current, '#3cffb4');
-    };
+  // ---------- render ----------
+  const draw = useCallback((s: MatchState) => {
+    const cv = canvasRef.current; if (!cv) return;
+    const ctx = cv.getContext('2d'); if (!ctx) return;
+    const { w, h, wall } = TABLE;
+    const gMin = (w - GOAL_W) / 2, gMax = (w + GOAL_W) / 2;
 
-    const drawPaddle = (ctx: CanvasRenderingContext2D, p: Paddle, color: string) => {
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, PADDLE_R, 0, Math.PI * 2);
-      ctx.fillStyle = color;
-      ctx.shadowColor = color; ctx.shadowBlur = 20;
-      ctx.fill();
-      ctx.shadowBlur = 0;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, PADDLE_R * 0.5, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(0,0,0,0.35)';
-      ctx.fill();
-    };
+    // surface
+    const g = ctx.createLinearGradient(0, 0, 0, h);
+    g.addColorStop(0, '#0c1838'); g.addColorStop(0.5, '#0a1228'); g.addColorStop(1, '#0c1838');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+    // side ambient (bot red top / you green bottom)
+    const top = ctx.createLinearGradient(0, 0, 0, h * 0.4);
+    top.addColorStop(0, 'rgba(255,60,120,0.10)'); top.addColorStop(1, 'rgba(255,60,120,0)');
+    ctx.fillStyle = top; ctx.fillRect(0, 0, w, h * 0.4);
+    const bot = ctx.createLinearGradient(0, h * 0.6, 0, h);
+    bot.addColorStop(0, 'rgba(60,255,180,0)'); bot.addColorStop(1, 'rgba(60,255,180,0.10)');
+    ctx.fillStyle = bot; ctx.fillRect(0, h * 0.6, w, h * 0.4);
 
-    rafRef.current = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(rafRef.current);
+    // center line + circle
+    ctx.strokeStyle = 'rgba(90,190,255,0.4)'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(wall, h / 2); ctx.lineTo(w - wall, h / 2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(w / 2, h / 2, 64, 0, 6.28); ctx.stroke();
+    ctx.beginPath(); ctx.arc(w / 2, h / 2, 6, 0, 6.28); ctx.fillStyle = 'rgba(90,190,255,0.4)'; ctx.fill();
+
+    // goals (flash on score)
+    const flash = goalFlashRef.current;
+    const topA = flash && flash.side === 'top' ? 0.9 : 0.5;
+    const botA = flash && flash.side === 'bottom' ? 0.9 : 0.5;
+    ctx.save(); ctx.shadowBlur = flash && flash.side === 'top' ? 30 : 10; ctx.shadowColor = '#ff3c78';
+    ctx.fillStyle = `rgba(255,60,120,${topA})`; ctx.fillRect(gMin, 0, GOAL_W, wall + 3); ctx.restore();
+    ctx.save(); ctx.shadowBlur = flash && flash.side === 'bottom' ? 30 : 10; ctx.shadowColor = '#3cffb4';
+    ctx.fillStyle = `rgba(60,255,180,${botA})`; ctx.fillRect(gMin, h - wall - 3, GOAL_W, wall + 3); ctx.restore();
+
+    // neon walls
+    ctx.strokeStyle = 'rgba(120,210,255,0.55)'; ctx.lineWidth = wall;
+    ctx.strokeRect(wall / 2, wall / 2, w - wall, h - wall);
+
+    // puck trail
+    const tr = trailRef.current;
+    for (let i = 0; i < tr.length; i++) {
+      const a = (i / tr.length) * 0.5;
+      ctx.beginPath(); ctx.arc(tr[i].x, tr[i].y, PUCK_R * (0.4 + (i / tr.length) * 0.55), 0, 6.28);
+      ctx.fillStyle = `rgba(255,211,77,${a})`; ctx.fill();
+    }
+    // puck
+    const puck = s.puck;
+    ctx.save(); ctx.shadowColor = '#ffd34d'; ctx.shadowBlur = 18;
+    ctx.beginPath(); ctx.arc(puck.x, puck.y, PUCK_R, 0, 6.28); ctx.fillStyle = '#ffe27a'; ctx.fill();
+    ctx.restore();
+    ctx.beginPath(); ctx.arc(puck.x, puck.y, PUCK_R * 0.55, 0, 6.28); ctx.strokeStyle = 'rgba(120,80,0,0.4)'; ctx.lineWidth = 2; ctx.stroke();
+
+    drawPaddle(ctx, s.bot, '#ff3c78');
+    drawPaddle(ctx, s.human, '#3cffb4');
   }, []);
 
-  return (
-    <div className={'ah-wrap'}>
-      <div className={'ah-head'}>
-        <Link to={'/games'} className={'ah-back'}>{'\u2190 Back'}</Link>
-        <h1 className={'ah-title'}>{'Air Hockey'}</h1>
-        <div className={'ah-diff'}>
-          {(['easy', 'medium', 'hard'] as Difficulty[]).map((d) => (
-            <button
-              key={d}
-              className={'ah-diff-btn' + (difficulty === d ? ' active' : '')}
-              onClick={() => { setDifficulty(d); }}
-            >{d}</button>
-          ))}
+  // ---------- input ----------
+  const toLocal = (e: React.PointerEvent) => {
+    const c = canvasRef.current!; const r = c.getBoundingClientRect();
+    return { x: (e.clientX - r.left) * (TABLE.w / r.width), y: (e.clientY - r.top) * (TABLE.h / r.height) };
+  };
+  const apply = (e: React.PointerEvent) => {
+    const s = matchRef.current; if (!s) return;
+    const p = toLocal(e);
+    matchRef.current = moveHuman(s, p.x, p.y);
+  };
+  const onDown = (e: React.PointerEvent) => { draggingRef.current = true; (e.target as Element).setPointerCapture?.(e.pointerId); apply(e); };
+  const onMove = (e: React.PointerEvent) => { if (draggingRef.current) apply(e); };
+  const onUp = () => { draggingRef.current = false; };
+
+  const doRematch = () => { matchRef.current = rematch(matchRef.current!, difficulty, target); trailRef.current = []; prevScoreRef.current = '0,0'; sigRef.current = ''; setPhase('playing'); fire('match_start', 'Rematch', null); };
+  const backToSetup = () => { matchRef.current = null; setPhase('setup'); };
+
+  // ============================== SETUP
+  if (phase === 'setup') {
+    return (
+      <div className="ah2-wrap">
+        <div className="ah2-setup">
+          <div className="ah2-setup__head">
+            <span className="ah2-eyebrow"><Icon name="Bolt" /> Air Hockey</span>
+            <h1>Match Setup</h1>
+            <p>Strike the puck past the bot. First to your target score wins.</p>
+          </div>
+          <div className="ah2-field"><label>Opponent</label>
+            <div className="ah2-opts">
+              <button className="ah2-opt is-active"><Icon name="Gamepad" /> Bot Match</button>
+              <button className="ah2-opt is-disabled" disabled><Icon name="Users" /> Player <span className="ah2-soon">soon</span></button>
+            </div>
+          </div>
+          <div className="ah2-field"><label>Bot difficulty</label>
+            <div className="ah2-opts">
+              {DIFFS.map((d) => (
+                <button key={d.id} className={'ah2-opt ah2-opt--diff' + (difficulty === d.id ? ' is-active' : '')} onClick={() => { setDifficulty(d.id); fire('tap'); }}>
+                  <b>{d.label}</b><span>{d.sub}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="ah2-field"><label>Match length</label>
+            <div className="ah2-opts ah2-opts--t">
+              {TARGETS.map((t) => (
+                <button key={t} className={'ah2-opt ah2-opt--t' + (target === t ? ' is-active' : '')} onClick={() => { setTarget(t); fire('tap'); }}>
+                  <b>First to {t}</b>
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="ah2-field"><label>Entry (Scalps)</label>
+            <div className="ah2-opts ah2-opts--entry">
+              {ENTRIES.map((en) => (
+                <button key={en} className={'ah2-opt ah2-opt--entry' + (entry === en ? ' is-active' : '')} onClick={() => { setEntry(en); fire('tap'); }}>
+                  {en === 0 ? 'Free' : 'Ⓢ ' + en}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="ah2-econ">
+            <div><span>Entry</span><b>{entry === 0 ? 'Free' : 'Ⓢ ' + entry}</b></div>
+            <div><span>Pot</span><b>Ⓢ {pot}</b></div>
+            <div className="ah2-econ--dim"><span>Rake 3%</span><b>Ⓢ {rake}</b></div>
+            <div className="ah2-econ--win"><span>Winner</span><b>Ⓢ {payout}</b></div>
+          </div>
+          <p className="ah2-note"><Icon name="Lock" /> Mock economy — no Scalps charged, no real money moves. 1 Scalp = $1.</p>
+          <div className="ah2-actions">
+            <button className="ah2-btn ah2-btn--ghost" onClick={() => navigate('/play')}><Icon name="ArrowLeft" /> Back to lobby</button>
+            <button className="ah2-btn ah2-btn--go" onClick={start}><Icon name="Play" /> Start match</button>
+          </div>
         </div>
       </div>
+    );
+  }
 
-      <div className={'ah-score'}>
-        <span className={'ah-cpu'}>{'CPU ' + score.cpu}</span>
-        <span className={'ah-vs'}>{'\u2013'}</span>
-        <span className={'ah-you'}>{'YOU ' + score.you}</span>
+  // ============================== RESULTS
+  if (phase === 'results' && matchRef.current) {
+    const s = matchRef.current;
+    const youWin = s.winner === 'human';
+    return (
+      <div className="ah2-wrap">
+        <div className={'ah2-results' + (youWin ? ' win' : '')}>
+          <div className="ah2-results__burst" aria-hidden="true" />
+          <span className="ah2-results__icon"><Icon name={youWin ? 'Trophy' : 'Shield'} /></span>
+          <h1>{youWin ? 'You win!' : 'Bot wins'}</h1>
+          <p className="ah2-results__sub">Final {s.scoreHuman} – {s.scoreBot}</p>
+          {entry > 0 && (
+            <div className="ah2-payout">
+              <div><span>Pot</span><b>Ⓢ {pot}</b></div>
+              <div className="ah2-econ--dim"><span>Rake 3%</span><b>Ⓢ {rake}</b></div>
+              <div className="ah2-econ--win"><span>{youWin ? 'You collect' : 'Winner collects'}</span><b>Ⓢ {payout}</b></div>
+            </div>
+          )}
+          <p className="ah2-note"><Icon name="Lock" /> Mock economy — no real money moved.</p>
+          <div className="ah2-actions">
+            <button className="ah2-btn ah2-btn--ghost" onClick={backToSetup}><Icon name="Bolt" /> New setup</button>
+            <button className="ah2-btn ah2-btn--go" onClick={doRematch}><Icon name="Swords" /> Rematch</button>
+          </div>
+        </div>
       </div>
+    );
+  }
 
-      <div className={'ah-table-wrap'}>
+  // ============================== PLAYING
+  const s = matchRef.current!;
+  return (
+    <div className="ah2-wrap">
+      <div className="ah2-hud">
+        <button className="ah2-hud__back" onClick={backToSetup} aria-label="Quit"><Icon name="ArrowLeft" /></button>
+        <div className="ah2-scorebar">
+          <div className="ah2-sc bot"><span className="ah2-sc__dot" /> Bot <b>{s.scoreBot}</b></div>
+          <span className="ah2-sc__to">first to {s.target}</span>
+          <div className="ah2-sc you"><b>{s.scoreHuman}</b> You <span className="ah2-sc__dot" /></div>
+        </div>
+      </div>
+      <div className="ah2-stage">
         <canvas
           ref={canvasRef}
           width={TABLE.w}
           height={TABLE.h}
-          className={'ah-canvas'}
+          className="ah2-canvas"
           onPointerDown={onDown}
           onPointerMove={onMove}
           onPointerUp={onUp}
           onPointerCancel={onUp}
         />
-        {winner && (
-          <div className={'ah-overlay'}>
-            <div className={'ah-card'}>
-              <div className={'ah-result'}>{winner === 'you' ? 'You Win!' : 'CPU Wins'}</div>
-              <div className={'ah-final'}>{'YOU ' + score.you + '  \u2013  ' + score.cpu + ' CPU'}</div>
-              <button className={'ah-play'} onClick={() => reset(true)}>{'Play again'}</button>
-              <Link to={'/games'} className={'ah-leave'}>{'Back to games'}</Link>
-            </div>
-          </div>
-        )}
+        {s.banner && (s.phase === 'serve' || s.phase === 'goal') && <div className="ah2-banner">{s.banner}</div>}
       </div>
-
-      <p className={'ah-hint'}>{'Drag your paddle (bottom) to defend your goal and strike the puck. First to ' + WIN_SCORE + ' wins.'}</p>
+      <p className="ah2-hint"><Icon name="Target" /> Drag your paddle (bottom) to defend and strike the puck</p>
     </div>
   );
+}
+
+function drawPaddle(ctx: CanvasRenderingContext2D, p: Paddle, color: string) {
+  ctx.save(); ctx.shadowColor = color; ctx.shadowBlur = 22;
+  ctx.beginPath(); ctx.arc(p.x, p.y, PADDLE_R, 0, 6.28); ctx.fillStyle = color; ctx.fill();
+  ctx.restore();
+  ctx.beginPath(); ctx.arc(p.x, p.y, PADDLE_R * 0.62, 0, 6.28); ctx.fillStyle = 'rgba(8,12,24,0.85)'; ctx.fill();
+  ctx.beginPath(); ctx.arc(p.x, p.y, PADDLE_R * 0.34, 0, 6.28); ctx.fillStyle = color; ctx.globalAlpha = 0.5; ctx.fill(); ctx.globalAlpha = 1;
 }

@@ -37,6 +37,7 @@ export type Phase =
 
 export interface MatchState {
   difficulty: Difficulty;
+  target: number; // first to this many goals wins
   puck: Puck;
   human: Paddle; // bottom
   bot: Paddle; // top
@@ -51,10 +52,11 @@ export interface MatchState {
   winner: "human" | "bot" | null;
 }
 
-export function createMatch(difficulty: Difficulty): MatchState {
+export function createMatch(difficulty: Difficulty, target: number = TARGET_SCORE): MatchState {
   const puck = makePuck();
   return {
     difficulty,
+    target,
     puck,
     human: makePaddle("bottom"),
     bot: makePaddle("top"),
@@ -131,15 +133,15 @@ export function tick(s: MatchState): MatchState {
       const scoreBot = st.scoreBot + (humanScored ? 0 : 1);
       // Loser serves next (toward the scorer keeps rallies lively).
       const serveToward: Side = humanScored ? "bottom" : "top";
-      if (scoreHuman >= TARGET_SCORE || scoreBot >= TARGET_SCORE) {
+      if (scoreHuman >= st.target || scoreBot >= st.target) {
         return {
           ...st,
           scoreHuman,
           scoreBot,
           phase: "matchOver",
           timer: RESULT_TICKS,
-          winner: scoreHuman >= TARGET_SCORE ? "human" : "bot",
-          banner: scoreHuman >= TARGET_SCORE ? "You win the match!" : "Bot takes the match",
+          winner: scoreHuman >= st.target ? "human" : "bot",
+          banner: scoreHuman >= st.target ? "You win the match!" : "Bot takes the match",
         };
       }
       return {
@@ -180,8 +182,8 @@ export function isMatchOver(s: MatchState): boolean {
   return s.phase === "matchOver";
 }
 
-export function rematch(s: MatchState, difficulty?: Difficulty): MatchState {
-  return createMatch(difficulty ?? s.difficulty);
+export function rematch(s: MatchState, difficulty?: Difficulty, target?: number): MatchState {
+  return createMatch(difficulty ?? s.difficulty, target ?? s.target);
 }
 
 // Exposed for tests / debug overlays: a coarse "is the puck on the table" check.

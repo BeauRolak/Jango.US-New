@@ -743,3 +743,17 @@ Applied the user's 4 reference images (Miniclip-style) as art direction, rendere
 Build green; screenshots show premium table, cue stick + aim/ghost/bounce guide, power meter, player cards; 0 console errors. Rules/physics unchanged (still 5/5 match tests).
 
 ### Next game: Air Hockey (#3).
+
+
+## Update 2026-06-23 — Air Hockey rebuild (game overhaul #3)
+
+Implemented docs/game-overhauls/03_Air_Hockey_Overhaul.txt.
+
+### Done (verified: 6/6 headless match tests, screenshots, 0 console errors, build green)
+- engine.ts: gave the bot real OFFENSE — it now positions on the far side of the puck from the human goal and drives it downfield (previously it only defended, so a passive human could never lose / matches could time out). Difficulty still scales speed/reaction; remains beatable.
+- match.ts: match length is now configurable (first to 3/5/7) via createMatch(difficulty, target); win check + rematch use it. Defaults to 7 so existing tests hold. Kept serve/playing/goal/matchOver flow, anti-stall re-serve, safety cap.
+- match.test.ts: 6/6 pass (all difficulties terminate with a winner, goals score + puck in bounds, serve->live, paddle constrained, rematch resets, passive human can't soft-lock).
+- AirHockey.tsx: full rewrite on the pure machine. Setup (difficulty, first-to 3/5/7, Scalps entry + pot/3% rake/payout, mock notice). Premium neon arcade table (blue surface, neon walls, center line/circle/spot, glowing red/green goal slots with score flash, side ambient lighting, puck motion trail + glow, glowing paddles). Scorebar HUD, serve/goal banners. Drag-to-move touch paddle. Global feedback (match start/win/loss, goal flash + chime). Results (final score, payout, rematch/new setup).
+- airhockey.css rewritten (.ah2-).
+
+### Next game: Chess (#4).

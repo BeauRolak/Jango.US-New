@@ -148,11 +148,18 @@ export function botMove(top: Paddle, puck: Puck, diff: Difficulty) {
   let targetX: number;
   let targetY: number;
   const puckOnBotSide = puck.y < mid;
+  const sp = Math.hypot(puck.vx, puck.vy);
   const puckApproaching = puck.vy < 0;
-  if (puckOnBotSide && puckApproaching) {
-    // attack: line up behind puck and strike
-    targetX = puck.x + puck.vx * 2;
-    targetY = puck.y - 6;
+  // Attack whenever the puck is reachable on the bot's half (approaching OR idle):
+  // position the paddle on the far side of the puck from the HUMAN goal so a push
+  // drives the puck downfield and the bot can actually score.
+  if (puckOnBotSide && (puckApproaching || sp < 2.2)) {
+    const goalX = TABLE.w / 2, goalY = TABLE.h; // human goal (bottom)
+    const gx = goalX - puck.x, gy = goalY - puck.y;
+    const gm = Math.hypot(gx, gy) || 1;
+    const off = (PUCK_R + PADDLE_R) * 0.55;
+    targetX = puck.x - (gx / gm) * off + puck.vx * 1.4;
+    targetY = puck.y - (gy / gm) * off;
   } else {
     // defend: track puck x near goal line, blend to center
     targetX = puck.x * cfg.defend + (TABLE.w / 2) * (1 - cfg.defend);
