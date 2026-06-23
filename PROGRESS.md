@@ -779,3 +779,11 @@ Every game now shares: setup (opponent, difficulty, game-specific options, Scalp
 
 ### Status: 15/15 games rebuilt to the premium bar.
 NOTE (env): repo read-only this session — all committed locally + verified via build/screenshots; deploy via the bundle or after write access.
+
+
+## Update 2026-06-23 — Bowling: neon-arena lane rebuild (reference-inspired)
+
+Applied the user's 3 bowling references (arcade/neon perspective lanes) in Jango dark/neon.
+- Bowling.tsx: replaced the flat top-down DOM lane with a CANVAS perspective alley — one-point-perspective wood lane (wide near -> narrow far), cyan/magenta neon edge rails, lane guide arrows, foul line, dark arcade backdrop + bokeh, far spotlight; 10 pins drawn in perspective triangle; glossy blue ball (glow + finger holes) that rolls down-lane shrinking with a trail and slight curve; dashed aim preview; vertical oscillating power meter + Bowl button; drag-to-aim. Strike -> pin explosion (topple/spin/fade) + camera shake + neon "STRIKE!" flash; spare -> "SPARE!" flash. Engine scoring (rollResult, 10-frame standard scoring, strike/spare) + Easy/Med/Hard bot reused; shell setup/results retained; sound/haptic/toast feedback.
+- bowling.css: bw2 canvas stage + power meter + Bowl button.
+Verified: build green, 0 console errors, screenshots (aim lane + roll + pinfall).
