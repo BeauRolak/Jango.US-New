@@ -11,6 +11,25 @@
 .bw2-power__fill { width: 100%; background: linear-gradient(180deg, #ff4d5e, #ffce5c); }
 .bw2-bowl { padding: 10px 16px; border-radius: 12px; border: none; cursor: pointer; font-weight: 800; font-size: 14px; color: #06121a; background: linear-gradient(135deg, var(--acc), #ffce8a); box-shadow: 0 10px 26px -12px color-mix(in srgb, var(--acc) 80%, transparent); }
 .bw2-bowl:active { transform: scale(.95); }
+.bw2-power__bar.is-hot { border-color: #ff5c5c; box-shadow: 0 0 14px rgba(255,92,92,.6); animation: bw2-hot .35s ease-in-out infinite alternate; }
+@keyframes bw2-hot { from { box-shadow: 0 0 8px rgba(255,92,92,.4); } to { box-shadow: 0 0 18px rgba(255,92,92,.8); } }
+
+/* spin control */
+.bw2-spin { display: flex; align-items: center; gap: 10px; justify-content: center; padding: 2px 6px; }
+.bw2-spin label { font-size: 12px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: #aab2d6; }
+.bw2-spin input[type=range] { width: 160px; accent-color: var(--acc); touch-action: none; }
+.bw2-spin__val { font-size: 12px; font-weight: 700; color: var(--acc); min-width: 64px; }
+
+/* status + bot thinking */
+.bw2-status.is-bot { color: var(--acc); }
+.bw2-dots { display: inline-flex; gap: 3px; margin-left: 6px; vertical-align: middle; }
+.bw2-dots i { width: 4px; height: 4px; border-radius: 50%; background: currentColor; opacity: .35; animation: bw2-dot 1s infinite; }
+.bw2-dots i:nth-child(2) { animation-delay: .18s; } .bw2-dots i:nth-child(3) { animation-delay: .36s; }
+@keyframes bw2-dot { 0%,100% { opacity: .25; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-3px); } }
+
+/* scoreboard pulse on frame complete */
+.bw-scores.p0 .bw-pcard.active, .bw-scores.p1 .bw-pcard.active { animation: bw2-pulse .5s ease; }
+@keyframes bw2-pulse { 0% { box-shadow: 0 0 0 rgba(176,127,255,0); } 40% { box-shadow: 0 0 22px rgba(176,127,255,.5); } 100% { box-shadow: 0 0 16px rgba(176,127,255,.3); } }
 .bw-wrap {
   min-height: 100vh;
   background: radial-gradient(circle at 50% 0%, #2a1a3a 0%, #08060f 70%);
