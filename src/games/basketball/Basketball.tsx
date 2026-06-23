@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { COURT, BALL_R, HOOP, SHOOT_ORIGIN, GRAVITY, makeBall, shoot, step, botShot } from './engine';
 import type { Ball, Difficulty } from './engine';
 import { MatchSetup, MatchResult, GameTopBar } from '../shared/GameShell';
+import { createSpin2D } from '../shared/rollingBall';
 import { useFeedback } from '../../components/Juice';
 import './basketball.css';
 
@@ -12,6 +13,7 @@ export default function Basketball() {
   const { fire } = useFeedback();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const ballRef = useRef<Ball>(makeBall());
+  const spinRef = useRef(createSpin2D(BALL_R));
   const rafRef = useRef<number>(0);
   const aimRef = useRef<{ angle: number; power: number } | null>(null);
   const dragRef = useRef<{ x: number; y: number } | null>(null);
@@ -82,7 +84,17 @@ export default function Basketball() {
       ctx.strokeStyle = 'rgba(255,170,80,0.3)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, COURT.h - 40); ctx.lineTo(COURT.w, COURT.h - 40); ctx.stroke();
       drawHoop(); drawAim();
       const b = ballRef.current; const grd = ctx.createRadialGradient(b.x - 5, b.y - 5, 3, b.x, b.y, BALL_R); grd.addColorStop(0, '#ffb066'); grd.addColorStop(1, '#d4631a'); ctx.fillStyle = grd;
-      ctx.beginPath(); ctx.arc(b.x, b.y, BALL_R, 0, 6.28); ctx.fill(); ctx.strokeStyle = 'rgba(0,0,0,0.4)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(b.x, b.y, BALL_R, 0, 6.28); ctx.stroke(); ctx.beginPath(); ctx.moveTo(b.x - BALL_R, b.y); ctx.lineTo(b.x + BALL_R, b.y); ctx.stroke();
+      ctx.beginPath(); ctx.arc(b.x, b.y, BALL_R, 0, 6.28); ctx.fill();
+      // backspin: seams rotate about the view axis as the ball travels
+      const ang = spinRef.current.step(b.x, b.y, -1);
+      ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(ang);
+      ctx.strokeStyle = 'rgba(0,0,0,0.45)'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(0, 0, BALL_R, 0, 6.28); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-BALL_R, 0); ctx.lineTo(BALL_R, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, -BALL_R); ctx.lineTo(0, BALL_R); ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(0, 0, BALL_R * 0.5, BALL_R, 0, 0, 6.28); ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(0, 0, BALL_R, BALL_R * 0.5, 0, 0, 6.28); ctx.stroke();
+      ctx.restore();
       rafRef.current = requestAnimationFrame(draw);
     };
     rafRef.current = requestAnimationFrame(draw);

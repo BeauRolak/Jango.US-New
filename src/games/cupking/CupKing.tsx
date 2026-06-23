@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { STAGE, BALL_R, CUP_R, THROW_ORIGIN, makeBall, makeCups, toss, step, botToss, allMade } from './engine';
 import type { Ball, Cup, Difficulty } from './engine';
 import { MatchSetup, MatchResult, GameTopBar } from '../shared/GameShell';
+import { createSpin2D } from '../shared/rollingBall';
 import { useFeedback } from '../../components/Juice';
 import './cupking.css';
 
@@ -12,6 +13,7 @@ export default function CupKing() {
   const { fire } = useFeedback();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const ballRef = useRef<Ball>(makeBall());
+  const spinRef = useRef(createSpin2D(BALL_R));
   const cupsRef = useRef<Cup[]>(makeCups());
   const botCupsRef = useRef<Cup[]>(makeCups());
   const rafRef = useRef<number>(0);
@@ -70,7 +72,14 @@ export default function CupKing() {
       const cups = turnRef.current === 'you' ? cupsRef.current : botCupsRef.current;
       for (const cup of cups) { if (cup.made) continue; ctx.beginPath(); ctx.ellipse(cup.x, cup.y, CUP_R, CUP_R * 0.55, 0, 0, 6.28); ctx.fillStyle = '#e23b3b'; ctx.fill(); ctx.beginPath(); ctx.ellipse(cup.x, cup.y - 2, CUP_R - 4, (CUP_R - 4) * 0.5, 0, 0, 6.28); ctx.fillStyle = '#ffce8a'; ctx.fill(); }
       if (aimRef.current) { const sim = { ...ballRef.current }; const simCups = cups.map((c) => ({ ...c })); toss(sim, aimRef.current.aimX, aimRef.current.power); ctx.fillStyle = 'rgba(255,255,255,0.5)'; for (let i = 0; i < 30; i++) { step(sim, simCups); if (i % 2 === 0) { ctx.beginPath(); ctx.arc(sim.x, sim.y - sim.z, 2, 0, 6.28); ctx.fill(); } } }
-      const b = ballRef.current; ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(b.x, b.y, BALL_R, BALL_R * 0.4, 0, 0, 6.28); ctx.fill(); ctx.fillStyle = '#f5f5f5'; ctx.beginPath(); ctx.arc(b.x, b.y - b.z, BALL_R, 0, 6.28); ctx.fill();
+      const b = ballRef.current; ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(b.x, b.y, BALL_R, BALL_R * 0.4, 0, 0, 6.28); ctx.fill();
+      const byy = b.y - b.z; const grd = ctx.createRadialGradient(b.x - 3, byy - 3, 1, b.x, byy, BALL_R); grd.addColorStop(0, '#ffffff'); grd.addColorStop(1, '#d7dae2');
+      ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(b.x, byy, BALL_R, 0, 6.28); ctx.fill();
+      // spin: seam rotates as the ball travels
+      const ang = spinRef.current.step(b.x, byy, 1);
+      ctx.save(); ctx.translate(b.x, byy); ctx.rotate(ang); ctx.strokeStyle = 'rgba(120,130,150,0.6)'; ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.ellipse(0, 0, BALL_R * 0.55, BALL_R, 0, 0, 6.28); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-BALL_R, 0); ctx.lineTo(BALL_R, 0); ctx.stroke(); ctx.restore();
       rafRef.current = requestAnimationFrame(draw);
     };
     rafRef.current = requestAnimationFrame(draw);

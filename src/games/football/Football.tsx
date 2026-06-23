@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { FIELD, BALL_R, GOAL, KICK_ORIGIN, makeBall, kick, step, botKick, randomWind } from './engine';
 import type { Ball, Difficulty, Wind } from './engine';
 import { MatchSetup, MatchResult, GameTopBar } from '../shared/GameShell';
+import { createSpin2D } from '../shared/rollingBall';
 import { useFeedback } from '../../components/Juice';
 import './football.css';
 
@@ -12,6 +13,7 @@ export default function Football() {
   const { fire } = useFeedback();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const ballRef = useRef<Ball>(makeBall());
+  const spinRef = useRef(createSpin2D(BALL_R));
   const windRef = useRef<Wind>(randomWind());
   const rafRef = useRef<number>(0);
   const aimRef = useRef<{ aimX: number; power: number } | null>(null);
@@ -91,8 +93,14 @@ export default function Football() {
       if (aimRef.current) { const sim = { ...ballRef.current }; kick(sim, aimRef.current.aimX, aimRef.current.power); ctx.fillStyle = 'rgba(255,255,255,0.5)'; for (let i = 0; i < 30; i++) { step(sim, windRef.current); if (i % 2 === 0) { ctx.beginPath(); ctx.arc(sim.x, sim.y, 2, 0, 6.28); ctx.fill(); } } }
       const b = ballRef.current; const drawY = b.y - b.z;
       ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(b.x, b.y, BALL_R * 0.8, BALL_R * 0.35, 0, 0, 6.28); ctx.fill();
-      ctx.fillStyle = '#7a3b16'; ctx.beginPath(); ctx.ellipse(b.x, drawY, BALL_R * 0.7, BALL_R, 0, 0, 6.28); ctx.fill();
-      ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(b.x, drawY - BALL_R + 3); ctx.lineTo(b.x, drawY + BALL_R - 3); ctx.stroke();
+      // end-over-end tumble as the kick travels
+      const ang = spinRef.current.step(b.x, drawY, 1);
+      ctx.save(); ctx.translate(b.x, drawY); ctx.rotate(ang);
+      ctx.fillStyle = '#7a3b16'; ctx.beginPath(); ctx.ellipse(0, 0, BALL_R * 0.7, BALL_R, 0, 0, 6.28); ctx.fill();
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(0, -BALL_R + 3); ctx.lineTo(0, BALL_R - 3); ctx.stroke();
+      // lace ticks
+      for (let i = -2; i <= 2; i++) { ctx.beginPath(); ctx.moveTo(-2, i * BALL_R * 0.28); ctx.lineTo(2, i * BALL_R * 0.28); ctx.stroke(); }
+      ctx.restore();
       rafRef.current = requestAnimationFrame(draw);
     };
     rafRef.current = requestAnimationFrame(draw);

@@ -6,6 +6,7 @@ import {
 } from './match';
 import type { Difficulty } from './engine';
 import { Icon } from '../../components/Icon';
+import { createSpin2D } from '../shared/rollingBall';
 import { useFeedback } from '../../components/Juice';
 import './airhockey.css';
 
@@ -31,6 +32,7 @@ export default function AirHockey() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const draggingRef = useRef(false);
   const trailRef = useRef<{ x: number; y: number }[]>([]);
+  const spinRef = useRef(createSpin2D(PUCK_R));
   const goalFlashRef = useRef<{ side: 'top' | 'bottom'; t: number } | null>(null);
   const prevScoreRef = useRef('0,0');
   const [, force] = useReducer((n) => n + 1, 0);
@@ -137,6 +139,13 @@ export default function AirHockey() {
     ctx.beginPath(); ctx.arc(puck.x, puck.y, PUCK_R, 0, 6.28); ctx.fillStyle = '#ffe27a'; ctx.fill();
     ctx.restore();
     ctx.beginPath(); ctx.arc(puck.x, puck.y, PUCK_R * 0.55, 0, 6.28); ctx.strokeStyle = 'rgba(120,80,0,0.4)'; ctx.lineWidth = 2; ctx.stroke();
+    // spin: an off-centre notch so the puck's rotation is visible as it slides
+    const pang = spinRef.current.step(puck.x, puck.y, 1);
+    ctx.save(); ctx.translate(puck.x, puck.y); ctx.rotate(pang);
+    ctx.strokeStyle = 'rgba(120,80,0,0.55)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(PUCK_R * 0.55, 0); ctx.stroke();
+    ctx.fillStyle = 'rgba(120,80,0,0.5)'; ctx.beginPath(); ctx.arc(PUCK_R * 0.72, 0, PUCK_R * 0.14, 0, 6.28); ctx.fill();
+    ctx.restore();
 
     drawPaddle(ctx, s.bot, '#ff3c78');
     drawPaddle(ctx, s.human, '#3cffb4');

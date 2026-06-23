@@ -47,6 +47,24 @@ export function apply(m: Mat3, p: [number, number, number]): [number, number, nu
   ];
 }
 
+/** In-plane spin accumulator for side-view balls / top-down pucks that spin
+ *  about the view axis. Feed the object's position each frame; angle advances by
+ *  distance/radius (rolling without slipping), signed by horizontal direction. */
+export function createSpin2D(R: number) {
+  let angle = 0; let px: number | null = null; let py: number | null = null;
+  return {
+    value() { return angle; },
+    step(x: number, y: number, sign = 1) {
+      if (px !== null && py !== null) {
+        const dx = x - px, dy = y - py; const dist = Math.hypot(dx, dy);
+        if (dist < R * 4) angle += sign * (dx >= 0 ? 1 : -1) * dist / R; // ignore teleports
+      }
+      px = x; py = y; return angle;
+    },
+    reset() { angle = 0; px = null; py = null; },
+  };
+}
+
 /** Manage a roll matrix per object id; call frame() each render with live velocities. */
 export function createRollTracker(R: number) {
   const mats = new Map<number, Mat3>();
