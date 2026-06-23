@@ -8,6 +8,7 @@ import {
 import type { Difficulty } from '../../game/types';
 import { Icon } from '../../components/Icon';
 import { useFeedback } from '../../components/Juice';
+import { createRollTracker, apply, type Mat3 } from '../shared/rollingBall';
 import './eightball.css';
 
 type Phase = 'setup' | 'playing' | 'results';
@@ -40,6 +41,7 @@ export default function EightBall() {
   const [, force] = useReducer((n) => n + 1, 0);
   const sigRef = useRef('');
   const pottedCountRef = useRef(0);
+  const rollRef = useRef(createRollTracker(BALL_R));
 
   const pot = entry * 2;
   const rake = Math.round(pot * RAKE);
@@ -47,7 +49,7 @@ export default function EightBall() {
 
   const start = () => {
     matchRef.current = createMatch(difficulty);
-    sigRef.current = ''; pottedCountRef.current = 0;
+    sigRef.current = ''; pottedCountRef.current = 0; rollRef.current.reset();
     setPhase('playing');
     fire('match_start', 'Break to begin', null);
   };
@@ -179,8 +181,13 @@ export default function EightBall() {
       ctx.fillStyle = `rgba(255,${Math.round(220 - a.power * 170)},70,0.95)`; roundRect(ctx, px + 1, h - cushion + 5, (pw - 2) * a.power, 7, 4); ctx.fill();
     }
 
-    // balls
-    for (const b of s.balls) { if (!b.potted) drawBall(ctx, b); }
+    // balls — advance each ball's roll by its velocity, then draw spinning
+    const tracker = rollRef.current;
+    for (const b of s.balls) {
+      if (b.potted) continue;
+      tracker.step(b.id, b.vx, b.vy);
+      drawBall(ctx, b, tracker.get(b.id));
+    }
   }, []);
 
   // ---------- input ----------
@@ -377,30 +384,87 @@ function groupOf(id: number): Group | null {
   return null;
 }
 
-function drawBall(ctx: CanvasRenderingContext2D, b: Ball) {
+// Surface speckles (local unit-sphere points) so even solid balls visibly roll.
+const SPECKLES: [number, number, number][] = [
+  [0.55, 0.2, 0.81], [-0.5, 0.45, 0.74], [0.1, -0.6, 0.79], [-0.35, -0.3, 0.89], [0.7, -0.45, 0.55],
+];
+
+function drawBall(ctx: CanvasRenderingContext2D, b: Ball, m: Mat3) {
   const color = BALL_COLORS[b.id] || '#fff';
+  const isStripe = b.group === 'stripe';
   // shadow
   ctx.beginPath(); ctx.ellipse(b.x, b.y + BALL_R * 0.6, BALL_R * 0.9, BALL_R * 0.4, 0, 0, Math.PI * 2);
   ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.fill();
-  // body
-  ctx.beginPath(); ctx.arc(b.x, b.y, BALL_R, 0, Math.PI * 2);
-  ctx.fillStyle = color; ctx.fill();
-  // stripe band
-  if (b.group === 'stripe') {
-    ctx.save(); ctx.beginPath(); ctx.arc(b.x, b.y, BALL_R, 0, Math.PI * 2); ctx.clip();
-    ctx.fillStyle = '#f6f8ff'; ctx.fillRect(b.x - BALL_R, b.y - BALL_R, BALL_R * 2, BALL_R * 0.7);
-    ctx.fillRect(b.x - BALL_R, b.y + BALL_R * 0.3, BALL_R * 2, BALL_R * 0.7); ctx.restore();
+
+  // body (white for stripe balls, color for solids/eight; cue stays white)
+  const base = isStripe ? '#f4f7ff' : color;
+  const body = ctx.createRadialGradient(b.x - BALL_R * 0.3, b.y - BALL_R * 0.3, BALL_R * 0.2, b.x, b.y, BALL_R);
+  body.addColorStop(0, lighten(base, 0.35)); body.addColorStop(1, base);
+  ctx.beginPath(); ctx.arc(b.x, b.y, BALL_R, 0, Math.PI * 2); ctx.fillStyle = body; ctx.fill();
+
+  ctx.save(); ctx.beginPath(); ctx.arc(b.x, b.y, BALL_R, 0, Math.PI * 2); ctx.clip();
+
+  // rotating equatorial stripe (its great-circle axis is fixed in ball space)
+  if (isStripe) {
+    const a = apply(m, [0, 1, 0]);            // stripe axis in world
+    const inPlane = Math.hypot(a[0], a[1]);   // 0 = axis at viewer (pole view), 1 = edge-on
+    if (inPlane < 0.35) {
+      // pole-on: colored ring with white centre
+      ctx.beginPath(); ctx.arc(b.x, b.y, BALL_R, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill();
+      ctx.beginPath(); ctx.arc(b.x, b.y, BALL_R * 0.6, 0, Math.PI * 2); ctx.fillStyle = base; ctx.fill();
+    } else {
+      const dir = Math.atan2(a[1], a[0]) + Math.PI / 2; // band runs ⟂ to axis projection
+      const half = BALL_R * 0.62 * inPlane + BALL_R * 0.16;
+      ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(dir);
+      ctx.fillStyle = color; ctx.fillRect(-BALL_R, -half, BALL_R * 2, half * 2);
+      ctx.restore();
+    }
   }
-  // number pip
+
+  // surface speckles that roll with the ball
+  ctx.fillStyle = 'rgba(0,0,0,0.16)';
+  for (const sp of SPECKLES) {
+    const w = apply(m, sp);
+    if (w[2] <= 0.05) continue; // back hemisphere hidden
+    const sx = b.x + w[0] * BALL_R, sy = b.y + w[1] * BALL_R;
+    ctx.globalAlpha = Math.min(1, w[2] * 2);
+    ctx.beginPath(); ctx.arc(sx, sy, BALL_R * 0.1 * (0.4 + w[2] * 0.6), 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  // numbered white disc on the surface — orbits and vanishes round the back
   if (b.id !== 0) {
-    ctx.beginPath(); ctx.arc(b.x, b.y, BALL_R * 0.46, 0, Math.PI * 2);
-    ctx.fillStyle = '#fff'; ctx.fill();
-    ctx.fillStyle = '#101010'; ctx.font = 'bold 8px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(String(b.id), b.x, b.y + 0.5);
+    const c = apply(m, [0, 0, 1]); // disc starts facing the viewer
+    if (c[2] > -0.05) {
+      const dx = b.x + c[0] * BALL_R * 0.62, dy = b.y + c[1] * BALL_R * 0.62;
+      const fore = Math.max(0.18, c[2]);                  // foreshorten near the rim
+      const dr = BALL_R * 0.46 * (0.55 + 0.45 * c[2]);
+      ctx.globalAlpha = Math.min(1, (c[2] + 0.05) * 3);
+      ctx.beginPath(); ctx.ellipse(dx, dy, dr, dr * fore, Math.atan2(c[1], c[0]), 0, Math.PI * 2);
+      ctx.fillStyle = '#fff'; ctx.fill();
+      if (c[2] > 0.45) {
+        ctx.fillStyle = '#101010'; ctx.font = 'bold 8px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(String(b.id), dx, dy + 0.5);
+      }
+      ctx.globalAlpha = 1;
+    }
   }
-  // highlight
+  ctx.restore();
+
+  // fixed specular highlight (light source doesn't roll with the ball)
   ctx.beginPath(); ctx.arc(b.x - BALL_R * 0.32, b.y - BALL_R * 0.32, BALL_R * 0.28, 0, Math.PI * 2);
-  ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.fill();
+  // rim shade for depth
+  ctx.beginPath(); ctx.arc(b.x, b.y, BALL_R, 0, Math.PI * 2); ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(0,0,0,0.25)'; ctx.stroke();
+}
+
+// tiny color lightener for the body gradient
+function lighten(hex: string, amt: number): string {
+  const h = hex.replace('#', '');
+  if (h.length < 6) return hex;
+  const r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), bl = parseInt(h.slice(4, 6), 16);
+  const f = (v: number) => Math.round(v + (255 - v) * amt);
+  return `rgb(${f(r)},${f(g)},${f(bl)})`;
 }
 
 function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {

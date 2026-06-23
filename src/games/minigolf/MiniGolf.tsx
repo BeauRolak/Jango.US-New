@@ -10,6 +10,7 @@ import { HOLES } from './holes';
 import type { Difficulty } from '../../game/types';
 import { Icon } from '../../components/Icon';
 import { useFeedback } from '../../components/Juice';
+import { createRollTracker, apply } from '../shared/rollingBall';
 import './minigolf.css';
 
 type Phase = 'setup' | 'playing' | 'results';
@@ -38,6 +39,7 @@ export default function MiniGolf() {
   const aimingRef = useRef(false);
   const botFramesRef = useRef(0);
   const trailRef = useRef<{ x: number; y: number }[]>([]);
+  const rollRef = useRef(createRollTracker(BALL_R));
   const [, force] = useReducer((n) => n + 1, 0);
   const sigRef = useRef('');
   const prevDoneRef = useRef('f,f');
@@ -224,15 +226,36 @@ export default function MiniGolf() {
       ctx.fill();
     }
 
-    // active ball
+    // active ball — rolls with visible rotation (dimples + player mark orbit)
     if (!ball.sunk) {
+      rollRef.current.step(who, ball.vel.x, ball.vel.y);
+      const m = rollRef.current.get(who);
+      const bx = ball.pos.x * sx, by = ball.pos.y * sy, r = BALL_R * sx;
       ctx.save();
       ctx.shadowColor = who === 0 ? 'rgba(120,180,255,0.9)' : 'rgba(190,130,255,0.9)';
       ctx.shadowBlur = 14;
-      ctx.beginPath();
-      ctx.arc(ball.pos.x * sx, ball.pos.y * sy, BALL_R * sx, 0, 2 * Math.PI);
-      ctx.fillStyle = '#ffffff'; ctx.fill();
+      const grd = ctx.createRadialGradient(bx - r * 0.3, by - r * 0.3, r * 0.2, bx, by, r);
+      grd.addColorStop(0, '#ffffff'); grd.addColorStop(1, '#d4dcec');
+      ctx.beginPath(); ctx.arc(bx, by, r, 0, 2 * Math.PI); ctx.fillStyle = grd; ctx.fill();
       ctx.restore();
+      // surface detail rotating with travel
+      ctx.save(); ctx.beginPath(); ctx.arc(bx, by, r, 0, 2 * Math.PI); ctx.clip();
+      const dimples: [number, number, number][] = [[0.5, 0.2, 0.84], [-0.45, 0.4, 0.8], [0.05, -0.6, 0.8], [-0.3, -0.25, 0.92], [0.6, -0.4, 0.7]];
+      for (const d of dimples) {
+        const w = apply(m, d); if (w[2] <= 0.05) continue;
+        ctx.globalAlpha = Math.min(1, w[2] * 2); ctx.fillStyle = 'rgba(120,130,150,0.5)';
+        ctx.beginPath(); ctx.arc(bx + w[0] * r, by + w[1] * r, r * 0.13 * (0.4 + w[2] * 0.6), 0, 2 * Math.PI); ctx.fill();
+      }
+      // player-colored mark so spin direction reads clearly
+      const c = apply(m, [0, 0, 1]);
+      if (c[2] > 0) {
+        ctx.globalAlpha = Math.min(1, c[2] * 3);
+        ctx.fillStyle = who === 0 ? '#3b82f6' : '#a855f7';
+        ctx.beginPath(); ctx.ellipse(bx + c[0] * r * 0.5, by + c[1] * r * 0.5, r * 0.34 * (0.5 + c[2] * 0.5), r * 0.34 * Math.max(0.2, c[2]), Math.atan2(c[1], c[0]), 0, 2 * Math.PI); ctx.fill();
+      }
+      ctx.globalAlpha = 1; ctx.restore();
+      // specular highlight (fixed)
+      ctx.beginPath(); ctx.arc(bx - r * 0.32, by - r * 0.32, r * 0.26, 0, 2 * Math.PI); ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.fill();
     }
 
     // aim guide + power (human only, aiming)

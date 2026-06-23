@@ -825,3 +825,16 @@ Economy/safety: Scalps naming consistent; 3% rake shown only in match/tournament
 Verified: build green (148 modules), 0 console errors desktop+mobile, screenshots (onboarding step 1, /rewards desktop, /rewards + bottom nav mobile, dashboard).
 
 REMAINING (next platform batches): Notifications Center upgrade (stateful mark-read, filters All/Invites/Rewards/Tournaments/Messages/System, mobile drawer) — currently a static dropdown in Layout; Profile identity upgrade (hero, achievements grid by rarity, cosmetics equip, match history, edit modal); Social/Friends/Invites/Messages + mobile chat (inbox→full chat); Settings deep-wire for reduced-motion + UI intensity controls (sound/haptics already wired); broader mobile QA across Profile/Social/Tournaments; per-page premium passes (Wallet/Rank/Battle Pass/Training language alignment with daily/weekly rewards).
+
+## Update 2026-06-23 — Global spin physics rule: balls visibly roll (8-Ball + Mini Golf)
+
+Applied the binding rule from the Games Art & Build Reference (rolling/spinning objects must visibly rotate, rotationAngle = distance / radius, surface texture turning with travel — a frozen ball that glides is the "#1 amateur tell"). Previously 8-Ball drew stripe band + number + highlight screen-fixed (stripe always horizontal, number always upright) = sticker sliding on glass; Mini Golf was a plain gliding white circle.
+
+NEW — src/games/shared/rollingBall.ts: reusable rolling-sphere helper. Tracks a 3x3 rotation matrix per ball (Mat3), advanceRoll(m, vx, vy, R) pre-multiplies an incremental Rodrigues rotation about the in-plane axis perpendicular to motion by angle = speed/R (rolling without slipping). apply(m, localPoint) projects unit-sphere surface features; createRollTracker(R) manages per-id matrices (get/step/reset). Unit-verified: a front-facing point rolls to the back over half a circumference, returns over a full one, and sits on the +x rim at a quarter — all PASS.
+
+8-Ball (EightBall.tsx): roll tracker stepped each frame by each ball's vx/vy. drawBall rewritten — radial-shaded body; rotating equatorial stripe (great-circle axis fixed in ball space → renders as an edge-on band that thins to a colored ring on pole view); surface speckles that orbit and vanish round the back hemisphere; a numbered white disc that orbits with travel, foreshortens near the rim, and disappears around the back (number hidden once mostly turned away); fixed specular highlight (light doesn't roll) + rim shade. Cue ball shows speckles so its spin reads too.
+
+Mini Golf (MiniGolf.tsx): active ball now radial-shaded with rolling dimples + a player-colored mark (blue P1 / purple P2) that orbits with travel so spin direction is visible; fixed specular highlight; roll tracker keyed by player, stepped by ball.vel.
+
+Reusable for the other ball games next (Bowling already has spin lines; Basketball/Football/Cup King backspin/arc-spin and Air Hockey puck spin can adopt createRollTracker).
+Verified: build green, rolling math unit test ALL PASS, 8-Ball rack + break render with 0 console errors.
