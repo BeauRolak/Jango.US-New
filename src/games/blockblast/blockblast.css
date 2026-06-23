@@ -1,3 +1,7 @@
+.bb2-wrap { max-width: 480px; margin: 0 auto; padding: 16px 14px 36px; display: flex; flex-direction: column; gap: 14px; color: #eef1ff; align-items: stretch; }
+.bb2-wrap .bb-board { margin: 0 auto; }
+.bb2-wrap .bb-tray { margin: 0 auto; }
+.bb2-wrap .bb-hint { text-align: center; font-size: 12.5px; color: #8b93b8; margin: 0; }
 .bb-wrap {
   min-height: 100vh;
   background: radial-gradient(circle at 50% 0%, #3a1240 0%, #0a0410 70%);

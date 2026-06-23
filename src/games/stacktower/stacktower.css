@@ -1,63 +1,7 @@
-.st-wrap {
-  min-height: 100vh;
-  background: radial-gradient(circle at 50% 0%, #122a55 0%, #04060f 70%);
-  color: #e8f0ff;
-  display: flex; flex-direction: column; align-items: center;
-  padding: 16px; font-family: 'Inter', system-ui, sans-serif;
-}
-.st-head {
-  width: 100%; max-width: 420px;
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  margin-bottom: 8px;
-}
-.st-back { color: #7fb6ff; text-decoration: none; font-size: 14px; font-weight: 600; white-space: nowrap; }
-.st-back:hover { color: #aad2ff; }
-.st-title {
-  font-size: 22px; font-weight: 800; margin: 0;
-  background: linear-gradient(90deg, #5ac8ff, #3cffb4);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-}
-.st-diff { display: flex; gap: 6px; }
-.st-diff-btn {
-  background: rgba(255,255,255,0.06); border: 1px solid rgba(120,200,255,0.25);
-  color: #bcd6ff; border-radius: 999px; padding: 5px 12px; font-size: 12px;
-  text-transform: capitalize; cursor: pointer; transition: all 0.15s ease;
-}
-.st-diff-btn:hover { border-color: #5ac8ff; }
-.st-diff-btn.active {
-  background: linear-gradient(90deg, #5ac8ff, #3cffb4); color: #04121a;
-  border-color: transparent; font-weight: 700;
-}
-.st-hud {
-  display: flex; align-items: center; gap: 14px; margin: 4px 0 10px;
-  font-size: 18px; font-weight: 800;
-}
-.st-h { color: #5ac8ff; }
-.st-streak {
-  color: #04121a; background: linear-gradient(90deg, #ffd34d, #3cffb4);
-  padding: 2px 10px; border-radius: 999px; font-size: 13px; font-weight: 800;
-}
-.st-stage-wrap {
-  position: relative; width: 100%; max-width: 360px; aspect-ratio: 360 / 600;
-  border-radius: 16px; overflow: hidden; cursor: pointer;
-  box-shadow: 0 0 0 2px rgba(120,200,255,0.2), 0 20px 60px rgba(0,0,0,0.6);
-  user-select: none;
-}
-.st-canvas { display: block; width: 100%; height: 100%; touch-action: none; background: #0a1430; }
-.st-overlay {
-  position: absolute; inset: 0; background: rgba(4,6,15,0.82); backdrop-filter: blur(6px);
-  display: flex; align-items: center; justify-content: center;
-}
-.st-card { text-align: center; display: flex; flex-direction: column; gap: 14px; padding: 28px; }
-.st-result {
-  font-size: 30px; font-weight: 900;
-  background: linear-gradient(90deg, #5ac8ff, #3cffb4);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-}
-.st-final { font-size: 16px; color: #bcd6ff; }
-.st-play { background: linear-gradient(90deg, #5ac8ff, #3cffb4); color: #04121a; border: none; border-radius: 12px; padding: 12px 28px; font-size: 16px; font-weight: 800; cursor: pointer; }
-.st-play:hover { filter: brightness(1.08); }
-.st-leave { color: #7fb6ff; text-decoration: none; font-size: 14px; }
-.st-leave:hover { color: #aad2ff; }
-.st-hint { margin-top: 14px; max-width: 360px; text-align: center; font-size: 13px; color: #8aa0c4; line-height: 1.5; }
-@media (max-width: 520px) { .st-title { font-size: 18px; } .st-result { font-size: 24px; } }
+/* STACK TOWER — premium (.st2-) */
+.st2-wrap { max-width: 480px; margin: 0 auto; padding: 16px 14px 36px; display: flex; flex-direction: column; gap: 14px; color: #eef1ff; }
+.st2-streak { font-weight: 800; font-size: 13px; color: var(--acc); }
+.st2-stage { display: flex; justify-content: center; }
+.st2-canvas { width: 100%; max-width: 360px; height: auto; display: block; border-radius: 16px; cursor: pointer; touch-action: none;
+  border: 1px solid color-mix(in srgb, var(--acc) 30%, transparent); box-shadow: 0 24px 60px -28px rgba(0,0,0,.9), 0 0 50px -30px color-mix(in srgb, var(--acc) 70%, transparent); }
+.st2-hint { text-align: center; font-size: 12.5px; color: #8b93b8; margin: 0; }
