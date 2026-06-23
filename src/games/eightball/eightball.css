@@ -88,3 +88,19 @@
   .eb2-banner, .eb2-results__icon { animation: none !important; }
   .eb2-btn--go:hover, .eb2-opt:hover { transform: none; }
 }
+
+/* english (cue-ball spin) control */
+.eb2-controls { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: center; }
+.eb2-english { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.eb2-english__lbl { font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: #8b93b8; }
+.eb2-english__ball { position: relative; width: 56px; height: 56px; border-radius: 50%; cursor: pointer; touch-action: none;
+  background: radial-gradient(circle at 38% 32%, #ffffff, #c9d2e6 70%, #9aa6c2);
+  box-shadow: inset 0 -4px 10px rgba(0,0,0,.25), 0 4px 12px -4px rgba(0,0,0,.6); border: 1px solid rgba(255,255,255,.4); }
+.eb2-english__cross { position: absolute; inset: 8px; border-radius: 50%; border: 1px dashed rgba(60,70,90,.4);
+  background:
+    linear-gradient(rgba(60,70,90,.25), rgba(60,70,90,.25)) 50% 0/1px 100% no-repeat,
+    linear-gradient(rgba(60,70,90,.25), rgba(60,70,90,.25)) 0 50%/100% 1px no-repeat; }
+.eb2-english__dot { position: absolute; width: 13px; height: 13px; border-radius: 50%; transform: translate(-50%, -50%);
+  background: radial-gradient(circle at 35% 30%, #ff7ad9, #b03a8f); box-shadow: 0 0 8px rgba(255,122,217,.8); }
+.eb2-english__hint { font-size: 11px; font-weight: 700; color: #ff9ad6; min-width: 50px; text-align: center; }
+@media (max-width: 520px) { .eb2-controls { flex-direction: column; } }

@@ -33,6 +33,10 @@ export default function EightBall() {
   const [phase, setPhase] = useState<Phase>('setup');
   const [difficulty, setDifficulty] = useState<Difficulty>('medium');
   const [entry, setEntry] = useState<number>(10);
+  const [english, setEnglish] = useState<{ f: number; s: number }>({ f: 0, s: 0 });
+  const englishRef = useRef(english); useEffect(() => { englishRef.current = english; }, [english]);
+  const engBoxRef = useRef<HTMLDivElement | null>(null);
+  const engDragRef = useRef(false);
 
   const matchRef = useRef<MatchState | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -214,12 +218,26 @@ export default function EightBall() {
     aimingRef.current = false;
     const a = aimRef.current;
     if (a.power > 0.06 && canHumanShoot(s)) {
-      matchRef.current = shoot(s, a.angle, a.power);
+      matchRef.current = shoot(s, a.angle, a.power, englishRef.current);
       pottedCountRef.current = 0;
+      setEnglish({ f: 0, s: 0 }); // reset to centre-ball after the shot
       fire('tap', undefined, null);
       force();
     }
   };
+
+  // english (cue-ball spin) control: drag the contact point on the mini cue ball
+  const setEngFromEvent = (e: React.PointerEvent) => {
+    const el = engBoxRef.current; if (!el) return;
+    const r = el.getBoundingClientRect();
+    let nx = ((e.clientX - r.left) / r.width) * 2 - 1;
+    let ny = ((e.clientY - r.top) / r.height) * 2 - 1;
+    const mag = Math.hypot(nx, ny); if (mag > 1) { nx /= mag; ny /= mag; }
+    setEnglish({ s: Math.round(nx * 100) / 100, f: Math.round(-ny * 100) / 100 });
+  };
+  const engDown = (e: React.PointerEvent) => { engDragRef.current = true; setEngFromEvent(e); fire('tap'); };
+  const engMove = (e: React.PointerEvent) => { if (engDragRef.current) setEngFromEvent(e); };
+  const engUp = () => { engDragRef.current = false; };
 
   const doRematch = () => { matchRef.current = rematch(difficulty); sigRef.current = ''; pottedCountRef.current = 0; setPhase('playing'); fire('match_start', 'Rematch', null); };
   const backToSetup = () => { matchRef.current = null; setPhase('setup'); };
@@ -348,7 +366,17 @@ export default function EightBall() {
         />
         {s.banner && <div className="eb2-banner">{s.banner}</div>}
       </div>
-      <p className="eb2-hint"><Icon name="Target" /> Drag back from the cue ball to aim &amp; set power, release to shoot</p>
+      <div className="eb2-controls">
+        <div className="eb2-english">
+          <span className="eb2-english__lbl">Spin</span>
+          <div ref={engBoxRef} className="eb2-english__ball" onPointerDown={engDown} onPointerMove={engMove} onPointerUp={engUp} onPointerLeave={engUp}>
+            <span className="eb2-english__cross" />
+            <span className="eb2-english__dot" style={{ left: `${50 + english.s * 42}%`, top: `${50 - english.f * 42}%` }} />
+          </div>
+          <span className="eb2-english__hint">{english.f > 0.1 ? 'Follow' : english.f < -0.1 ? 'Draw' : english.s > 0.1 ? 'Right' : english.s < -0.1 ? 'Left' : 'Centre'}</span>
+        </div>
+        <p className="eb2-hint"><Icon name="Target" /> Drag back from the cue ball to aim &amp; set power, release to shoot. Set spin on the cue ball for follow, draw or side english.</p>
+      </div>
     </div>
   );
 }

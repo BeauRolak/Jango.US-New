@@ -16,6 +16,9 @@ export interface Ball {
   vy: number;
   potted: boolean;
   group: 'cue' | 'solid' | 'stripe' | 'eight';
+  // cue-ball english, applied once on first object-ball contact (follow/draw/side).
+  // Absent for every normal shot (and all bot shots) so physics stay deterministic.
+  eng?: { f: number; s: number; dir: number };
 }
 
 export function pockets() {
@@ -109,6 +112,15 @@ export function step(balls: Ball[]): number[] {
           const imp = dot;
           a.vx += nx * imp; a.vy += ny * imp;
           c.vx -= nx * imp; c.vy -= ny * imp;
+          // cue english: on first contact, add follow/draw (along shot dir) + side
+          const cueBall = a.id === 0 ? a : c.id === 0 ? c : null;
+          if (cueBall && cueBall.eng) {
+            const { f, s, dir } = cueBall.eng;
+            const K = 9;
+            cueBall.vx += Math.cos(dir) * f * K + Math.cos(dir + Math.PI / 2) * s * K;
+            cueBall.vy += Math.sin(dir) * f * K + Math.sin(dir + Math.PI / 2) * s * K;
+            cueBall.eng = undefined;
+          }
         }
       }
     }

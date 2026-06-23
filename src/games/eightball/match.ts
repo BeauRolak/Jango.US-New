@@ -85,7 +85,7 @@ function cueBall(balls: Ball[]): Ball | undefined {
 }
 
 // Take a shot for the current player at the given angle (radians) + power (0..1).
-export function shoot(s: MatchState, angle: number, power: number): MatchState {
+export function shoot(s: MatchState, angle: number, power: number, english?: { f: number; s: number }): MatchState {
   if (s.phase !== "aiming" && s.phase !== "botThink") return s;
   if (s.winner !== null) return s;
   const cue = cueBall(s.balls);
@@ -96,6 +96,10 @@ export function shoot(s: MatchState, angle: number, power: number): MatchState {
   if (!c) return s;
   const p = Math.max(0.15, Math.min(1, power));
   strike(c, angle, p);
+  // attach english only when the human applied some — keeps bot sims deterministic
+  if (english && (Math.abs(english.f) > 0.01 || Math.abs(english.s) > 0.01)) {
+    c.eng = { f: english.f, s: english.s, dir: angle };
+  }
   return {
     ...s,
     balls,
