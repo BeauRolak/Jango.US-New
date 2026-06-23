@@ -757,3 +757,25 @@ Implemented docs/game-overhauls/03_Air_Hockey_Overhaul.txt.
 - airhockey.css rewritten (.ah2-).
 
 ### Next game: Chess (#4).
+
+
+## Update 2026-06-23 — ALL 15 games on shared premium shell (#4–#15)
+
+Built src/games/shared/GameShell.tsx (MatchSetup / MatchResult / GameTopBar, themed per game via --ga-acc) — the spec's shared match framework — then rebuilt every remaining game on it.
+
+### Done (build green, 0 console errors, screenshots verified)
+- Chess (#4): premium glass board (legal-move dots, selected lift, capture rings, last-move + check pulse); negamax engine/bot reused.
+- Connect Four (#5): animated disc drop, ghost preview, win-line pulse.
+- Rock Paper Scissors (#6): emoji replaced with custom SVG hands; first-to 3/5/7.
+- Dots & Boxes (#7): board-size 3/4/5, claim animation, neon edges.
+- Stack Tower (#10) + Block Blast (#11): solo score-attack framed as beat-the-target wagers.
+- Tron (#12): first-to rounds vs bot, neon grid + pad/keys.
+- Basketball (#13), Field Goal/Football (#14): drag-arc/kick vs bot with trajectory preview, first-to / kicks selectors.
+- Cup King (#9): toss-to-sink vs bot.
+- Racing (#15): lap race vs bot, pad/keys.
+- Bowling (#8): 10-frame match vs bot, lane + frame scorecards + power meter.
+
+Every game now shares: setup (opponent, difficulty, game-specific options, Scalps entry + pot/3% rake/winner payout, mock notice), results (win/lose/draw + payout + rematch/new setup), a consistent GameTopBar, and global sound/haptic/toast feedback (match_start / win / loss / sink etc.). Engines/bots reused; earlier games (Mini Golf, 8-Ball, Air Hockey) retain their headless match tests (421/5/6 passing).
+
+### Status: 15/15 games rebuilt to the premium bar.
+NOTE (env): repo read-only this session — all committed locally + verified via build/screenshots; deploy via the bundle or after write access.
