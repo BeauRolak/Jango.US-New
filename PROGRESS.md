@@ -691,3 +691,21 @@ Implemented the per-game overhaul spec (docs/game-overhauls/01_Mini_Golf_Overhau
 ### Next game (per master index order): 8-Ball Pool, then Air Hockey (shared physics/bot patterns).
 
 NOTE (env): push still 403, signing server intermittently 503 — committed locally, verified via headless tests + screenshots, not yet on Vercel.
+
+
+## Update 2026-06-23 — Mini Golf Course Variety + Difficulty pass
+
+Kept the V2 system (3/6/9/12 selector, seeded locked order, Easy/Med/Hard bots, Scalps + 3% rake, results, rematch, separate balls, stall-proofing) and upgraded the 12 holes into distinct themed "worlds".
+
+### Done (verified: 421/421 match tests, sink diagnostic ALL SINKABLE, screenshots, 0 console errors)
+- engine.ts: added friction Zones (rectangular, per-hole). Slick zones (>0.985, e.g. ice/space 0.993–0.994) slide far; draggy zones (<0.985, e.g. sand/water/mud 0.962–0.966) stop fast. Deterministic -> bots + tests unaffected. step() applies zone friction by ball position.
+- holes.ts: 12 themed holes — Classic Turf, Neon Arcade, Outer Space (slick), Volcano Run (lava drag), Glacier Slide (ice slick), Jungle Bridge (mud), High Roller (casino split), Cyber Grid (tron gates), Desert Canyon (multi-bank + sand), Sky Temple (island), Coral Deep (water drag), Final Arena (multi-bank + bumpers). Each: theme, accent, par, difficulty, walls (banks/gates/islands/bumpers/bridges), optional zones.
+- MiniGolf.tsx: theme-driven canvas — per-theme background gradient, grid tint, rail color, cup/accent glow, friction-zone patches (dashed), starfield for space/sky. Hole name + theme accent in HUD; results lists hole names.
+- Sink diagnostic (all difficulties x12 seeds/hole): every hole sinkable; e.g. ice/space slide, desert/volcano/water drag. Hard still beats easy over a match (match tests assert win/loss reachable).
+
+### Verified
+- npx tsx match.test.ts -> 421/421. Build green. Screenshots confirm distinct themed worlds (Jungle green w/ mud zone vs Cyber cyan tron grid), 0 console errors.
+
+### Next: 8-Ball Pool (game overhaul #2) per docs/game-overhauls/02_8_Ball_Pool_Overhaul.txt.
+
+NOTE (env): repo access is READ-ONLY this session (git proxy denies git-receive-pack 403; GitHub API integration 403 "Resource not accessible by integration"). Committed locally + verified via tests/screenshots; user deploys via the provided bundle or after granting write access.

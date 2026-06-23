@@ -16,10 +16,16 @@ export const CUP_GRAVITY = 0.55;   // pull toward cup center when near + slow
 export interface Wall { x: number; y: number; w: number; h: number; }
 export interface Vec { x: number; y: number; }
 
+// A rectangular turf zone that overrides friction inside it.
+// >FRICTION (e.g. 0.993) = slick/ice (slides far); <FRICTION (e.g. 0.965) =
+// sand/water/mud (drags to a stop). Deterministic, so bots + tests stay valid.
+export interface Zone { x: number; y: number; w: number; h: number; friction: number; }
+
 export interface Hole {
   tee: Vec;
   cup: Vec;
   walls: Wall[];
+  zones?: Zone[];
   par: number;
 }
 
@@ -87,9 +93,17 @@ export function step(b: BallState, hole: Hole): BallState {
   if (!b.moving || b.sunk) return b;
   let nb = { ...b, pos: { x: b.pos.x + b.vel.x, y: b.pos.y + b.vel.y }, vel: { ...b.vel } };
   nb = reflectWalls(nb, hole.walls);
-  // Friction
-  nb.vel.x *= FRICTION;
-  nb.vel.y *= FRICTION;
+  // Friction (zone-aware: slick/ice slides, sand/water drags)
+  let fr = FRICTION;
+  if (hole.zones) {
+    for (const z of hole.zones) {
+      if (nb.pos.x >= z.x && nb.pos.x <= z.x + z.w && nb.pos.y >= z.y && nb.pos.y <= z.y + z.h) {
+        fr = z.friction; break;
+      }
+    }
+  }
+  nb.vel.x *= fr;
+  nb.vel.y *= fr;
   // Cup interaction
   const toCup = { x: hole.cup.x - nb.pos.x, y: hole.cup.y - nb.pos.y };
   const dCup = Math.hypot(toCup.x, toCup.y);

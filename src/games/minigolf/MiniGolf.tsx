@@ -123,23 +123,45 @@ export default function MiniGolf() {
     const hole = HOLES[s.holeOrder[s.holeIdx]];
     const accent = hole.accent;
 
+    const theme = THEMES[hole.theme] || THEMES.classic;
     ctx.clearRect(0, 0, c.width, c.height);
-    // dark base + tinted felt
+    // themed base gradient
     const g = ctx.createLinearGradient(0, 0, 0, c.height);
-    g.addColorStop(0, '#0a1f15');
-    g.addColorStop(0.5, '#0c2a1c');
-    g.addColorStop(1, '#071610');
+    g.addColorStop(0, theme.bg[0]);
+    g.addColorStop(0.5, theme.bg[1]);
+    g.addColorStop(1, theme.bg[2]);
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, c.width, c.height);
+    // starfield (space / sky)
+    if (theme.stars) {
+      for (let i = 0; i < 70; i++) {
+        const px = ((i * 9301 + 49297) % 233280) / 233280 * c.width;
+        const py = ((i * 49297 + 233) % 233280) / 233280 * c.height;
+        const r = (i % 3 === 0) ? 1.4 : 0.8;
+        ctx.beginPath(); ctx.arc(px, py, r, 0, 6.28);
+        ctx.fillStyle = `rgba(255,255,255,${i % 4 === 0 ? 0.5 : 0.22})`; ctx.fill();
+      }
+    }
     // subtle turf grid
-    ctx.strokeStyle = 'rgba(255,255,255,0.03)';
-    ctx.lineWidth = 1;
+    ctx.strokeStyle = theme.grid; ctx.lineWidth = 1;
     for (let y = 0; y < FIELD.h; y += 28) {
       ctx.beginPath(); ctx.moveTo(0, y * sy); ctx.lineTo(c.width, y * sy); ctx.stroke();
     }
-    // ambient accent glow top
+    // friction zones (ice/sand/water/lava patches)
+    if (hole.zones) {
+      for (const z of hole.zones) {
+        ctx.save();
+        ctx.fillStyle = theme.zone;
+        roundRect(ctx, z.x * sx, z.y * sy, z.w * sx, z.h * sy, 12); ctx.fill();
+        ctx.setLineDash([8, 8]); ctx.lineWidth = 1.5;
+        ctx.strokeStyle = hexA(accent, 0.4);
+        roundRect(ctx, z.x * sx, z.y * sy, z.w * sx, z.h * sy, 12); ctx.stroke();
+        ctx.restore();
+      }
+    }
+    // ambient accent glow at the cup
     const ag = ctx.createRadialGradient(hole.cup.x * sx, hole.cup.y * sy, 0, hole.cup.x * sx, hole.cup.y * sy, 220 * sx);
-    ag.addColorStop(0, hexA(accent, 0.18));
+    ag.addColorStop(0, hexA(accent, 0.2));
     ag.addColorStop(1, hexA(accent, 0));
     ctx.fillStyle = ag;
     ctx.fillRect(0, 0, c.width, c.height);
@@ -150,7 +172,7 @@ export default function MiniGolf() {
       ctx.save();
       ctx.shadowColor = accent;
       ctx.shadowBlur = 14;
-      ctx.fillStyle = '#10261b';
+      ctx.fillStyle = theme.rail;
       roundRect(ctx, x, y, ww, wh, 4); ctx.fill();
       ctx.shadowBlur = 0;
       ctx.lineWidth = 2;
@@ -464,6 +486,21 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
   ctx.arcTo(x, y, x + w, y, rr);
   ctx.closePath();
 }
+type ThemeViz = { bg: [string, string, string]; grid: string; zone: string; rail: string; stars?: boolean };
+const THEMES: Record<string, ThemeViz> = {
+  classic:    { bg: ['#0a1f15', '#0c2a1c', '#071610'], grid: 'rgba(255,255,255,.03)', zone: 'rgba(120,220,150,.10)', rail: '#10301f' },
+  arcade:     { bg: ['#160a2a', '#1c0c38', '#0a0618'], grid: 'rgba(199,125,255,.06)', zone: 'rgba(199,125,255,.12)', rail: '#241338' },
+  space:      { bg: ['#05060f', '#080a1a', '#03040a'], grid: 'rgba(124,155,255,.05)', zone: 'rgba(150,170,255,.07)', rail: '#10152e', stars: true },
+  volcano:    { bg: ['#1a0805', '#280b06', '#0e0503'], grid: 'rgba(255,90,44,.05)',  zone: 'rgba(255,90,30,.16)',  rail: '#2a1108' },
+  ice:        { bg: ['#08233a', '#0a2e4a', '#061824'], grid: 'rgba(150,220,255,.06)', zone: 'rgba(180,235,255,.14)', rail: '#163a55' },
+  jungle:     { bg: ['#08230f', '#0b2e15', '#04140a'], grid: 'rgba(74,222,128,.05)',  zone: 'rgba(60,150,70,.18)',  rail: '#123a1f' },
+  casino:     { bg: ['#1c0710', '#280a15', '#0e0408'], grid: 'rgba(255,206,92,.05)',  zone: 'rgba(255,206,92,.10)', rail: '#2a1015' },
+  cyber:      { bg: ['#040a14', '#06121f', '#02060c'], grid: 'rgba(25,224,255,.08)',  zone: 'rgba(25,224,255,.10)', rail: '#0a2233' },
+  desert:     { bg: ['#1c1408', '#28210c', '#0e0a04'], grid: 'rgba(230,162,60,.06)',  zone: 'rgba(230,180,90,.16)', rail: '#2a2010' },
+  sky:        { bg: ['#0a1f3a', '#123058', '#081624'], grid: 'rgba(142,197,255,.06)', zone: 'rgba(142,197,255,.10)', rail: '#16315a' },
+  underwater: { bg: ['#031f2e', '#06303f', '#02141c'], grid: 'rgba(45,212,191,.06)',  zone: 'rgba(45,160,190,.16)', rail: '#0a3040' },
+  final:      { bg: ['#140617', '#1e0a24', '#0a040c'], grid: 'rgba(255,61,110,.06)',  zone: 'rgba(255,61,110,.12)', rail: '#241024' },
+};
 function hexA(hex: string, a: number): string {
   const h = hex.replace('#', '');
   const n = h.length === 3 ? h.split('').map((c) => c + c).join('') : h;
