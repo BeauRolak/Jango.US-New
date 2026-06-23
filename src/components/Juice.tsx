@@ -127,6 +127,10 @@ const EVENT_FEEDBACK: Record<string, { sound: string; haptic: string }> = {
   save: { sound: "success", haptic: "success" },
   rank_up: { sound: "rank_up", haptic: "rank_up" },
   notification: { sound: "notification", haptic: "light" },
+  match_start: { sound: "tournament_join", haptic: "medium" },
+  match_win: { sound: "rank_up", haptic: "reward" },
+  match_loss: { sound: "error", haptic: "error" },
+  training_complete: { sound: "reward_claim", haptic: "reward" },
 };
 
 export function feedback(kind: string = "tap", el?: HTMLElement | null) {
@@ -145,6 +149,10 @@ const TOAST_TYPE_FOR_KIND: Record<string, "success" | "error" | "info" | "reward
   reward: "reward",
   rank_up: "reward",
   tournament_join: "success",
+  match_start: "success",
+  match_win: "reward",
+  match_loss: "error",
+  training_complete: "reward",
   error: "error",
   notification: "info",
   tap: "info",

@@ -1,0 +1,85 @@
+JANGO.US GAME OVERHAUL FILE - DOTS & BOXES
+
+CLAUDE / AI DEV DIRECTIVE
+This file is for one game only. Do not try to fix the entire platform from this file. Use it as the game-specific rebuild/overhaul spec for Jango.US. The goal is to make this game feel premium, alive, fair, reactive, visually strong, and playable from start to finish.
+
+Jango.US product standard:
+- Dark near-black competitive arena UI.
+- Blue/purple neon identity with each game having its own accent color.
+- Scalps economy shown in UI where relevant.
+- 3% platform rake shown in match/tournament economics where relevant.
+- No real payment movement unless explicitly approved later. UI can show mock/gated economy states.
+- No emoji primary icons. Use real icons, custom SVG, or original poster art.
+- Every action should feel responsive through motion, sound, haptics, and toast feedback.
+- Mobile must feel intentionally designed, not squeezed desktop.
+
+GAME MISSION
+Turn Dots & Boxes into a clean tactical board duel with satisfying line drawing, box capture feedback, smart bots, and reliable extra-turn logic.
+
+VISUAL / ART / LIFE OVERHAUL
+- Create a neon grid board with glowing dots, animated line drawing, captured boxes filling with player color, and combo capture effects.
+- Add hover previews for lines and a soft pulse around risky/available moves in training mode.
+- Captured boxes should pop and glow with player initials/icon.
+- Background should feel like an electric strategy board.
+- Lobby art should show a glowing grid with boxes being claimed.
+
+CORE GAMEPLAY / MECHANICS OVERHAUL
+- Support configurable board sizes: 3x3 boxes for quick, 4x4 standard, 5x5 advanced later.
+- Legal action: choose an undrawn edge only.
+- If a move completes one or more boxes, player scores those boxes and gets another turn.
+- If no box is completed, turn passes.
+- Match ends when all edges are drawn; higher boxes captured wins.
+- Use moveId and claimedBoxIds to prevent duplicate scoring.
+
+MATCH SETUP / SCALPS / ECONOMY UI
+- Entry modal: board size, bot difficulty, entry Scalps, pot, 3% rake, payout.
+- Show estimated match length per board size.
+
+BOT SYSTEM - EASY / MEDIUM / HARD
+- Easy bot: random safe-ish edges, misses captures sometimes.
+- Medium bot: takes available boxes, avoids obvious third-side traps.
+- Hard bot: understands chains, sacrifices, double-cross strategy, and endgame control.
+- Bot must respect extra-turn rules and cannot loop beyond legal extra turns.
+
+WIN / LOSS / REWARD ANIMATIONS
+- Box capture animation with pop/haptic.
+- Combo capture animation if multiple boxes are claimed in one move.
+- Match end: board fills, winner boxes glow, payout panel.
+
+SHARED GAME ARCHITECTURE RULES
+Every game should plug into the same reliable match framework:
+MATCH_SETUP -> MATCH_START -> ROUND_START -> PLAYER_ACTION -> ACTION_RESOLVED -> SCORE_LOCKED -> NEXT_TURN_OR_ROUND -> MATCH_END -> RESULTS_SCREEN
+
+Hard rules:
+- UI cannot directly mutate score.
+- Scoreboard only displays confirmed state.
+- Bots take one valid action per turn, then stop.
+- No bot can loop forever or spam actions.
+- No game can stall after a bot turn.
+- No game resets state unless it is a legal new round, restart, out-of-bounds, foul reset, or match reset.
+- Every match must reach a winner/results screen.
+- Every player action must create a unique actionId/shotId/moveId so duplicate scoring cannot happen.
+- Every important action should trigger the global feedback system: visual effect + toast + sound + haptic if enabled.
+
+IMPLEMENTATION ORDER
+1. Create DotsBoxesEngine for edges, boxes, legal moves, and extra-turn logic.
+2. Create bot strategy as separate module.
+3. Test extra turns thoroughly.
+4. Add board scaling for mobile.
+
+ACCEPTANCE TESTS
+- Game loads without console errors.
+- Human vs bot match starts correctly.
+- Easy, Medium, and Hard bots all complete full matches.
+- Score updates only from confirmed actions.
+- Score does not duplicate, loop, or climb by itself.
+- Game progresses after bot action.
+- Winner/result screen appears at match end.
+- Restart returns to a clean match state.
+- Mobile controls are touch-friendly and do not overflow.
+- All major actions trigger sound/haptic/toast feedback through the global system.
+- No primary emoji icons are used.
+- Vercel build is green and PROGRESS.md is updated.
+
+FINAL NOTE TO CLAUDE
+Do not call this game complete until it is playable, visually alive, mobile-friendly, and reaches a clean winner screen. If a choice exists between more polish and more reliability, build reliability first, then add art/motion. The final result should feel like a premium Jango.US game, not a placeholder.

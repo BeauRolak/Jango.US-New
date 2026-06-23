@@ -1,0 +1,90 @@
+JANGO.US GAME OVERHAUL FILE - 8-BALL POOL
+
+CLAUDE / AI DEV DIRECTIVE
+This file is for one game only. Do not try to fix the entire platform from this file. Use it as the game-specific rebuild/overhaul spec for Jango.US. The goal is to make this game feel premium, alive, fair, reactive, visually strong, and playable from start to finish.
+
+Jango.US product standard:
+- Dark near-black competitive arena UI.
+- Blue/purple neon identity with each game having its own accent color.
+- Scalps economy shown in UI where relevant.
+- 3% platform rake shown in match/tournament economics where relevant.
+- No real payment movement unless explicitly approved later. UI can show mock/gated economy states.
+- No emoji primary icons. Use real icons, custom SVG, or original poster art.
+- Every action should feel responsive through motion, sound, haptics, and toast feedback.
+- Mobile must feel intentionally designed, not squeezed desktop.
+
+GAME MISSION
+Turn 8-Ball into a polished skill-based pool game with believable ball physics, legal rules, cue control, bot strategy, premium pool-hall visuals, and clean match progression.
+
+VISUAL / ART / LIFE OVERHAUL
+- Use a luxury neon pool hall theme: dark room, overhead table light, green felt texture, glossy rails, pockets with depth, ball highlights/shadows, and smoky purple-blue ambience.
+- Make the table feel physical with perspective, felt grain, subtle rail reflections, and ball cast shadows.
+- Cue aim line should be premium: dashed ghost line, soft glow, power meter, spin indicator, and predicted first collision helper for beginner mode.
+- Add rack-break animation, pocket glow when ball drops, cue strike sound/haptic, and victory table-light sweep.
+- Build poster art and lobby card that looks like a real competitive pool table, not billiard-ball icons.
+
+CORE GAMEPLAY / MECHANICS OVERHAUL
+- Use 2D rigid-body billiards physics: ball-ball collision, ball-wall rebound, pocket capture, friction, spin placeholder, and rest detection.
+- Implement legal 8-ball rules: break, assign solids/stripes after first legal pocket, fouls, scratch, ball-in-hand, 8-ball win/loss logic.
+- Cue control: aim drag, power pullback, optional fine-aim control, mobile touch aiming, and clear shot confirmation.
+- Prevent double scoring by tracking pocketEventId and shotId.
+- A shot ends only when all balls fully stop or a foul/illegal state is resolved.
+- After shot resolution, rules engine decides next player, ball-in-hand, win/loss, or continuation.
+- Scorecard should show solids/stripes, remaining balls, fouls, turn owner, and 8-ball status.
+
+MATCH SETUP / SCALPS / ECONOMY UI
+- Entry modal shows 1v1 match, bot difficulty, entry in Scalps, total pot, 3% rake, winner payout, and mock economy notice.
+- Offer match types: quick rack, race to 2, race to 3 later.
+- Allow training mode with aim assist and no wager.
+
+BOT SYSTEM - EASY / MEDIUM / HARD
+- Easy bot: chooses visible makeable shots with aim error and weaker position play.
+- Medium bot: evaluates pocket angles, avoids obvious scratches, plans one shot ahead.
+- Hard bot: evaluates multiple candidate shots, cue-ball position, defensive shots, 8-ball safety, and foul risk.
+- Bot must wait until all balls stop before next decision.
+- Bot must obey the same legal rules as human players.
+- Bot cannot pocket/score balls by state mutation; all results come from physics pocket events.
+
+WIN / LOSS / REWARD ANIMATIONS
+- Win animation: 8-ball drops in slow glow, table lights sweep, winner card pops, payout breakdown shown.
+- Foul/loss animation: clear but not harsh, show rule explanation.
+- Big shot feedback: combo shot, bank shot, break pocket, 8-ball finish.
+
+SHARED GAME ARCHITECTURE RULES
+Every game should plug into the same reliable match framework:
+MATCH_SETUP -> MATCH_START -> ROUND_START -> PLAYER_ACTION -> ACTION_RESOLVED -> SCORE_LOCKED -> NEXT_TURN_OR_ROUND -> MATCH_END -> RESULTS_SCREEN
+
+Hard rules:
+- UI cannot directly mutate score.
+- Scoreboard only displays confirmed state.
+- Bots take one valid action per turn, then stop.
+- No bot can loop forever or spam actions.
+- No game can stall after a bot turn.
+- No game resets state unless it is a legal new round, restart, out-of-bounds, foul reset, or match reset.
+- Every match must reach a winner/results screen.
+- Every player action must create a unique actionId/shotId/moveId so duplicate scoring cannot happen.
+- Every important action should trigger the global feedback system: visual effect + toast + sound + haptic if enabled.
+
+IMPLEMENTATION ORDER
+1. Create poolRulesEngine.ts separate from poolPhysicsEngine.ts.
+2. Create shot lifecycle: aiming -> struck -> ballsMoving -> resolving -> scoreLocked -> nextTurn.
+3. Implement pocket events and foul detection before bot improvements.
+4. Add bot strategy only after legal rules are stable.
+5. Add mobile cue UI and training assist toggles.
+
+ACCEPTANCE TESTS
+- Game loads without console errors.
+- Human vs bot match starts correctly.
+- Easy, Medium, and Hard bots all complete full matches.
+- Score updates only from confirmed actions.
+- Score does not duplicate, loop, or climb by itself.
+- Game progresses after bot action.
+- Winner/result screen appears at match end.
+- Restart returns to a clean match state.
+- Mobile controls are touch-friendly and do not overflow.
+- All major actions trigger sound/haptic/toast feedback through the global system.
+- No primary emoji icons are used.
+- Vercel build is green and PROGRESS.md is updated.
+
+FINAL NOTE TO CLAUDE
+Do not call this game complete until it is playable, visually alive, mobile-friendly, and reaches a clean winner screen. If a choice exists between more polish and more reliability, build reliability first, then add art/motion. The final result should feel like a premium Jango.US game, not a placeholder.

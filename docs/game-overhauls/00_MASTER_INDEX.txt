@@ -1,0 +1,27 @@
+JANGO.US INDIVIDUAL GAME OVERHAUL FILES - MASTER INDEX
+
+This package contains one individual overhaul file per game. Use one file at a time with Claude/AI Developer. Do not feed all files at once unless you want a broad audit. Recommended order:
+
+1. Mini Golf
+2. 8-Ball Pool
+3. Air Hockey
+4. Chess
+5. Connect Four
+6. Rock Paper Scissors
+7. Dots & Boxes
+8. Bowling
+9. Cup King
+10. Stack Tower
+11. Block Blast
+12. Tron
+13. Basketball
+14. Football
+15. Racing
+
+Recommended development order:
+1. Mini Golf first because it has the most urgent mechanics and match structure needs.
+2. Air Hockey and 8-Ball because they share important physics/bot requirements.
+3. Connect Four, Chess, Dots & Boxes, and Rock Paper Scissors because their rules are easiest to stabilize.
+4. Bowling, Tron, Stack Tower, Block Blast, Cup King, Basketball, Football, and Racing.
+
+Every game must pass its own acceptance tests before moving on.

@@ -663,3 +663,31 @@ Kicking off the "Massive Life/Art/UI-UX/Gameplay Overhaul" brief. Implementation
 7. Full motion/sound/haptics pass, then mobile QA, then final visual QA.
 
 NOTE (env): push to origin is currently blocked (HTTP 403) and the commit-signing server is intermittently 503 — work is committed locally and verified via headless-Chromium screenshots; not yet deployed to Vercel this session.
+
+
+## Update 2026-06-23 — Mini Golf V2 (game overhaul #1)
+
+Implemented the per-game overhaul spec (docs/game-overhauls/01_Mini_Golf_Overhaul.txt). Saved all 15 game overhaul specs to docs/game-overhauls/.
+
+### Done (built + verified: 421/421 headless match tests, screenshots, 0 console errors)
+- src/games/minigolf/holes.ts — 12-hole library (HoleDef: id, name, par, difficulty, accent + tee/cup/walls). Distinct layouts: Straight Starter, Bank Shot Bend, Narrow Bridge, Bumper Garden, Split Path, Slope Drop, The Gate, Spiral Curve, Island Hole, Rotator, Multi-Bank Challenge, Final Arena. Diagnostic confirms every hole is sinkable and skill-graded (hard < medium < easy strokes).
+- src/games/minigolf/match.ts — upgraded the pure state machine:
+  - holeOrder support: createMatch(difficulty, holeOrder?) maps holeIdx -> HOLES[holeOrder[holeIdx]]; default = all holes (keeps tests valid).
+  - makeHoleOrder(count, seed): seeded (mulberry32) shuffle picks N unique holes; locked for the match.
+  - SEPARATE BALL PER PLAYER (balls:[BallState,BallState]) — fixes a real bug where a single shared ball let the 2nd shooter inherit the 1st's progress (bot was beating a stronger human). Spec-mandated player/bot ball separation.
+  - MAX_STROKES_PER_HOLE=16 concede safeguard so a match can never stall.
+  - rematch preserves the locked hole order.
+- src/games/minigolf/match.test.ts — updated human policy to active-ball/holeOrder; 421 assertions pass (no soft-lock across all difficulty pairings + seeds, all holes complete, scorecard sums, win+loss reachable, rematch resets, hole sinkable regression).
+- src/games/minigolf/MiniGolf.tsx — full rewrite driving the pure machine:
+  - Setup screen: opponent (Bot; Player/Tournament shown "soon"), bot difficulty (Easy/Medium/Hard w/ descriptions), match length 3/6/9/12, Scalps entry (Free/5/10/25/50) with live pot / 3% rake / winner payout / est. length / mock notice.
+  - Play screen: neon canvas (per-hole accent rails w/ glow, glowing cup+flag, ball trail, opponent ghost ball, drag aim line + power meter), HUD "Hole X of N · name · Par", live scoreboard, turn indicator, banners, touch (pointer) input.
+  - Results screen: winner + totals, hole-by-hole scorecard, Scalps payout + 3% rake, rematch (same course) / new setup.
+  - Global feedback: match_start/win/loss + sink chime via useFeedback.
+- src/components/Juice.tsx — added match_start / match_win / match_loss / training_complete to the shared feedback + toast maps.
+
+### Verified
+- 421/421 headless match tests (npx tsx match.test.ts). Build green (tsc + vite). Setup + gameplay screenshots correct, 0 console errors. Results screen is logic-covered by tests + compiles; playable to completion in the interactive preview.
+
+### Next game (per master index order): 8-Ball Pool, then Air Hockey (shared physics/bot patterns).
+
+NOTE (env): push still 403, signing server intermittently 503 — committed locally, verified via headless tests + screenshots, not yet on Vercel.

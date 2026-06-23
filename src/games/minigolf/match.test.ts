@@ -44,7 +44,7 @@ function withSeed<T>(seed: number, fn: () => T): T {
 
 // A human policy that aims like a competent bot of the given difficulty.
 function humanShot(s: MatchState, diff: Difficulty): void {
-  const sh = botShot(s.ball, HOLES[s.holeIdx], diff);
+  const sh = botShot(s.balls[s.turn], HOLES[s.holeOrder[s.holeIdx]], diff);
   shoot(s, sh.dragX, sh.dragY);
 }
 

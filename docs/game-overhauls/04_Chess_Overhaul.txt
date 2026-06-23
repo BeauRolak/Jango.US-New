@@ -1,0 +1,88 @@
+JANGO.US GAME OVERHAUL FILE - CHESS
+
+CLAUDE / AI DEV DIRECTIVE
+This file is for one game only. Do not try to fix the entire platform from this file. Use it as the game-specific rebuild/overhaul spec for Jango.US. The goal is to make this game feel premium, alive, fair, reactive, visually strong, and playable from start to finish.
+
+Jango.US product standard:
+- Dark near-black competitive arena UI.
+- Blue/purple neon identity with each game having its own accent color.
+- Scalps economy shown in UI where relevant.
+- 3% platform rake shown in match/tournament economics where relevant.
+- No real payment movement unless explicitly approved later. UI can show mock/gated economy states.
+- No emoji primary icons. Use real icons, custom SVG, or original poster art.
+- Every action should feel responsive through motion, sound, haptics, and toast feedback.
+- Mobile must feel intentionally designed, not squeezed desktop.
+
+GAME MISSION
+Make Chess feel like a premium competitive board arena with reliable legal moves, bot levels, polished move feedback, ranking presentation, and dramatic checkmate/win states.
+
+VISUAL / ART / LIFE OVERHAUL
+- Dark luxury chess arena with a glass board, glowing legal squares, blue-purple edge lighting, dramatic spotlight, and premium piece silhouettes.
+- Board should feel tactile: selected piece lift, legal move dots, capture glow, check warning pulse, last-move highlight.
+- Use clean, readable pieces and strong contrast on mobile.
+- Add cinematic checkmate sequence: king shadow, board pulse, winner banner.
+- Lobby art should feel like a high-stakes chess table, not a generic chess icon.
+
+CORE GAMEPLAY / MECHANICS OVERHAUL
+- Use a reliable chess rules engine or implement complete legal rules: legal moves, check, checkmate, stalemate, castling, en passant, promotion, draw conditions.
+- Never allow illegal moves from UI or bot.
+- Move lifecycle: select piece -> legal target -> move confirmed -> board state updated -> result checked -> next turn.
+- Add timers optionally: quick mode, blitz mode later.
+- Promotion modal must be mobile-friendly and impossible to skip incorrectly.
+- PGN/move history should be generated for match history.
+
+MATCH SETUP / SCALPS / ECONOMY UI
+- Entry modal: match mode, timer if used, bot difficulty, entry Scalps, pot, 3% rake, winner payout.
+- No random board variants unless intentionally added later.
+- Allow practice bot matches with no entry.
+
+BOT SYSTEM - EASY / MEDIUM / HARD
+- Easy bot: low-depth/random legal moves with basic capture preference.
+- Medium bot: minimax 1-2 ply with material evaluation, avoids obvious blunders.
+- Hard bot: deeper search or integrated engine-like heuristic, considers check threats, captures, king safety, and mate opportunities.
+- Bot must never move during human turn or make illegal moves.
+- Bot thinking state should animate and then commit one move.
+
+WIN / LOSS / REWARD ANIMATIONS
+- Checkmate animation: losing king glows/cracks, board spotlight, winner badge, rank/XP bar animation.
+- Stalemate/draw screen clear with refund/split rules if applicable.
+- Brilliant move or check feedback can be subtle, not spammy.
+
+SHARED GAME ARCHITECTURE RULES
+Every game should plug into the same reliable match framework:
+MATCH_SETUP -> MATCH_START -> ROUND_START -> PLAYER_ACTION -> ACTION_RESOLVED -> SCORE_LOCKED -> NEXT_TURN_OR_ROUND -> MATCH_END -> RESULTS_SCREEN
+
+Hard rules:
+- UI cannot directly mutate score.
+- Scoreboard only displays confirmed state.
+- Bots take one valid action per turn, then stop.
+- No bot can loop forever or spam actions.
+- No game can stall after a bot turn.
+- No game resets state unless it is a legal new round, restart, out-of-bounds, foul reset, or match reset.
+- Every match must reach a winner/results screen.
+- Every player action must create a unique actionId/shotId/moveId so duplicate scoring cannot happen.
+- Every important action should trigger the global feedback system: visual effect + toast + sound + haptic if enabled.
+
+IMPLEMENTATION ORDER
+1. Use or build ChessEngine.ts with full legal validation.
+2. Separate board UI from rules engine.
+3. Build bot after rules engine tests pass.
+4. Add move history and result detection.
+5. Add mobile drag/tap controls.
+
+ACCEPTANCE TESTS
+- Game loads without console errors.
+- Human vs bot match starts correctly.
+- Easy, Medium, and Hard bots all complete full matches.
+- Score updates only from confirmed actions.
+- Score does not duplicate, loop, or climb by itself.
+- Game progresses after bot action.
+- Winner/result screen appears at match end.
+- Restart returns to a clean match state.
+- Mobile controls are touch-friendly and do not overflow.
+- All major actions trigger sound/haptic/toast feedback through the global system.
+- No primary emoji icons are used.
+- Vercel build is green and PROGRESS.md is updated.
+
+FINAL NOTE TO CLAUDE
+Do not call this game complete until it is playable, visually alive, mobile-friendly, and reaches a clean winner screen. If a choice exists between more polish and more reliability, build reliability first, then add art/motion. The final result should feel like a premium Jango.US game, not a placeholder.

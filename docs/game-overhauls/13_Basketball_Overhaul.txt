@@ -1,0 +1,84 @@
+JANGO.US GAME OVERHAUL FILE - BASKETBALL
+
+CLAUDE / AI DEV DIRECTIVE
+This file is for one game only. Do not try to fix the entire platform from this file. Use it as the game-specific rebuild/overhaul spec for Jango.US. The goal is to make this game feel premium, alive, fair, reactive, visually strong, and playable from start to finish.
+
+Jango.US product standard:
+- Dark near-black competitive arena UI.
+- Blue/purple neon identity with each game having its own accent color.
+- Scalps economy shown in UI where relevant.
+- 3% platform rake shown in match/tournament economics where relevant.
+- No real payment movement unless explicitly approved later. UI can show mock/gated economy states.
+- No emoji primary icons. Use real icons, custom SVG, or original poster art.
+- Every action should feel responsive through motion, sound, haptics, and toast feedback.
+- Mobile must feel intentionally designed, not squeezed desktop.
+
+GAME MISSION
+Define Basketball as a polished skill-shot duel with aim/timing controls, arena visuals, bot scoring, and satisfying shot animations.
+
+VISUAL / ART / LIFE OVERHAUL
+- Neon half-court arena with hoop, glass backboard, stadium lights, court reflections, ball arc trail, and crowd glow.
+- Shot should show arc prediction, ball spin, rim/backboard bounce, and net swish animation.
+- Perfect shot should trigger green glow/swish burst.
+- Lobby art should show a ball arcing into a glowing hoop under arena lights.
+
+CORE GAMEPLAY / MECHANICS OVERHAUL
+- Choose clear V1 mode: timed shooting duel or alternating shot challenge.
+- Recommended V1: alternating 10-shot challenge from randomized spots; highest score wins.
+- Each shot has aim, power, and timing window.
+- Shot spots vary in point value: close 1, mid 2, deep 3, bonus money ball later.
+- Both players/bots receive same shot sequence from matchSeed for fairness.
+- Score only updates after shot result: made/missed/bonus.
+
+MATCH SETUP / SCALPS / ECONOMY UI
+- Entry modal: 5/10/15 shot challenge, bot difficulty, entry Scalps, pot, 3% rake, payout.
+- Show shot sequence fairness note.
+
+BOT SYSTEM - EASY / MEDIUM / HARD
+- Easy bot: low timing accuracy, misses many deep shots.
+- Medium bot: solid mid-range, inconsistent deep shots.
+- Hard bot: strong timing and power control, but still has miss chance.
+- Bot uses same shot spots and scoring rules as human.
+
+WIN / LOSS / REWARD ANIMATIONS
+- Made shot: swish glow, score pop.
+- Perfect shot: larger glow and sound/haptic.
+- Match win: scoreboard lights, winner celebration, payout panel.
+
+SHARED GAME ARCHITECTURE RULES
+Every game should plug into the same reliable match framework:
+MATCH_SETUP -> MATCH_START -> ROUND_START -> PLAYER_ACTION -> ACTION_RESOLVED -> SCORE_LOCKED -> NEXT_TURN_OR_ROUND -> MATCH_END -> RESULTS_SCREEN
+
+Hard rules:
+- UI cannot directly mutate score.
+- Scoreboard only displays confirmed state.
+- Bots take one valid action per turn, then stop.
+- No bot can loop forever or spam actions.
+- No game can stall after a bot turn.
+- No game resets state unless it is a legal new round, restart, out-of-bounds, foul reset, or match reset.
+- Every match must reach a winner/results screen.
+- Every player action must create a unique actionId/shotId/moveId so duplicate scoring cannot happen.
+- Every important action should trigger the global feedback system: visual effect + toast + sound + haptic if enabled.
+
+IMPLEMENTATION ORDER
+1. Create BasketballEngine with shot sequence, physics/result resolver, score.
+2. Create mobile aim/power/timing controls.
+3. Add bot accuracy models.
+4. Add training for controls.
+
+ACCEPTANCE TESTS
+- Game loads without console errors.
+- Human vs bot match starts correctly.
+- Easy, Medium, and Hard bots all complete full matches.
+- Score updates only from confirmed actions.
+- Score does not duplicate, loop, or climb by itself.
+- Game progresses after bot action.
+- Winner/result screen appears at match end.
+- Restart returns to a clean match state.
+- Mobile controls are touch-friendly and do not overflow.
+- All major actions trigger sound/haptic/toast feedback through the global system.
+- No primary emoji icons are used.
+- Vercel build is green and PROGRESS.md is updated.
+
+FINAL NOTE TO CLAUDE
+Do not call this game complete until it is playable, visually alive, mobile-friendly, and reaches a clean winner screen. If a choice exists between more polish and more reliability, build reliability first, then add art/motion. The final result should feel like a premium Jango.US game, not a placeholder.

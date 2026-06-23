@@ -1,0 +1,85 @@
+JANGO.US GAME OVERHAUL FILE - TRON
+
+CLAUDE / AI DEV DIRECTIVE
+This file is for one game only. Do not try to fix the entire platform from this file. Use it as the game-specific rebuild/overhaul spec for Jango.US. The goal is to make this game feel premium, alive, fair, reactive, visually strong, and playable from start to finish.
+
+Jango.US product standard:
+- Dark near-black competitive arena UI.
+- Blue/purple neon identity with each game having its own accent color.
+- Scalps economy shown in UI where relevant.
+- 3% platform rake shown in match/tournament economics where relevant.
+- No real payment movement unless explicitly approved later. UI can show mock/gated economy states.
+- No emoji primary icons. Use real icons, custom SVG, or original poster art.
+- Every action should feel responsive through motion, sound, haptics, and toast feedback.
+- Mobile must feel intentionally designed, not squeezed desktop.
+
+GAME MISSION
+Make Tron an embedded, fast, neon light-cycle arena with reliable collision, bots, round progression, and cinematic grid visuals instead of opening externally or feeling unfinished.
+
+VISUAL / ART / LIFE OVERHAUL
+- Deep cyber grid arena with perspective lines, glowing walls, light-cycle trails, blue/purple/cyan motion blur, and arena fog.
+- Player trails should feel electric and leave persistent glowing walls.
+- Collisions should trigger a bright pulse/explosion and camera/screen shake.
+- Round start countdown should feel like an arcade duel.
+- Lobby art should be one of the most dynamic posters on the platform.
+
+CORE GAMEPLAY / MECHANICS OVERHAUL
+- Embed Tron fully inside Jango.US; no external window.
+- Controls: WASD/arrows desktop, swipe/virtual controls mobile.
+- Player moves continuously on a grid or smooth arena, leaving trail walls.
+- Collision with walls/trails/opponent ends round.
+- Round-based match: first to 3/5/7 or best of rounds.
+- Use deterministic tick loop to keep movement consistent.
+
+MATCH SETUP / SCALPS / ECONOMY UI
+- Entry modal: first to 3/5/7, bot difficulty, entry Scalps, pot, 3% rake, payout.
+- Show controls before match starts.
+
+BOT SYSTEM - EASY / MEDIUM / HARD
+- Easy bot: basic turning, poor trap avoidance.
+- Medium bot: avoids nearby walls, tries simple encircling.
+- Hard bot: pathfinding, space control, trap setup, but not impossible.
+- Bot chooses directions at tick intervals and never teleports.
+
+WIN / LOSS / REWARD ANIMATIONS
+- Crash animation: trail burst, arena ripple, round winner flash.
+- Match win: grid collapses into winner color, payout panel slides in.
+- Flawless victory animation if player wins all rounds.
+
+SHARED GAME ARCHITECTURE RULES
+Every game should plug into the same reliable match framework:
+MATCH_SETUP -> MATCH_START -> ROUND_START -> PLAYER_ACTION -> ACTION_RESOLVED -> SCORE_LOCKED -> NEXT_TURN_OR_ROUND -> MATCH_END -> RESULTS_SCREEN
+
+Hard rules:
+- UI cannot directly mutate score.
+- Scoreboard only displays confirmed state.
+- Bots take one valid action per turn, then stop.
+- No bot can loop forever or spam actions.
+- No game can stall after a bot turn.
+- No game resets state unless it is a legal new round, restart, out-of-bounds, foul reset, or match reset.
+- Every match must reach a winner/results screen.
+- Every player action must create a unique actionId/shotId/moveId so duplicate scoring cannot happen.
+- Every important action should trigger the global feedback system: visual effect + toast + sound + haptic if enabled.
+
+IMPLEMENTATION ORDER
+1. Create TronEngine with tick loop, trail map, collision detection, and round state.
+2. Create embedded canvas/SVG renderer.
+3. Add bot pathfinding after collision works.
+4. Test mobile controls carefully.
+
+ACCEPTANCE TESTS
+- Game loads without console errors.
+- Human vs bot match starts correctly.
+- Easy, Medium, and Hard bots all complete full matches.
+- Score updates only from confirmed actions.
+- Score does not duplicate, loop, or climb by itself.
+- Game progresses after bot action.
+- Winner/result screen appears at match end.
+- Restart returns to a clean match state.
+- Mobile controls are touch-friendly and do not overflow.
+- All major actions trigger sound/haptic/toast feedback through the global system.
+- No primary emoji icons are used.
+- Vercel build is green and PROGRESS.md is updated.
+
+FINAL NOTE TO CLAUDE
+Do not call this game complete until it is playable, visually alive, mobile-friendly, and reaches a clean winner screen. If a choice exists between more polish and more reliability, build reliability first, then add art/motion. The final result should feel like a premium Jango.US game, not a placeholder.

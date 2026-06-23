@@ -1,0 +1,99 @@
+JANGO.US GAME OVERHAUL FILE - MINI GOLF
+
+CLAUDE / AI DEV DIRECTIVE
+This file is for one game only. Do not try to fix the entire platform from this file. Use it as the game-specific rebuild/overhaul spec for Jango.US. The goal is to make this game feel premium, alive, fair, reactive, visually strong, and playable from start to finish.
+
+Jango.US product standard:
+- Dark near-black competitive arena UI.
+- Blue/purple neon identity with each game having its own accent color.
+- Scalps economy shown in UI where relevant.
+- 3% platform rake shown in match/tournament economics where relevant.
+- No real payment movement unless explicitly approved later. UI can show mock/gated economy states.
+- No emoji primary icons. Use real icons, custom SVG, or original poster art.
+- Every action should feel responsive through motion, sound, haptics, and toast feedback.
+- Mobile must feel intentionally designed, not squeezed desktop.
+
+GAME MISSION
+Rebuild Mini Golf into a premium Jango.US flagship game with smooth ball physics, cinematic neon course art, 12 unique holes, selectable match length, fair scoring, working bots, and satisfying win animations.
+
+VISUAL / ART / LIFE OVERHAUL
+- Create a neon mini-golf arena visual language: dark arcade course, glowing rails, turf texture, light bloom, subtle particle dust, and ball trail effects.
+- Build 12 visually distinct holes with their own themes, layouts, obstacles, colors, and background poster art.
+- Use low-angle or 2.5D perspective where possible so holes feel like real courses, not flat diagrams.
+- Animate course entry: hole number appears, camera/panel glides in, rails glow, cup pulses once, then controls unlock.
+- Add ball trail, collision sparks on rail hits, cup-drop animation, and victory confetti/glow.
+- Create poster cards for the 12-hole collection so players can preview the hole library before a match.
+
+CORE GAMEPLAY / MECHANICS OVERHAUL
+- Create a library of exactly 12 Mini Golf holes in data, each with id, name, par, difficulty, theme, tee position, cup position, walls, rails, obstacles, slopes, hazards, and out-of-bounds zones.
+- Before wager/bot match, let the player choose match length: 3 holes, 6 holes, 9 holes, or 12 holes.
+- After the player confirms match length and entry, generate a random hole order from the 12-hole pool using a matchSeed.
+- Lock the random hole order for the entire match so both players/bot use the exact same hole sequence.
+- Do not re-randomize holes mid-match, on refresh, or after bot turns.
+- Each hole uses strokes scoring. Lowest total strokes after selected holes wins.
+- Tie handling: sudden-death random hole from the 12-hole library or closest-to-pin tiebreaker, but define one consistent rule and show it before entry.
+- Ball physics should be one authoritative controller: aim, initial velocity, friction, rail bounce, obstacle collision, slope force, cup capture, stopped/holed/out-of-bounds states.
+- Cup capture should depend on distance and speed: slow close ball drops; fast ball can lip out or roll over.
+- Out-of-bounds returns to last legal shot or tee with one stroke penalty, clearly animated and explained.
+- Hole-in-one locks immediately as 1 stroke and cannot be erased by bot turns, UI refreshes, or scorecard updates.
+
+MATCH SETUP / SCALPS / ECONOMY UI
+- Match setup modal shows: game, opponent type, match length 3/6/9/12 holes, entry in Scalps, total pot, 3% rake, projected winner payout, and mock/gated notice.
+- Bot setup supports the same 3/6/9/12-hole selector.
+- Tournament setup can use fixed hole count or bracket-configured hole count.
+- Show selected hole count clearly on scorecard and progress tracker: Hole 2 of 6, etc.
+
+BOT SYSTEM - EASY / MEDIUM / HARD
+- Easy bot: approximate aim, lower power control, occasional wall misreads, but still completes every hole.
+- Medium bot: uses path sampling, basic wall-bounce reasoning, decent speed control, occasional mistakes.
+- Hard bot: simulates multiple candidate shots, considers rail bounces and cup speed, favors safe two-putt strategies over impossible shots.
+- Bot must use the same ball physics as the player.
+- Bot must take one shot, wait for ball stop/holed/out-of-bounds, lock score, then pass turn.
+- Bot cannot reset the human ball or overwrite human hole state.
+
+WIN / LOSS / REWARD ANIMATIONS
+- Hole win animation: winner tag, stroke comparison, glow sweep across scorecard.
+- Match win animation: neon cup trophy, course lights flash, Scalps payout breakdown appears, player rank/XP bar animates.
+- Hole-in-one animation: slow-motion ball drop, cup glow, sound/haptic reward, badge pop.
+- Comeback win animation if player wins after trailing.
+
+SHARED GAME ARCHITECTURE RULES
+Every game should plug into the same reliable match framework:
+MATCH_SETUP -> MATCH_START -> ROUND_START -> PLAYER_ACTION -> ACTION_RESOLVED -> SCORE_LOCKED -> NEXT_TURN_OR_ROUND -> MATCH_END -> RESULTS_SCREEN
+
+Hard rules:
+- UI cannot directly mutate score.
+- Scoreboard only displays confirmed state.
+- Bots take one valid action per turn, then stop.
+- No bot can loop forever or spam actions.
+- No game can stall after a bot turn.
+- No game resets state unless it is a legal new round, restart, out-of-bounds, foul reset, or match reset.
+- Every match must reach a winner/results screen.
+- Every player action must create a unique actionId/shotId/moveId so duplicate scoring cannot happen.
+- Every important action should trigger the global feedback system: visual effect + toast + sound + haptic if enabled.
+
+IMPLEMENTATION ORDER
+1. Create miniGolfHoles.ts with 12 hole definitions.
+2. Create matchLength selector in Mini Golf entry modal.
+3. Create seeded random hole selection: select N unique holes from 12 based on matchSeed.
+4. Refactor Mini Golf state to separate match, hole, playerBallState, botBallState, scorecard, and result events.
+5. Build ball physics controller and test it independently before hooking into match flow.
+6. Build bots after physics works.
+7. Build scorecard and win animations last.
+
+ACCEPTANCE TESTS
+- Game loads without console errors.
+- Human vs bot match starts correctly.
+- Easy, Medium, and Hard bots all complete full matches.
+- Score updates only from confirmed actions.
+- Score does not duplicate, loop, or climb by itself.
+- Game progresses after bot action.
+- Winner/result screen appears at match end.
+- Restart returns to a clean match state.
+- Mobile controls are touch-friendly and do not overflow.
+- All major actions trigger sound/haptic/toast feedback through the global system.
+- No primary emoji icons are used.
+- Vercel build is green and PROGRESS.md is updated.
+
+FINAL NOTE TO CLAUDE
+Do not call this game complete until it is playable, visually alive, mobile-friendly, and reaches a clean winner screen. If a choice exists between more polish and more reliability, build reliability first, then add art/motion. The final result should feel like a premium Jango.US game, not a placeholder.

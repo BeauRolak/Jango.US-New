@@ -1,0 +1,84 @@
+JANGO.US GAME OVERHAUL FILE - ROCK PAPER SCISSORS
+
+CLAUDE / AI DEV DIRECTIVE
+This file is for one game only. Do not try to fix the entire platform from this file. Use it as the game-specific rebuild/overhaul spec for Jango.US. The goal is to make this game feel premium, alive, fair, reactive, visually strong, and playable from start to finish.
+
+Jango.US product standard:
+- Dark near-black competitive arena UI.
+- Blue/purple neon identity with each game having its own accent color.
+- Scalps economy shown in UI where relevant.
+- 3% platform rake shown in match/tournament economics where relevant.
+- No real payment movement unless explicitly approved later. UI can show mock/gated economy states.
+- No emoji primary icons. Use real icons, custom SVG, or original poster art.
+- Every action should feel responsive through motion, sound, haptics, and toast feedback.
+- Mobile must feel intentionally designed, not squeezed desktop.
+
+GAME MISSION
+Make Rock Paper Scissors feel like a fast, stylish arena duel with mind-game presentation, round streaks, animated reveals, and clean match economics.
+
+VISUAL / ART / LIFE OVERHAUL
+- Use a versus arena presentation: two player panels, animated choice cards, neon countdown, reveal burst, and winner pulse.
+- Replace emoji hands with custom SVG/illustrated hand symbols or branded icons.
+- Add streak meter, mind-game stats, and cinematic round reveal.
+- Background reacts to chosen symbols: rock impact, paper sweep, scissors slash as subtle effects.
+- Lobby art should feel like a duel poster, not three emoji icons.
+
+CORE GAMEPLAY / MECHANICS OVERHAUL
+- Match format should be best of 3, 5, or 7 selectable before entry.
+- Each round: choose -> lock -> opponent locks -> reveal -> resolve -> score -> next round.
+- Choices must be hidden until both sides lock.
+- No duplicate score from reveal animations; use roundId.
+- Add streak tracking and history to make it feel strategic.
+
+MATCH SETUP / SCALPS / ECONOMY UI
+- Entry modal: best of 3/5/7, entry Scalps, pot, 3% rake, payout.
+- Bot setup: difficulty selector and visible odds/mind-game message.
+
+BOT SYSTEM - EASY / MEDIUM / HARD
+- Easy bot: mostly random with slight patterns.
+- Medium bot: uses weighted strategy and adapts to last few player choices.
+- Hard bot: pattern analysis, counter-prediction, but still with randomness so it is not impossible.
+- Bot choice is locked once per round and not changed after seeing player choice.
+
+WIN / LOSS / REWARD ANIMATIONS
+- Round win: symbol impact animation.
+- Match win: victory streak flare, payout panel, rematch CTA.
+- Perfect sweep animation if player wins without losing a round.
+
+SHARED GAME ARCHITECTURE RULES
+Every game should plug into the same reliable match framework:
+MATCH_SETUP -> MATCH_START -> ROUND_START -> PLAYER_ACTION -> ACTION_RESOLVED -> SCORE_LOCKED -> NEXT_TURN_OR_ROUND -> MATCH_END -> RESULTS_SCREEN
+
+Hard rules:
+- UI cannot directly mutate score.
+- Scoreboard only displays confirmed state.
+- Bots take one valid action per turn, then stop.
+- No bot can loop forever or spam actions.
+- No game can stall after a bot turn.
+- No game resets state unless it is a legal new round, restart, out-of-bounds, foul reset, or match reset.
+- Every match must reach a winner/results screen.
+- Every player action must create a unique actionId/shotId/moveId so duplicate scoring cannot happen.
+- Every important action should trigger the global feedback system: visual effect + toast + sound + haptic if enabled.
+
+IMPLEMENTATION ORDER
+1. Create RpsEngine with hidden choice lock and round resolution.
+2. Create BotStrategy with seeded randomness and pattern reading.
+3. Add reveal animation and score lock.
+4. Add best-of match wrapper.
+
+ACCEPTANCE TESTS
+- Game loads without console errors.
+- Human vs bot match starts correctly.
+- Easy, Medium, and Hard bots all complete full matches.
+- Score updates only from confirmed actions.
+- Score does not duplicate, loop, or climb by itself.
+- Game progresses after bot action.
+- Winner/result screen appears at match end.
+- Restart returns to a clean match state.
+- Mobile controls are touch-friendly and do not overflow.
+- All major actions trigger sound/haptic/toast feedback through the global system.
+- No primary emoji icons are used.
+- Vercel build is green and PROGRESS.md is updated.
+
+FINAL NOTE TO CLAUDE
+Do not call this game complete until it is playable, visually alive, mobile-friendly, and reaches a clean winner screen. If a choice exists between more polish and more reliability, build reliability first, then add art/motion. The final result should feel like a premium Jango.US game, not a placeholder.

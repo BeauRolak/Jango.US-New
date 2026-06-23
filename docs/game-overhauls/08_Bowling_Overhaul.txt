@@ -1,0 +1,85 @@
+JANGO.US GAME OVERHAUL FILE - BOWLING
+
+CLAUDE / AI DEV DIRECTIVE
+This file is for one game only. Do not try to fix the entire platform from this file. Use it as the game-specific rebuild/overhaul spec for Jango.US. The goal is to make this game feel premium, alive, fair, reactive, visually strong, and playable from start to finish.
+
+Jango.US product standard:
+- Dark near-black competitive arena UI.
+- Blue/purple neon identity with each game having its own accent color.
+- Scalps economy shown in UI where relevant.
+- 3% platform rake shown in match/tournament economics where relevant.
+- No real payment movement unless explicitly approved later. UI can show mock/gated economy states.
+- No emoji primary icons. Use real icons, custom SVG, or original poster art.
+- Every action should feel responsive through motion, sound, haptics, and toast feedback.
+- Mobile must feel intentionally designed, not squeezed desktop.
+
+GAME MISSION
+Build Bowling into a polished lane-based skill game with aim/power/spin controls, pin physics, correct frame scoring, bots, and cinematic strike/spare animations.
+
+VISUAL / ART / LIFE OVERHAUL
+- Create neon bowling alley scene with lane perspective, glossy wood, gutters, pins under spotlight, ball reflection, and animated lane arrows.
+- Ball roll should have motion blur/trail and pin collision sparks/confetti.
+- Strike animation should feel huge: lane lights flash, pins explode outward, STRIKE banner with sound/haptic.
+- Spare animation should be distinct but smaller.
+- Lobby art should show a bowling ball racing down a neon lane.
+
+CORE GAMEPLAY / MECHANICS OVERHAUL
+- Controls: aim angle, power meter, optional spin/curve input.
+- Ball physics: lane friction, spin curve placeholder, pin collision, gutter detection.
+- Implement correct 10-frame bowling scoring including strikes, spares, tenth-frame extra rolls.
+- Support quick match variants: 3-frame, 5-frame, full 10-frame.
+- Score only updates after pin state is final and frame rules are applied.
+- No pin can be counted twice; track pinfallEventId.
+
+MATCH SETUP / SCALPS / ECONOMY UI
+- Entry modal: 3/5/10 frame selector, bot difficulty, entry Scalps, pot, 3% rake, payout.
+- Show expected match length and scoring format.
+
+BOT SYSTEM - EASY / MEDIUM / HARD
+- Easy bot: inconsistent aim/power, many partial pinfalls.
+- Medium bot: aims for pocket, decent spare conversion.
+- Hard bot: strong pocket targeting, spin adjustments, better spare strategy.
+- Bot rolls use same physics and scoring rules as human.
+
+WIN / LOSS / REWARD ANIMATIONS
+- Strike: huge neon wordmark, pin burst, lane flash.
+- Spare: clean sweep animation.
+- Match win: final scorecard, best frame highlight, payout panel.
+
+SHARED GAME ARCHITECTURE RULES
+Every game should plug into the same reliable match framework:
+MATCH_SETUP -> MATCH_START -> ROUND_START -> PLAYER_ACTION -> ACTION_RESOLVED -> SCORE_LOCKED -> NEXT_TURN_OR_ROUND -> MATCH_END -> RESULTS_SCREEN
+
+Hard rules:
+- UI cannot directly mutate score.
+- Scoreboard only displays confirmed state.
+- Bots take one valid action per turn, then stop.
+- No bot can loop forever or spam actions.
+- No game can stall after a bot turn.
+- No game resets state unless it is a legal new round, restart, out-of-bounds, foul reset, or match reset.
+- Every match must reach a winner/results screen.
+- Every player action must create a unique actionId/shotId/moveId so duplicate scoring cannot happen.
+- Every important action should trigger the global feedback system: visual effect + toast + sound + haptic if enabled.
+
+IMPLEMENTATION ORDER
+1. Create BowlingScoringEngine separate from physics.
+2. Create frame lifecycle and pin state resolver.
+3. Build quick modes before full tournament mode.
+4. Add mobile aim/power controls.
+
+ACCEPTANCE TESTS
+- Game loads without console errors.
+- Human vs bot match starts correctly.
+- Easy, Medium, and Hard bots all complete full matches.
+- Score updates only from confirmed actions.
+- Score does not duplicate, loop, or climb by itself.
+- Game progresses after bot action.
+- Winner/result screen appears at match end.
+- Restart returns to a clean match state.
+- Mobile controls are touch-friendly and do not overflow.
+- All major actions trigger sound/haptic/toast feedback through the global system.
+- No primary emoji icons are used.
+- Vercel build is green and PROGRESS.md is updated.
+
+FINAL NOTE TO CLAUDE
+Do not call this game complete until it is playable, visually alive, mobile-friendly, and reaches a clean winner screen. If a choice exists between more polish and more reliability, build reliability first, then add art/motion. The final result should feel like a premium Jango.US game, not a placeholder.
