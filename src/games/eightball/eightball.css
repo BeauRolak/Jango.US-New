@@ -44,13 +44,21 @@
 .eb2-hud__turn { font-size: 12.5px; font-weight: 800; padding: 7px 12px; border-radius: 999px; white-space: nowrap; }
 .eb2-hud__turn.you { color: #7fe0b0; background: rgba(25,169,116,.16); border: 1px solid rgba(25,169,116,.4); }
 .eb2-hud__turn.bot { color: #c79bff; background: rgba(170,90,255,.14); border: 1px solid rgba(170,90,255,.35); }
-.eb2-scoreboard { display: flex; gap: 10px; }
-.eb2-pl { flex: 1; display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 12px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); font-weight: 700; font-size: 13.5px; transition: all .2s; }
-.eb2-pl.active { border-color: rgba(25,169,116,.5); box-shadow: 0 0 0 1px rgba(25,169,116,.3) inset; }
-.eb2-pl b { margin-left: auto; font-weight: 800; color: #cfe9da; font-size: 13px; }
-.eb2-pl__dot { width: 9px; height: 9px; border-radius: 50%; }
-.eb2-pl__dot.you { background: #19a974; box-shadow: 0 0 8px #19a974; }
-.eb2-pl__dot.bot { background: #a855f7; box-shadow: 0 0 8px #a855f7; }
+.eb2-players { display: flex; align-items: center; gap: 10px; }
+.eb2-card { flex: 1; display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02)); border: 1px solid rgba(255,255,255,.09); transition: all .25s; }
+.eb2-card--bot { justify-content: flex-end; }
+.eb2-card.active { border-color: rgba(25,169,116,.6); box-shadow: 0 0 0 1px rgba(25,169,116,.4) inset, 0 8px 26px -12px rgba(25,169,116,.7); }
+.eb2-card--bot.active { border-color: rgba(168,85,247,.6); box-shadow: 0 0 0 1px rgba(168,85,247,.4) inset, 0 8px 26px -12px rgba(168,85,247,.7); }
+.eb2-av { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; flex: none;
+  font-family: var(--font-head, 'Space Grotesk'); font-weight: 800; font-size: 15px; color: #fff; }
+.eb2-av.you { background: linear-gradient(135deg, #19a974, #5be0a8); box-shadow: 0 0 0 2px rgba(25,169,116,.4); }
+.eb2-av.bot { background: linear-gradient(135deg, #a855f7, #ec4899); box-shadow: 0 0 0 2px rgba(168,85,247,.4); }
+.eb2-card__meta { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.eb2-card__meta--r { text-align: right; }
+.eb2-card__name { font-weight: 800; font-size: 14px; }
+.eb2-card__grp { font-size: 11.5px; color: #9aa3c7; text-transform: capitalize; }
+.eb2-vs { font-family: var(--font-head, 'Space Grotesk'); font-weight: 800; font-size: 13px; color: #6b7398; flex: none; }
 
 /* STAGE */
 .eb2-stage { position: relative; }

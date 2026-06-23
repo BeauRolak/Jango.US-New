@@ -727,3 +727,19 @@ Implemented docs/game-overhauls/02_8_Ball_Pool_Overhaul.txt.
 ### Next game (master index): Air Hockey (#3).
 
 NOTE (env): repo read-only this session — committed locally + verified; deploy via provided bundle / after write access.
+
+
+## Update 2026-06-23 — 8-Ball visual pass (reference-inspired premium table)
+
+Applied the user's 4 reference images (Miniclip-style) as art direction, rendered in Jango dark/neon.
+
+### Done (build green, 0 console errors, screenshots verified)
+- EightBall.tsx draw(): premium pool-hall table — purple wooden rail frame w/ neon edge + sight diamonds, teal felt with overhead light pool + head string/spot, segmented cushions with pocket-mouth cutaways, deep leather pockets, glossy balls (shadow/number/stripe/highlight).
+- Aim assist (Miniclip-style): rendered CUE STICK that pulls back with power, dashed aim line to first contact, GHOST cue-ball at contact, target-direction line off the object ball, one-bounce dashed line off cushions (predictAim ray-march). Power meter on the rail.
+- Player cards (corner avatars You vs Bot + group + balls-left) with active-turn glow ring; "VS" divider.
+- eightball.css: player cards + premium styling.
+
+### Verified
+Build green; screenshots show premium table, cue stick + aim/ghost/bounce guide, power meter, player cards; 0 console errors. Rules/physics unchanged (still 5/5 match tests).
+
+### Next game: Air Hockey (#3).

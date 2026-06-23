@@ -88,59 +88,99 @@ export default function EightBall() {
     const cv = canvasRef.current; if (!cv) return;
     const ctx = cv.getContext('2d'); if (!ctx) return;
     const { w, h, cushion } = TABLE;
-    // room backdrop
-    ctx.fillStyle = '#0a0d12'; ctx.fillRect(0, 0, w, h);
-    // rail / frame
-    ctx.fillStyle = '#3a2414';
-    roundRect(ctx, 2, 2, w - 4, h - 4, 18); ctx.fill();
-    ctx.fillStyle = '#23150b';
-    roundRect(ctx, cushion - 8, cushion - 8, w - (cushion - 8) * 2, h - (cushion - 8) * 2, 12); ctx.fill();
-    // felt
-    const felt = ctx.createRadialGradient(w / 2, h / 2, 40, w / 2, h / 2, w * 0.7);
-    felt.addColorStop(0, '#117a48');
-    felt.addColorStop(1, '#0a5733');
-    ctx.fillStyle = felt;
-    roundRect(ctx, cushion, cushion, w - cushion * 2, h - cushion * 2, 6); ctx.fill();
-    // overhead light sheen
-    const sheen = ctx.createLinearGradient(0, cushion, 0, h - cushion);
-    sheen.addColorStop(0, 'rgba(255,255,255,0.07)');
-    sheen.addColorStop(0.4, 'rgba(255,255,255,0)');
-    ctx.fillStyle = sheen; ctx.fillRect(cushion, cushion, w - cushion * 2, h - cushion * 2);
+    const px = cushion, py = cushion, pw = w - cushion * 2, ph = h - cushion * 2; // play area
+
+    // room backdrop (dark, neon-tinted)
+    const room = ctx.createRadialGradient(w / 2, h / 2, 60, w / 2, h / 2, w * 0.75);
+    room.addColorStop(0, '#0c1018'); room.addColorStop(1, '#05070c');
+    ctx.fillStyle = room; ctx.fillRect(0, 0, w, h);
+
+    // wooden rail frame
+    const wood = ctx.createLinearGradient(0, 0, 0, h);
+    wood.addColorStop(0, '#2a1a3a'); wood.addColorStop(0.5, '#1c1230'); wood.addColorStop(1, '#150d24');
+    ctx.fillStyle = wood; roundRect(ctx, 1, 1, w - 2, h - 2, 20); ctx.fill();
+    // neon rail edge
+    ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(80,150,255,0.35)'; roundRect(ctx, 3, 3, w - 6, h - 6, 18); ctx.stroke();
+
+    // sight diamonds on the rail
+    ctx.fillStyle = 'rgba(180,210,255,0.65)';
+    const diamond = (cx: number, cy: number) => { ctx.save(); ctx.translate(cx, cy); ctx.rotate(Math.PI / 4); ctx.fillRect(-2.6, -2.6, 5.2, 5.2); ctx.restore(); };
+    for (const f of [0.25, 0.375, 0.625, 0.75]) { diamond(px + pw * f, cushion / 2); diamond(px + pw * f, h - cushion / 2); }
+    for (const f of [0.33, 0.66]) { diamond(cushion / 2, py + ph * f); diamond(w - cushion / 2, py + ph * f); }
+
+    // felt with radial sheen
+    const felt = ctx.createRadialGradient(w / 2, h * 0.42, 40, w / 2, h / 2, w * 0.62);
+    felt.addColorStop(0, '#10866a'); felt.addColorStop(0.7, '#0a5f4a'); felt.addColorStop(1, '#073f31');
+    ctx.fillStyle = felt; roundRect(ctx, px, py, pw, ph, 6); ctx.fill();
+    // overhead light pool
+    const lamp = ctx.createRadialGradient(w / 2, h * 0.4, 30, w / 2, h * 0.5, w * 0.5);
+    lamp.addColorStop(0, 'rgba(190,255,235,0.16)'); lamp.addColorStop(0.5, 'rgba(120,200,255,0.04)'); lamp.addColorStop(1, 'rgba(0,0,0,0.28)');
+    ctx.save(); roundRect(ctx, px, py, pw, ph, 6); ctx.clip(); ctx.fillStyle = lamp; ctx.fillRect(px, py, pw, ph);
     // head string + spot
-    ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(w * 0.25, cushion); ctx.lineTo(w * 0.25, h - cushion); ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,255,255,0.07)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(w * 0.25, py); ctx.lineTo(w * 0.25, py + ph); ctx.stroke();
+    ctx.beginPath(); ctx.arc(w * 0.25, h / 2, 2, 0, 6.28); ctx.fillStyle = 'rgba(255,255,255,0.12)'; ctx.fill();
+    ctx.restore();
 
-    // pockets
+    // cushions (segmented, angled cutaways near pockets)
+    const cu = '#0b5a44'; const cuTop = 'rgba(180,255,230,0.18)';
+    const cbar = (x: number, y: number, ww: number, hh: number) => {
+      ctx.fillStyle = cu; roundRect(ctx, x, y, ww, hh, 4); ctx.fill();
+      ctx.fillStyle = cuTop; roundRect(ctx, x, y, ww, Math.max(2, hh * 0.32), 4); ctx.fill();
+    };
+    const mouth = 30;
+    // top & bottom (split at side pocket)
+    cbar(px + mouth, py - 0, w / 2 - px - mouth - 14, 7);
+    cbar(w / 2 + 14, py - 0, w / 2 - px - mouth - 14, 7);
+    cbar(px + mouth, h - cushion - 7, w / 2 - px - mouth - 14, 7);
+    cbar(w / 2 + 14, h - cushion - 7, w / 2 - px - mouth - 14, 7);
+    // left & right
+    cbar(px - 0, py + mouth, 7, ph - mouth * 2);
+    cbar(w - cushion - 7, py + mouth, 7, ph - mouth * 2);
+
+    // pockets (well + rim)
     for (const p of pockets()) {
-      ctx.beginPath(); ctx.arc(p.x, p.y, 20, 0, Math.PI * 2);
-      ctx.fillStyle = '#05070a'; ctx.fill();
-      ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(0,0,0,0.6)'; ctx.stroke();
+      const cx = Math.max(px - 2, Math.min(w - px + 2, p.x));
+      const cy = Math.max(py - 2, Math.min(h - py + 2, p.y));
+      ctx.beginPath(); ctx.arc(cx, cy, 21, 0, 6.28); ctx.fillStyle = '#04060a'; ctx.fill();
+      ctx.lineWidth = 3.5; ctx.strokeStyle = 'rgba(20,30,45,0.9)'; ctx.beginPath(); ctx.arc(cx, cy, 21, 0, 6.28); ctx.stroke();
     }
 
-    // balls
-    for (const b of s.balls) {
-      if (b.potted) continue;
-      drawBall(ctx, b);
-    }
-
-    // aim guide (human, aiming)
+    // aim guide + cue stick (human aiming)
     const cue = s.balls.find((bb) => bb.id === 0);
     if (aimingRef.current && cue && !cue.potted && canHumanShoot(s)) {
       const a = aimRef.current;
-      const len = 60 + a.power * 220;
-      const ex = cue.x + Math.cos(a.angle) * len;
-      const ey = cue.y + Math.sin(a.angle) * len;
-      ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.lineWidth = 2; ctx.setLineDash([8, 8]);
-      ctx.beginPath(); ctx.moveTo(cue.x, cue.y); ctx.lineTo(ex, ey); ctx.stroke();
-      ctx.setLineDash([]);
-      // ghost target
-      ctx.beginPath(); ctx.arc(ex, ey, BALL_R, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 1.5; ctx.stroke();
+      const ux = Math.cos(a.angle), uy = Math.sin(a.angle);
+      const pred = predictAim(s.balls, cue, a.angle);
+      // primary line to contact
+      ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.lineWidth = 2; ctx.setLineDash([9, 7]);
+      ctx.beginPath(); ctx.moveTo(cue.x, cue.y); ctx.lineTo(pred.cx, pred.cy); ctx.stroke(); ctx.setLineDash([]);
+      // ghost cue ball at contact
+      ctx.beginPath(); ctx.arc(pred.cx, pred.cy, BALL_R, 0, 6.28); ctx.strokeStyle = 'rgba(255,255,255,0.55)'; ctx.lineWidth = 1.5; ctx.stroke();
+      if (pred.type === 'ball' && pred.target) {
+        // direction the object ball would travel
+        const tdx = pred.target.x - pred.cx, tdy = pred.target.y - pred.cy; const tm = Math.hypot(tdx, tdy) || 1;
+        ctx.strokeStyle = 'rgba(120,220,160,0.85)'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(pred.target.x, pred.target.y); ctx.lineTo(pred.target.x + (tdx / tm) * 70, pred.target.y + (tdy / tm) * 70); ctx.stroke();
+      } else if (pred.type === 'wall') {
+        ctx.strokeStyle = 'rgba(120,180,255,0.55)'; ctx.lineWidth = 1.5; ctx.setLineDash([6, 8]);
+        ctx.beginPath(); ctx.moveTo(pred.cx, pred.cy); ctx.lineTo(pred.ex!, pred.ey!); ctx.stroke(); ctx.setLineDash([]);
+      }
+      // cue stick (pulls back with power)
+      const back = BALL_R + 8 + a.power * 52;
+      const tipX = cue.x - ux * back, tipY = cue.y - uy * back;
+      const buttX = tipX - ux * 250, buttY = tipY - uy * 250;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = '#caa066'; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(tipX, tipY); ctx.lineTo((tipX + buttX) / 2, (tipY + buttY) / 2); ctx.stroke();
+      ctx.strokeStyle = '#2c1c10'; ctx.beginPath(); ctx.moveTo((tipX + buttX) / 2, (tipY + buttY) / 2); ctx.lineTo(buttX, buttY); ctx.stroke();
+      ctx.strokeStyle = '#eef'; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(tipX, tipY); ctx.lineTo(tipX - ux * 5, tipY - uy * 5); ctx.stroke();
+      ctx.lineCap = 'butt';
       // power meter
-      ctx.fillStyle = 'rgba(0,0,0,0.45)'; roundRect(ctx, cushion, h - cushion + 4, w - cushion * 2, 10, 5); ctx.fill();
-      ctx.fillStyle = `rgba(255,${Math.round(220 - a.power * 170)},70,0.95)`;
-      roundRect(ctx, cushion + 1, h - cushion + 5, (w - cushion * 2 - 2) * a.power, 8, 4); ctx.fill();
+      ctx.fillStyle = 'rgba(0,0,0,0.5)'; roundRect(ctx, px, h - cushion + 4, pw, 9, 5); ctx.fill();
+      ctx.fillStyle = `rgba(255,${Math.round(220 - a.power * 170)},70,0.95)`; roundRect(ctx, px + 1, h - cushion + 5, (pw - 2) * a.power, 7, 4); ctx.fill();
     }
+
+    // balls
+    for (const b of s.balls) { if (!b.potted) drawBall(ctx, b); }
   }, []);
 
   // ---------- input ----------
@@ -271,14 +311,21 @@ export default function EightBall() {
         <div className="eb2-hud__title">8-Ball Pool</div>
         <span className={'eb2-hud__turn' + (s.turn === 0 ? ' you' : ' bot')}>{s.turn === 0 ? 'Your shot' : 'Bot shooting…'}</span>
       </div>
-      <div className="eb2-scoreboard">
-        <div className={'eb2-pl' + (s.turn === 0 ? ' active' : '')}>
-          <span className="eb2-pl__dot you" /> You
-          <b>{yourGroup ? `${yourGroup}s · ${left(yourGroup)} left` : 'open'}</b>
+      <div className="eb2-players">
+        <div className={'eb2-card' + (s.turn === 0 ? ' active' : '')}>
+          <span className="eb2-av you">B</span>
+          <div className="eb2-card__meta">
+            <span className="eb2-card__name">You</span>
+            <span className="eb2-card__grp">{yourGroup ? `${yourGroup}s · ${left(yourGroup)} left` : 'Open table'}</span>
+          </div>
         </div>
-        <div className={'eb2-pl' + (s.turn === 1 ? ' active' : '')}>
-          <span className="eb2-pl__dot bot" /> Bot
-          <b>{botGroup ? `${botGroup}s · ${left(botGroup)} left` : 'open'}</b>
+        <div className="eb2-vs">VS</div>
+        <div className={'eb2-card eb2-card--bot' + (s.turn === 1 ? ' active' : '')}>
+          <div className="eb2-card__meta eb2-card__meta--r">
+            <span className="eb2-card__name">Bot</span>
+            <span className="eb2-card__grp">{botGroup ? `${botGroup}s · ${left(botGroup)} left` : 'Open table'}</span>
+          </div>
+          <span className="eb2-av bot">AI</span>
         </div>
       </div>
       <div className="eb2-stage">
@@ -297,6 +344,31 @@ export default function EightBall() {
       <p className="eb2-hint"><Icon name="Target" /> Drag back from the cue ball to aim &amp; set power, release to shoot</p>
     </div>
   );
+}
+
+type AimPred = { type: 'ball' | 'wall' | 'end'; cx: number; cy: number; target?: Ball; ex?: number; ey?: number };
+// March the aim ray until it meets an object ball or a cushion; report contact
+// so we can draw a ghost ball + target/bounce guide (Miniclip-style assist).
+function predictAim(balls: Ball[], cue: Ball, angle: number): AimPred {
+  const { w, h, cushion } = TABLE;
+  const minX = cushion + BALL_R, maxX = w - cushion - BALL_R, minY = cushion + BALL_R, maxY = h - cushion - BALL_R;
+  const dx = Math.cos(angle), dy = Math.sin(angle);
+  const others = balls.filter((b) => !b.potted && b.id !== 0);
+  let x = cue.x, y = cue.y;
+  for (let d = 0; d < 1500; d += 3) {
+    x += dx * 3; y += dy * 3;
+    for (const b of others) {
+      if (Math.hypot(b.x - x, b.y - y) <= BALL_R * 2) return { type: 'ball', cx: x, cy: y, target: b };
+    }
+    if (x < minX || x > maxX || y < minY || y > maxY) {
+      let rdx = dx, rdy = dy;
+      if (x < minX || x > maxX) rdx = -dx;
+      if (y < minY || y > maxY) rdy = -dy;
+      const bx = Math.max(minX, Math.min(maxX, x)), by = Math.max(minY, Math.min(maxY, y));
+      return { type: 'wall', cx: bx, cy: by, ex: bx + rdx * 130, ey: by + rdy * 130 };
+    }
+  }
+  return { type: 'end', cx: x, cy: y };
 }
 
 function groupOf(id: number): Group | null {
