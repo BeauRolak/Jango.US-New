@@ -1,62 +1,11 @@
-.rc-wrap {
-  min-height: 100vh;
-  background: radial-gradient(circle at 50% 0%, #1a0808 0%, #0a0404 70%);
-  color: #ffe0e0;
-  display: flex; flex-direction: column; align-items: center;
-  padding: 16px; font-family: 'Inter', system-ui, sans-serif;
-}
-.rc-head {
-  width: 100%; max-width: 480px;
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  margin-bottom: 8px;
-}
-.rc-back { color: #ff8a8a; text-decoration: none; font-size: 14px; font-weight: 600; white-space: nowrap; }
-.rc-back:hover { color: #ffb0b0; }
-.rc-title {
-  font-size: 22px; font-weight: 800; margin: 0;
-  background: linear-gradient(90deg, #ff5c5c, #ffd34d);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-}
-.rc-diff { display: flex; gap: 6px; }
-.rc-diff-btn {
-  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,120,120,0.25);
-  color: #ffc0c0; border-radius: 999px; padding: 5px 12px; font-size: 12px;
-  text-transform: capitalize; cursor: pointer; transition: all 0.15s ease;
-}
-.rc-diff-btn:hover { border-color: #ff5c5c; }
-.rc-diff-btn.active {
-  background: linear-gradient(90deg, #ff5c5c, #ffd34d); color: #1a0808;
-  border-color: transparent; font-weight: 700;
-}
-.rc-hud { font-size: 18px; font-weight: 800; color: #ffd34d; margin: 4px 0 10px; }
-.rc-stage-wrap {
-  position: relative; width: 100%; max-width: 380px; aspect-ratio: 480 / 640;
-  border-radius: 14px; overflow: hidden;
-  box-shadow: 0 0 0 2px rgba(255,120,120,0.2), 0 20px 60px rgba(0,0,0,0.6);
-}
-.rc-canvas { display: block; width: 100%; height: 100%; background: #0c3b1a; }
-.rc-overlay {
-  position: absolute; inset: 0; background: rgba(10,4,4,0.82); backdrop-filter: blur(6px);
-  display: flex; align-items: center; justify-content: center;
-}
-.rc-card { text-align: center; display: flex; flex-direction: column; gap: 14px; padding: 28px; }
-.rc-result {
-  font-size: 30px; font-weight: 900;
-  background: linear-gradient(90deg, #ff5c5c, #ffd34d);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-}
-.rc-play { background: linear-gradient(90deg, #ff5c5c, #ffd34d); color: #1a0808; border: none; border-radius: 12px; padding: 12px 28px; font-size: 16px; font-weight: 800; cursor: pointer; }
-.rc-play:hover { filter: brightness(1.08); }
-.rc-leave { color: #ff8a8a; text-decoration: none; font-size: 14px; }
-.rc-leave:hover { color: #ffb0b0; }
-.rc-controls { margin-top: 14px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-.rc-pad-row { display: flex; gap: 8px; }
-.rc-pad {
-  width: 60px; height: 50px;
-  background: rgba(255,120,120,0.1); border: 1px solid rgba(255,120,120,0.35);
-  color: #ffb0b0; border-radius: 10px; font-size: 18px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center; touch-action: none; user-select: none;
-}
-.rc-pad:active { background: rgba(255,120,120,0.3); }
-.rc-hint { margin-top: 12px; max-width: 380px; text-align: center; font-size: 12px; color: #c08a8a; line-height: 1.5; }
-@media (max-width: 480px) { .rc-title { font-size: 18px; } .rc-pad { width: 52px; height: 44px; } }
+/* RACING — premium (.rc2-) */
+.rc2-wrap { max-width: 520px; margin: 0 auto; padding: 16px 14px 30px; display: flex; flex-direction: column; gap: 12px; color: #eef1ff; }
+.rc2-stage { display: flex; justify-content: center; }
+.rc2-canvas { width: 100%; max-width: 420px; height: auto; display: block; border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--acc) 30%, transparent); box-shadow: 0 24px 60px -28px rgba(0,0,0,.9), 0 0 50px -30px color-mix(in srgb, var(--acc) 70%, transparent); }
+.rc2-controls { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.rc2-pad-row { display: flex; gap: 8px; }
+.rc2-pad { width: 64px; height: 50px; border-radius: 12px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.14); color: var(--acc); font-size: 18px; cursor: pointer; user-select: none; touch-action: none; }
+.rc2-pad:hover { background: color-mix(in srgb, var(--acc) 16%, transparent); border-color: var(--acc); }
+.rc2-pad:active { transform: scale(.95); }
+.rc2-hint { text-align: center; font-size: 12.5px; color: #8b93b8; margin: 0; }
