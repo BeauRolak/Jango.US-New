@@ -709,3 +709,21 @@ Kept the V2 system (3/6/9/12 selector, seeded locked order, Easy/Med/Hard bots, 
 ### Next: 8-Ball Pool (game overhaul #2) per docs/game-overhauls/02_8_Ball_Pool_Overhaul.txt.
 
 NOTE (env): repo access is READ-ONLY this session (git proxy denies git-receive-pack 403; GitHub API integration 403 "Resource not accessible by integration"). Committed locally + verified via tests/screenshots; user deploys via the provided bundle or after granting write access.
+
+
+## Update 2026-06-23 — 8-Ball Pool rebuild (game overhaul #2)
+
+Implemented docs/game-overhauls/02_8_Ball_Pool_Overhaul.txt.
+
+### Done (verified: 5/5 headless match tests, screenshots, 0 console errors, build green)
+- engine.ts: FIXED a fundamental bug — cushions were solid across the whole edge so balls could NEVER reach a pocket (closest approach ~49px vs 22px capture). Added pocket-mouth GAPS (corners + side pockets) so balls roll in, plus an escape-catch so a ball can't leave the table. (This also fixes the old 8-ball.)
+- match.ts: replaced the blind ghost-ball bot with a SIMULATION bot (runs candidate target x pocket shots through the physics, scores by legal pots, penalizes scratch/illegal-8). Difficulty tiers (easy/medium/hard via search window + aim/power error) plumbed through createMatch/rematch/state. Existing rules (group assignment, scratch + ball-in-hand, 8-ball win/loss, stall guards) retained.
+- EightBall.tsx: full rewrite on the pure match machine. Setup screen (Bot opponent, difficulty, Scalps entry + pot/3% rake/winner payout, mock notice). Premium pool-hall canvas (wood rails, felt sheen, 6 deep pockets, balls with shadow/number/stripe/highlight, dashed aim line + ghost target + power meter). HUD (group + balls left, turn, banner). Results (winner, payout breakdown, rematch/new setup). Drag-back-to-aim touch input. Global feedback (match_start/win/loss, pocket chime, cue strike).
+- eightball.css: rewritten (.eb2-) — setup, HUD, premium table, banner, results.
+
+### Verified
+- 5/5 headless 8-ball match tests (games finish naturally under the cap, groups assigned, winner by rules — previously stalled because nothing could be potted). Build green. Screenshots: premium rack + live break scatter, 0 console errors.
+
+### Next game (master index): Air Hockey (#3).
+
+NOTE (env): repo read-only this session — committed locally + verified; deploy via provided bundle / after write access.

@@ -1,21 +1,82 @@
-.eb-wrap { max-width: 860px; margin: 0 auto; padding: 16px; position: relative; }
-.eb-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
-.eb-back { color: #8fa3c8; text-decoration: none; font-size: 14px; }
-.eb-back:hover { color: #fff; }
-.eb-title { font-size: 22px; font-weight: 800; margin: 0; background: linear-gradient(90deg,#f4c430,#1f8a4c); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.eb-diff { margin-left: auto; display: flex; gap: 6px; }
-.eb-diff-btn { text-transform: capitalize; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); color: #b9c6e0; border-radius: 8px; padding: 6px 12px; font-size: 13px; cursor: pointer; }
-.eb-diff-btn.active { background: linear-gradient(90deg,#f4c430,#1f8a4c); color: #06121f; border-color: transparent; font-weight: 700; }
-.eb-status { text-align: center; font-weight: 700; font-size: 14px; margin: 6px 0 14px; }
-.eb-status.you { color: #36e0c8; }
-.eb-status.bot { color: #ff7a9c; }
-.eb-table-wrap { border-radius: 18px; padding: 14px; background: linear-gradient(160deg,#5a3415,#3a2110); border: 2px solid #2a1708; box-shadow: 0 18px 50px rgba(0,0,0,0.5); }
-.eb-canvas { width: 100%; height: auto; display: block; border-radius: 8px; touch-action: none; }
-.eb-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(4,8,18,0.72); border-radius: 18px; backdrop-filter: blur(4px); }
-.eb-card { background: linear-gradient(160deg,#142a5e,#0b1734); border: 1px solid rgba(120,160,255,0.3); border-radius: 16px; padding: 26px 30px; text-align: center; }
-.eb-result { font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 18px; }
-.eb-play { display: block; width: 100%; background: linear-gradient(90deg,#36e0c8,#5b8cff); color: #06121f; border: none; border-radius: 10px; padding: 12px 22px; font-weight: 800; font-size: 15px; cursor: pointer; margin-bottom: 10px; }
-.eb-play:hover { filter: brightness(1.1); }
-.eb-leave { color: #8fa3c8; text-decoration: none; font-size: 14px; }
-.eb-leave:hover { color: #fff; }
-@media (max-width: 480px) { .eb-title { font-size: 18px; } .eb-table-wrap { padding: 8px; } }
+/* ==========================================================================
+   8-BALL POOL — premium pool-hall match UI (namespaced .eb2-)
+   ========================================================================== */
+.eb2-wrap { max-width: 880px; margin: 0 auto; padding: 16px 14px 40px; display: flex; flex-direction: column; gap: 14px; color: #eef1ff; }
+
+.eb2-eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #19a974; }
+.eb2-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; font-size: 15px; border-radius: 12px; padding: 13px 18px; cursor: pointer; border: 1px solid transparent; transition: transform .14s, filter .16s, box-shadow .16s, background .16s; }
+.eb2-btn--go { color: #04130c; background: linear-gradient(135deg, #19a974, #5be0a8); box-shadow: 0 12px 30px -12px rgba(25,169,116,.8); }
+.eb2-btn--go:hover { transform: translateY(-2px); filter: brightness(1.05); }
+.eb2-btn--ghost { color: #cfd6f5; background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.14); }
+.eb2-btn--ghost:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.3); }
+.eb2-note { display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: #8b93b8; margin: 0; }
+.eb2-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.eb2-actions .eb2-btn { flex: 1 1 auto; }
+
+/* SETUP */
+.eb2-setup { max-width: 520px; margin: 0 auto; width: 100%; background: linear-gradient(180deg, rgba(14,24,19,.96), rgba(8,16,12,.96));
+  border: 1px solid rgba(40,170,110,.2); border-radius: 22px; padding: 22px 20px;
+  box-shadow: 0 30px 70px -34px rgba(25,169,116,.5), inset 0 1px 0 rgba(255,255,255,.05); display: flex; flex-direction: column; gap: 18px; }
+.eb2-setup__head h1 { font-family: var(--font-head, 'Space Grotesk'); font-size: 28px; margin: 8px 0 6px; letter-spacing: -.02em; }
+.eb2-setup__head p { color: #9aa3c7; font-size: 14px; margin: 0; }
+.eb2-field { display: flex; flex-direction: column; gap: 9px; }
+.eb2-field > label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: #8b93b8; }
+.eb2-opts { display: flex; flex-wrap: wrap; gap: 9px; }
+.eb2-opt { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1); color: #d6dcff; border-radius: 12px; padding: 11px 14px; font-weight: 700; font-size: 14px; transition: all .15s; }
+.eb2-opt:hover:not(.is-disabled) { border-color: rgba(25,169,116,.5); transform: translateY(-1px); }
+.eb2-opt.is-active { background: linear-gradient(135deg, rgba(25,169,116,.22), rgba(25,169,116,.1)); border-color: #19a974; color: #fff; box-shadow: 0 8px 22px -12px rgba(25,169,116,.8); }
+.eb2-opt.is-disabled { opacity: .45; cursor: not-allowed; }
+.eb2-soon { font-size: 10px; font-weight: 800; text-transform: uppercase; color: #8b93b8; background: rgba(255,255,255,.08); padding: 2px 6px; border-radius: 999px; }
+.eb2-opt--diff { flex-direction: column; align-items: flex-start; gap: 2px; flex: 1 1 0; min-width: 92px; }
+.eb2-opt--diff b { font-size: 14px; } .eb2-opt--diff span { font-size: 11px; color: #8b93b8; font-weight: 600; }
+.eb2-opts--entry .eb2-opt--entry { flex: 1 1 0; justify-content: center; min-width: 58px; }
+.eb2-econ { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; background: rgba(0,0,0,.28); border: 1px solid rgba(255,255,255,.08); border-radius: 14px; padding: 12px; }
+.eb2-econ > div { display: flex; flex-direction: column; gap: 3px; text-align: center; }
+.eb2-econ span { font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; color: #8b93b8; }
+.eb2-econ b { font-size: 15px; font-weight: 800; }
+.eb2-econ--dim b { color: #9aa3c7; } .eb2-econ--win b { color: #19a974; }
+
+/* HUD */
+.eb2-hud { display: flex; align-items: center; gap: 12px; }
+.eb2-hud__back { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 11px; flex: none; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.12); color: #cfd6f5; cursor: pointer; }
+.eb2-hud__back:hover { background: rgba(255,255,255,.1); }
+.eb2-hud__title { flex: 1; font-family: var(--font-head, 'Space Grotesk'); font-size: 17px; font-weight: 800; }
+.eb2-hud__turn { font-size: 12.5px; font-weight: 800; padding: 7px 12px; border-radius: 999px; white-space: nowrap; }
+.eb2-hud__turn.you { color: #7fe0b0; background: rgba(25,169,116,.16); border: 1px solid rgba(25,169,116,.4); }
+.eb2-hud__turn.bot { color: #c79bff; background: rgba(170,90,255,.14); border: 1px solid rgba(170,90,255,.35); }
+.eb2-scoreboard { display: flex; gap: 10px; }
+.eb2-pl { flex: 1; display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 12px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); font-weight: 700; font-size: 13.5px; transition: all .2s; }
+.eb2-pl.active { border-color: rgba(25,169,116,.5); box-shadow: 0 0 0 1px rgba(25,169,116,.3) inset; }
+.eb2-pl b { margin-left: auto; font-weight: 800; color: #cfe9da; font-size: 13px; }
+.eb2-pl__dot { width: 9px; height: 9px; border-radius: 50%; }
+.eb2-pl__dot.you { background: #19a974; box-shadow: 0 0 8px #19a974; }
+.eb2-pl__dot.bot { background: #a855f7; box-shadow: 0 0 8px #a855f7; }
+
+/* STAGE */
+.eb2-stage { position: relative; }
+.eb2-canvas { width: 100%; height: auto; display: block; border-radius: 14px; touch-action: none; cursor: crosshair;
+  box-shadow: 0 28px 64px -28px rgba(0,0,0,.95), inset 0 1px 0 rgba(255,255,255,.05); background: #0a0d12; }
+.eb2-banner { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: rgba(5,12,9,.85); border: 1px solid rgba(25,169,116,.5); color: #eafff4; padding: 8px 16px; border-radius: 999px; font-weight: 800; font-size: 13.5px; backdrop-filter: blur(6px); animation: eb2Pop .3s cubic-bezier(.34,1.56,.64,1) both; max-width: 90%; text-align: center; }
+@keyframes eb2Pop { from { opacity: 0; transform: translateX(-50%) scale(.85); } to { opacity: 1; transform: translateX(-50%) scale(1); } }
+.eb2-hint { display: flex; align-items: center; justify-content: center; gap: 7px; font-size: 12.5px; color: #8b93b8; margin: 0; }
+
+/* RESULTS */
+.eb2-results { max-width: 520px; margin: 0 auto; width: 100%; position: relative; overflow: hidden; text-align: center; background: linear-gradient(180deg, rgba(14,22,18,.96), rgba(8,14,11,.96)); border: 1px solid rgba(40,170,110,.2); border-radius: 22px; padding: 30px 22px 22px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.eb2-results__burst { position: absolute; inset: -40% -10% auto -10%; height: 70%; pointer-events: none; background: radial-gradient(60% 70% at 50% 0%, rgba(25,169,116,.18), transparent 70%); }
+.eb2-results.win .eb2-results__burst { background: radial-gradient(60% 80% at 50% 0%, rgba(245,215,110,.22), rgba(25,169,116,.12), transparent 75%); }
+.eb2-results > * { position: relative; z-index: 1; }
+.eb2-results__icon { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 18px; font-size: 32px; color: #04130c; background: linear-gradient(135deg, #19a974, #5be0a8); box-shadow: 0 14px 34px -14px rgba(25,169,116,.9); animation: eb2Pop .5s cubic-bezier(.34,1.56,.64,1) both; }
+.eb2-results h1 { font-family: var(--font-head, 'Space Grotesk'); font-size: 30px; margin: 4px 0 0; }
+.eb2-results__sub { color: #9aa3c7; font-size: 14px; margin: 0; }
+.eb2-payout { width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: rgba(0,0,0,.28); border: 1px solid rgba(255,255,255,.08); border-radius: 14px; padding: 12px; }
+.eb2-payout > div { display: flex; flex-direction: column; gap: 3px; text-align: center; }
+.eb2-payout span { font-size: 10.5px; text-transform: uppercase; color: #8b93b8; }
+.eb2-payout b { font-size: 16px; font-weight: 800; }
+
+@media (max-width: 460px) {
+  .eb2-opt--diff { min-width: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .eb2-banner, .eb2-results__icon { animation: none !important; }
+  .eb2-btn--go:hover, .eb2-opt:hover { transform: none; }
+}
