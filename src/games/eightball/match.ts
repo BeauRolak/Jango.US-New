@@ -6,7 +6,9 @@ import {
   anyMoving,
   pockets,
   TABLE,
+  BALL_R,
 } from "./engine";
+import type { Difficulty } from "../../game/types";
 
 // Deterministic, tick-based 8-Ball match controller.
 // The physics (ball integration, cushions, pocket detection) lives in engine.step();
@@ -32,6 +34,7 @@ export type Phase =
 
 export interface MatchState {
   balls: Ball[];
+  difficulty: Difficulty;
   turn: Turn;
   phase: Phase;
   timer: number;
@@ -56,9 +59,10 @@ function groupOfId(id: number): Group | null {
   return null; // cue (0) or eight (8)
 }
 
-export function createMatch(): MatchState {
+export function createMatch(difficulty: Difficulty = "medium"): MatchState {
   return {
     balls: rack(),
+    difficulty,
     turn: 0,
     phase: "aiming",
     timer: 0,
@@ -102,57 +106,100 @@ export function shoot(s: MatchState, angle: number, power: number): MatchState {
   };
 }
 
-// Simple deterministic aiming bot: aim the cue at the nearest legal target ball,
-// nudging toward the closest pocket behind it. Never returns nonsense — if no
-// target is found it still takes a centered shot so the turn can't stall.
+function angDiff(a: number, b: number): number {
+  let d = a - b;
+  while (d > Math.PI) d -= 2 * Math.PI;
+  while (d < -Math.PI) d += 2 * Math.PI;
+  return d;
+}
+
+// Run a candidate shot against the real physics, headlessly, and report what it
+// pocketed and whether it scratched. This is what makes the bot actually sink
+// balls (a blind ghost-ball aim misses far too often to ever finish a game).
+function simulateShot(balls: Ball[], angle: number, power: number): { potted: number[]; scratch: boolean } {
+  const sim = balls.map((b) => ({ ...b }));
+  const c = sim.find((b) => b.id === 0);
+  if (!c) return { potted: [], scratch: true };
+  strike(c, angle, Math.max(0.15, Math.min(1, power)));
+  const potted: number[] = [];
+  let t = 0;
+  while (anyMoving(sim) && t < MAX_ROLL_TICKS) {
+    const pn = step(sim);
+    for (const id of pn) potted.push(id);
+    t += 1;
+  }
+  const cc = sim.find((b) => b.id === 0);
+  return { potted, scratch: !cc || cc.potted };
+}
+
+// Simulation-based aiming bot. Enumerates legal target x pocket candidates,
+// simulates each against the physics, scores by what it legally pockets (and
+// penalizes scratches / illegal 8s), then applies difficulty (search window +
+// aim/power error). Always returns a valid shot so a turn can never stall.
 export function botAim(s: MatchState): { angle: number; power: number } {
   const balls = s.balls;
   const cue = cueBall(balls);
   if (!cue) return { angle: 0, power: 0.6 };
-  const myGroup = s.groups[1];
+  const shooter = s.turn;
+  const myGroup = s.groups[shooter];
+  const cleared = myGroup !== null && groupClearedExcluding8(balls, myGroup);
   const targets = balls.filter((b) => {
     if (b.potted || b.id === 0) return false;
     if (myGroup === null) return b.id !== 8; // open table: anything but the 8
-    if (b.id === 8) return groupCleared(balls, myGroup); // 8 only when group cleared
+    if (b.id === 8) return cleared;          // the 8 only once the group is cleared
     return groupOfId(b.id) === myGroup;
   });
-  if (targets.length === 0) {
-    return { angle: 0, power: 0.5 };
-  }
-  // nearest target
-  let best = targets[0];
-  let bestD = Infinity;
-  for (const t of targets) {
-    const d = Math.hypot(t.x - cue.x, t.y - cue.y);
-    if (d < bestD) {
-      bestD = d;
-      best = t;
-    }
-  }
-  // aim from cue toward the target, then bias toward the nearest pocket beyond it
+  const aimTargets = targets.length ? targets : balls.filter((b) => !b.potted && b.id !== 0);
   const pks = pockets();
-  let pocket = pks[0];
-  let pd = Infinity;
-  for (const pk of pks) {
-    const d = Math.hypot(pk.x - best.x, pk.y - best.y);
-    if (d < pd) {
-      pd = d;
-      pocket = pk;
+
+  type Cand = { angle: number; power: number; score: number };
+  const cands: Cand[] = [];
+  for (const tb of aimTargets) {
+    const near = pks
+      .slice()
+      .sort((p, q) => Math.hypot(p.x - tb.x, p.y - tb.y) - Math.hypot(q.x - tb.x, q.y - tb.y))
+      .slice(0, 3);
+    for (const pk of near) {
+      const ax = tb.x - pk.x, ay = tb.y - pk.y;
+      const am = Math.hypot(ax, ay) || 1;
+      const ghostX = tb.x + (ax / am) * (BALL_R * 2);
+      const ghostY = tb.y + (ay / am) * (BALL_R * 2);
+      const angle = Math.atan2(ghostY - cue.y, ghostX - cue.x);
+      const dist = Math.hypot(ghostX - cue.x, ghostY - cue.y) + Math.hypot(pk.x - tb.x, pk.y - tb.y);
+      const power = Math.max(0.42, Math.min(1, 0.45 + dist / (TABLE.w * 1.7)));
+      const res = simulateShot(balls, angle, power);
+      let score = 0;
+      if (res.scratch) score -= 1000;
+      for (const id of res.potted) {
+        if (id === 8) {
+          score += (myGroup !== null && cleared && !res.scratch) ? 6000 : -6000;
+        } else if (myGroup === null) {
+          score += groupOfId(id) !== null ? 90 : 0;
+        } else if (groupOfId(id) === myGroup) {
+          score += 130;
+        } else {
+          score -= 60; // pocketed an opponent ball
+        }
+      }
+      // prefer straighter cuts (easier, more repeatable shots)
+      const cut = Math.abs(angDiff(Math.atan2(tb.y - cue.y, tb.x - cue.x), Math.atan2(pk.y - tb.y, pk.x - tb.x)));
+      score -= cut * 8;
+      cands.push({ angle, power, score });
     }
   }
-  // ghost-ball aim point: aim cue at the point on the target opposite the pocket
-  const ax = best.x - pocket.x;
-  const ay = best.y - pocket.y;
-  const am = Math.hypot(ax, ay) || 1;
-  const ghostX = best.x + (ax / am) * 22;
-  const ghostY = best.y + (ay / am) * 22;
-  const angle = Math.atan2(ghostY - cue.y, ghostX - cue.x);
-  const power = Math.min(1, 0.55 + bestD / (TABLE.w * 2));
-  return { angle, power };
-}
+  if (!cands.length) return { angle: 0, power: 0.5 };
+  cands.sort((a, b) => b.score - a.score);
 
-function groupCleared(balls: Ball[], g: Group): boolean {
-  return !balls.some((b) => !b.potted && groupOfId(b.id) === g);
+  const diff = s.difficulty;
+  const pickN = diff === "hard" ? 1 : diff === "medium" ? 3 : 7;
+  const errAng = diff === "hard" ? 0.012 : diff === "medium" ? 0.05 : 0.14;
+  const errPow = diff === "hard" ? 0.02 : diff === "medium" ? 0.08 : 0.18;
+  const top = Math.min(pickN, cands.length);
+  const chosen = cands[Math.floor(Math.random() * top)];
+  return {
+    angle: chosen.angle + (Math.random() * 2 - 1) * errAng,
+    power: Math.max(0.2, Math.min(1, chosen.power * (1 + (Math.random() * 2 - 1) * errPow))),
+  };
 }
 
 // Resolve the outcome of a shot once all balls have stopped.
@@ -303,6 +350,6 @@ export function isMatchOver(s: MatchState): boolean {
   return s.phase === "gameOver";
 }
 
-export function rematch(): MatchState {
-  return createMatch();
+export function rematch(difficulty?: Difficulty): MatchState {
+  return createMatch(difficulty);
 }

@@ -70,13 +70,17 @@ export function step(balls: Ball[]): number[] {
     if (Math.abs(b.vy) < STOP_SPEED) b.vy = 0;
   }
 
-  // cushions
+  // cushions — WITH pocket-mouth gaps so balls can actually enter the pockets.
+  // Near a pocket the rail is "open" (no reflection) so the ball rolls in.
+  const mouth = POCKET_R + 8;
   for (const b of balls) {
     if (b.potted) continue;
-    if (b.x < cushion + BALL_R) { b.x = cushion + BALL_R; b.vx = Math.abs(b.vx) * CUSHION_RESTITUTION; }
-    if (b.x > w - cushion - BALL_R) { b.x = w - cushion - BALL_R; b.vx = -Math.abs(b.vx) * CUSHION_RESTITUTION; }
-    if (b.y < cushion + BALL_R) { b.y = cushion + BALL_R; b.vy = Math.abs(b.vy) * CUSHION_RESTITUTION; }
-    if (b.y > h - cushion - BALL_R) { b.y = h - cushion - BALL_R; b.vy = -Math.abs(b.vy) * CUSHION_RESTITUTION; }
+    const nearCornerY = b.y < mouth || b.y > h - mouth;          // top/bottom corners
+    const nearPocketX = b.x < mouth || b.x > w - mouth || Math.abs(b.x - w / 2) < mouth; // corners + side pockets
+    if (b.x < cushion + BALL_R && !nearCornerY) { b.x = cushion + BALL_R; b.vx = Math.abs(b.vx) * CUSHION_RESTITUTION; }
+    if (b.x > w - cushion - BALL_R && !nearCornerY) { b.x = w - cushion - BALL_R; b.vx = -Math.abs(b.vx) * CUSHION_RESTITUTION; }
+    if (b.y < cushion + BALL_R && !nearPocketX) { b.y = cushion + BALL_R; b.vy = Math.abs(b.vy) * CUSHION_RESTITUTION; }
+    if (b.y > h - cushion - BALL_R && !nearPocketX) { b.y = h - cushion - BALL_R; b.vy = -Math.abs(b.vy) * CUSHION_RESTITUTION; }
   }
 
   // ball-ball collisions (elastic, equal mass)
@@ -110,16 +114,20 @@ export function step(balls: Ball[]): number[] {
     }
   }
 
-  // pockets
+  // pockets (capture by proximity, plus a catch for any ball that rolled out
+  // through a gap so it can never escape the table and vanish into the void)
   for (const b of balls) {
     if (b.potted) continue;
+    let dropped = false;
     for (const p of pockets()) {
-      if (Math.hypot(b.x - p.x, b.y - p.y) < POCKET_R) {
-        b.potted = true;
-        b.vx = 0; b.vy = 0;
-        potted.push(b.id);
-        break;
-      }
+      if (Math.hypot(b.x - p.x, b.y - p.y) < POCKET_R) { dropped = true; break; }
+    }
+    if (!dropped && (b.x < -BALL_R || b.x > w + BALL_R || b.y < -BALL_R || b.y > h + BALL_R)) {
+      dropped = true; // rolled off through a pocket mouth
+    }
+    if (dropped) {
+      b.potted = true; b.vx = 0; b.vy = 0;
+      potted.push(b.id);
     }
   }
   return potted;
